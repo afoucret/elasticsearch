@@ -125,7 +125,12 @@ public interface IndexAbstraction {
          * A data stream typically has multiple backing indices, the latest of which
          * is the target for index requests.
          */
-        DATA_STREAM("data_stream");
+        DATA_STREAM("data_stream"),
+
+        /**
+         * An index abstraction that refers to a content index.
+         */
+        CONTENT_INDEX("content_index");
 
         private final String displayName;
 
@@ -254,7 +259,7 @@ public interface IndexAbstraction {
             }
             this.writeIndex = widx;
 
-            this.isHidden = aliasMetadata.isHidden() == null ? false : aliasMetadata.isHidden();
+            this.isHidden = aliasMetadata.isHidden() == null && aliasMetadata.isHidden();
             this.isSystem = isSystem;
             dataStreamAlias = false;
         }
@@ -472,6 +477,68 @@ public interface IndexAbstraction {
         @Override
         public int hashCode() {
             return Objects.hash(dataStream, referencedByDataStreamAliases);
+        }
+    }
+
+    class ContentIndex implements IndexAbstraction {
+
+        private final org.elasticsearch.cluster.metadata.ContentIndex contentIndex;
+
+        public ContentIndex(org.elasticsearch.cluster.metadata.ContentIndex contentIndex) {
+            this.contentIndex = contentIndex;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.CONTENT_INDEX;
+        }
+
+        @Override
+        public String getName() {
+            return contentIndex.getName();
+        }
+
+        @Override
+        public List<Index> getIndices() {
+            return List.of(contentIndex.getIndex());
+        }
+
+        @Override
+        public Index getWriteIndex() {
+            return contentIndex.getIndex();
+        }
+
+        @Override
+        public DataStream getParentDataStream() {
+            return null;
+        }
+
+        @Override
+        public boolean isHidden() {
+            return false;
+        }
+
+        @Override
+        public boolean isSystem() {
+            return false;
+        }
+
+        @Override
+        public List<String> getAliases() {
+            return null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ContentIndex that = (ContentIndex) o;
+            return contentIndex.equals(that.contentIndex);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(contentIndex);
         }
     }
 
