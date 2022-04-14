@@ -433,7 +433,8 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
     public SortedMap<String, IndexAbstraction> getIndicesLookup() {
         if (indicesLookup == null) {
             DataStreamMetadata dataStreamMetadata = custom(DataStreamMetadata.TYPE);
-            indicesLookup = Builder.buildIndicesLookup(dataStreamMetadata, indices);
+            ContentIndexMetadata contentIndexMetadata = custom(ContentIndexMetadata.TYPE);
+            indicesLookup = Builder.buildIndicesLookup(dataStreamMetadata, contentIndexMetadata, indices);
         }
         return indicesLookup;
     }
@@ -899,6 +900,12 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
     public Map<String, DataStream> dataStreams() {
         return Optional.ofNullable((DataStreamMetadata) this.custom(DataStreamMetadata.TYPE))
             .map(DataStreamMetadata::dataStreams)
+            .orElse(Collections.emptyMap());
+    }
+
+    public Map<String, ContentIndex> contentIndices() {
+        return Optional.ofNullable((ContentIndexMetadata) this.custom(ContentIndexMetadata.TYPE))
+            .map(ContentIndexMetadata::contentIndices)
             .orElse(Collections.emptyMap());
     }
 
@@ -1540,6 +1547,20 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
             return this;
         }
 
+        public Builder put(ContentIndex contentIndex) {
+            previousIndicesLookup = null;
+            Objects.requireNonNull(contentIndex, "it is invalid to add a null content index");
+
+            Map<String, ContentIndex> existingContentIndices = Optional.ofNullable(
+                (ContentIndexMetadata) this.customs.get(ContentIndexMetadata.TYPE)
+            ).map(dsmd -> new HashMap<>(dsmd.contentIndices())).orElse(new HashMap<>());
+            existingContentIndices.put(contentIndex.getName(), contentIndex);
+
+            this.customs.put(ContentIndexMetadata.TYPE, new ContentIndexMetadata(existingContentIndices));
+
+            return this;
+        }
+
         public boolean put(String aliasName, String dataStream, Boolean isWriteDataStream, String filter) {
             previousIndicesLookup = null;
 
@@ -1815,12 +1836,12 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
                 validateAlias(entry.getKey(), aliasIndices);
             }
             final DataStreamMetadata dataStreamMetadata = (DataStreamMetadata) this.customs.get(DataStreamMetadata.TYPE);
-            ensureNoNameCollisions(aliasedIndices.keySet(), indicesMap, allIndices, dataStreamMetadata);
+            final ContentIndexMetadata contentIndexMetadata = (ContentIndexMetadata) this.customs.get(ContentIndexMetadata.TYPE);
             assert assertDataStreams(indicesMap, dataStreamMetadata);
 
             SortedMap<String, IndexAbstraction> indicesLookup = null;
             if (previousIndicesLookup != null) {
-                assert previousIndicesLookup.equals(buildIndicesLookup(dataStreamMetadata, indicesMap));
+                assert previousIndicesLookup.equals(buildIndicesLookup(dataStreamMetadata, contentIndexMetadata, indicesMap));
                 indicesLookup = previousIndicesLookup;
             }
 
@@ -1984,6 +2005,7 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
 
         static SortedMap<String, IndexAbstraction> buildIndicesLookup(
             @Nullable DataStreamMetadata dataStreamMetadata,
+            @Nullable ContentIndexMetadata contentIndexMetadata,
             ImmutableOpenMap<String, IndexMetadata> indices
         ) {
             SortedMap<String, IndexAbstraction> indicesLookup = new TreeMap<>();
@@ -2045,6 +2067,13 @@ public class Metadata extends AbstractCollection<IndexMetadata> implements Diffa
                 AliasMetadata alias = entry.getValue().get(0).getAliases().get(entry.getKey());
                 IndexAbstraction existing = indicesLookup.put(entry.getKey(), new IndexAbstraction.Alias(alias, entry.getValue()));
                 assert existing == null : "duplicate for " + entry.getKey();
+            }
+
+            if (contentIndexMetadata != null) {
+                for (var contentIndex : contentIndexMetadata.contentIndices().values()) {
+                    IndexAbstraction existing = indicesLookup.put(contentIndex.getName(), new IndexAbstraction.ContentIndex(contentIndex));
+                    assert existing == null : "duplicate for " + contentIndex.getName();
+                }
             }
 
             return Collections.unmodifiableSortedMap(indicesLookup);

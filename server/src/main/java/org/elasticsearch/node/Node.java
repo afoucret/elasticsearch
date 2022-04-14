@@ -46,6 +46,7 @@ import org.elasticsearch.cluster.desirednodes.DesiredNodesSettingsValidator;
 import org.elasticsearch.cluster.metadata.IndexMetadataVerifier;
 import org.elasticsearch.cluster.metadata.IndexTemplateMetadata;
 import org.elasticsearch.cluster.metadata.Metadata;
+import org.elasticsearch.cluster.metadata.MetadataCreateContentIndexService;
 import org.elasticsearch.cluster.metadata.MetadataCreateDataStreamService;
 import org.elasticsearch.cluster.metadata.MetadataCreateIndexService;
 import org.elasticsearch.cluster.metadata.MetadataDataStreamsService;
@@ -671,6 +672,12 @@ public class Node implements Closeable {
             );
             final MetadataDataStreamsService metadataDataStreamsService = new MetadataDataStreamsService(clusterService, indicesService);
 
+            final MetadataCreateContentIndexService metadataCreateContentIndexService = new MetadataCreateContentIndexService(
+                threadPool,
+                clusterService,
+                metadataCreateIndexService
+            );
+
             final MetadataUpdateSettingsService metadataUpdateSettingsService = new MetadataUpdateSettingsService(
                 clusterService,
                 clusterModule.getAllocationService(),
@@ -938,6 +945,7 @@ public class Node implements Closeable {
                 b.bind(IndicesService.class).toInstance(indicesService);
                 b.bind(MetadataCreateIndexService.class).toInstance(metadataCreateIndexService);
                 b.bind(MetadataCreateDataStreamService.class).toInstance(metadataCreateDataStreamService);
+                b.bind(MetadataCreateContentIndexService.class).toInstance(metadataCreateContentIndexService);
                 b.bind(MetadataDataStreamsService.class).toInstance(metadataDataStreamsService);
                 b.bind(MetadataUpdateSettingsService.class).toInstance(metadataUpdateSettingsService);
                 b.bind(SearchService.class).toInstance(searchService);
