@@ -73,10 +73,10 @@ public class HelloWorldAction extends ActionType<HelloWorldAction.Response> {
     public static class Response extends ActionResponse implements ToXContentObject {
 
         public static final ParseField MESSAGE_FIELD = new ParseField("message");
-        private final String name;
+        private final String message;
 
         public Response(String name) {
-            this.name = name;
+            this.message = name;
         }
 
         public Response(StreamInput in) throws IOException {
@@ -85,7 +85,7 @@ public class HelloWorldAction extends ActionType<HelloWorldAction.Response> {
 
         @Override
         public void writeTo(StreamOutput out) throws IOException {
-            out.writeString(name);
+            out.writeString(message);
         }
 
         @Override
@@ -93,24 +93,20 @@ public class HelloWorldAction extends ActionType<HelloWorldAction.Response> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             HelloWorldAction.Response response = (HelloWorldAction.Response) o;
-            return name.equals(response.name);
+            return message.equals(response.message);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name);
+            return Objects.hash(message);
         }
 
         @Override
         public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
             builder.startObject();
-            builder.field(MESSAGE_FIELD.getPreferredName(), getMessage());
+            builder.field(MESSAGE_FIELD.getPreferredName(), message);
             builder.endObject();
             return builder;
-        }
-
-        private String getMessage() {
-            return "Hello, " + name + "!";
         }
     }
 }
