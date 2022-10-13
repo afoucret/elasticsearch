@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -210,7 +211,7 @@ public class RelevanceMatchQueryRewriterTests extends AbstractBuilderTestCase {
         relevanceSettings.setQueryConfiguration(queryConfiguration);
 
         try {
-            when(relevanceSettingsService.getSettings(RELEVANCE_SETTINGS_ID)).thenReturn(relevanceSettings);
+            when(relevanceSettingsService.getSettings(RELEVANCE_SETTINGS_ID, any())).thenReturn(relevanceSettings);
         } catch (RelevanceSettingsService.SettingsNotFoundException | RelevanceSettingsService.InvalidSettingsException e) {
             // Can't happen at mock definition
         }
@@ -244,7 +245,7 @@ public class RelevanceMatchQueryRewriterTests extends AbstractBuilderTestCase {
 
         CurationSettings curationSettings = new CurationSettings(pinnedDocs, hiddenDocs, conditions);
 
-        when(curationsService.getSettings(CURATION_SETTINGS_ID)).thenReturn(curationSettings);
+        when(curationsService.getSettings(CURATION_SETTINGS_ID, any())).thenReturn(curationSettings);
     }
 
 }

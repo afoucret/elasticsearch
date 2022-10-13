@@ -10,6 +10,7 @@ package org.elasticsearch.xpack.relevancesearch.query;
 import org.elasticsearch.cluster.metadata.SearchEngine;
 import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.index.query.SearchExecutionContext;
+import org.elasticsearch.xpack.relevancesearch.settings.RelevanceSettingsContext;
 import org.elasticsearch.xpack.relevancesearch.settings.Settings;
 import org.elasticsearch.xpack.relevancesearch.settings.SettingsService;
 
@@ -32,7 +33,7 @@ abstract class AbstractQueryRewriter<S extends Settings> implements QueryRewrite
 
         if (settingsId != null) {
             try {
-                return settingsService.getSettings(settingsId);
+                return settingsService.getSettings(settingsId, getRelevanceSettingsContext(relevanceMatchQuery));
             } catch (SettingsService.SettingsServiceException e) {
                 throw new IllegalArgumentException("[relevance_match] " + e.getMessage());
             }
@@ -44,6 +45,10 @@ abstract class AbstractQueryRewriter<S extends Settings> implements QueryRewrite
     protected abstract String getSettingsId(SearchEngine searchEngine);
 
     protected abstract String getSettingsId(RelevanceMatchQueryBuilder relevanceMatchQuery);
+
+    private RelevanceSettingsContext getRelevanceSettingsContext(RelevanceMatchQueryBuilder relevanceMatchQuery) {
+        return new RelevanceSettingsContext("query", relevanceMatchQuery.getQuery());
+    }
 
     private SearchEngine getSearchEngine(SearchExecutionContext context) {
         String searchEngineName = context.getSearchEngineName();

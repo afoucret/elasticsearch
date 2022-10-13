@@ -8,7 +8,7 @@
 package org.elasticsearch.xpack.relevancesearch.settings;
 
 public interface SettingsService<S extends Settings> {
-    S getSettings(String settingsId) throws SettingsNotFoundException, InvalidSettingsException;
+    S getSettings(String settingsId, RelevanceSettingsContext context) throws SettingsNotFoundException, InvalidSettingsException;
 
     class SettingsServiceException extends Exception {
         public SettingsServiceException(String message) {

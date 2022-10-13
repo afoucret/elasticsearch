@@ -123,6 +123,7 @@ public class IndexCreationService implements ClusterStateListener {
                 .endObject()
                 .endObject()
                 .startObject("conditions")
+                .field("type", "nested")
                 .startObject("properties")
                 .startObject("context")
                 .field("type", "keyword")

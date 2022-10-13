@@ -10,6 +10,7 @@ package org.elasticsearch.xpack.relevancesearch.settings;
 import org.elasticsearch.client.internal.Client;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.xpack.relevancesearch.settings.index.IndexCreationService;
+import org.elasticsearch.xpack.relevancesearch.settings.relevance.RelevanceSettings;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public abstract class AbstractSettingsService<S extends Settings> implements Set
     }
 
     @Override
-    public S getSettings(String settingsId) throws SettingsNotFoundException, InvalidSettingsException {
+    public S getSettings(String settingsId, RelevanceSettingsContext context) throws SettingsNotFoundException, InvalidSettingsException {
         // TODO cache relevance settings, including cache invalidation
         Map<String, Object> settingsContent = null;
         try {
