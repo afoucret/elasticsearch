@@ -1,0 +1,7 @@
+import org.elasticsearch.gradle.internal.info.BuildParams
+
+esplugin {
+  description 'Elasticsearch Expanded Pack Plugin - Queues implementation'
+  classname 'org.elasticsearch.queues.QueuePlugin'
+}
+
