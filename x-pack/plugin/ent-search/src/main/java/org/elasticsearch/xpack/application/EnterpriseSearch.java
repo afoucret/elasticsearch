@@ -32,10 +32,13 @@ import org.elasticsearch.repositories.RepositoriesService;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.script.ScriptService;
+import org.elasticsearch.threadpool.ExecutorBuilder;
+import org.elasticsearch.threadpool.FixedExecutorBuilder;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.tracing.Tracer;
 import org.elasticsearch.watcher.ResourceWatcherService;
 import org.elasticsearch.xcontent.NamedXContentRegistry;
+import org.elasticsearch.xpack.application.analytics.AnalyticsEventIngestService;
 import org.elasticsearch.xpack.application.analytics.AnalyticsTemplateRegistry;
 import org.elasticsearch.xpack.application.analytics.action.DeleteAnalyticsCollectionAction;
 import org.elasticsearch.xpack.application.analytics.action.GetAnalyticsCollectionAction;
@@ -70,6 +73,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static java.util.Collections.emptyList;
 
 public class EnterpriseSearch extends Plugin implements ActionPlugin, SystemIndexPlugin {
     public static final String APPLICATION_API_ENDPOINT = "_application";
@@ -175,6 +180,24 @@ public class EnterpriseSearch extends Plugin implements ActionPlugin, SystemInde
     @Override
     public String getFeatureName() {
         return FEATURE_NAME;
+    }
+
+    @Override
+    public List<ExecutorBuilder<?>> getExecutorBuilders(Settings unused) {
+        if (false == enabled) {
+            return emptyList();
+        }
+
+        return Collections.singletonList(
+            new FixedExecutorBuilder(
+                Settings.EMPTY,
+                AnalyticsEventIngestService.THREAD_POOL_NAME,
+                1,
+                1,
+                "xpack.ent-search.analytics.ingest.thread_pool",
+                false
+            )
+        );
     }
 
     @Override
