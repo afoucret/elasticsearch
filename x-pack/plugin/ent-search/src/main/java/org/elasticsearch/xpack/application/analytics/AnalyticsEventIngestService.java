@@ -7,26 +7,23 @@
 
 package org.elasticsearch.xpack.application.analytics;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.cluster.ClusterChangedEvent;
+import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.ClusterStateListener;
 import org.elasticsearch.cluster.service.ClusterService;
-import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.component.Lifecycle;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.logging.LoggerMessageFormat;
-import org.elasticsearch.threadpool.ThreadPool;
-import org.elasticsearch.xcontent.ToXContent;
-import org.elasticsearch.xcontent.json.JsonXContent;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.gateway.GatewayService;
 import org.elasticsearch.xpack.application.analytics.action.PostAnalyticsEventAction;
 import org.elasticsearch.xpack.application.analytics.event.AnalyticsEvent;
 import org.elasticsearch.xpack.application.analytics.event.AnalyticsEventFactory;
+import org.elasticsearch.xpack.application.analytics.ingest.AnalyticsEventConsumer;
+import org.elasticsearch.xpack.application.analytics.ingest.AnalyticsEventConsumerFactory;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -34,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Event will be emitted in using a specific logger created for the purpose of logging analytics events.
  * The log file is formatted as a ndjson file (one json per line). We send formatted JSON to the logger directly.
  */
-public class AnalyticsEventIngestService {
+public class AnalyticsEventIngestService implements ClusterStateListener {
     public static final String THREAD_POOL_NAME = "behavioral_analytics_event_ingest";
     private final ClusterService clusterService;
 
@@ -42,29 +39,39 @@ public class AnalyticsEventIngestService {
 
     private final AnalyticsEventFactory analyticsEventFactory;
 
-    private final BlockingQueue<AnalyticsEvent> eventQueue = new LinkedBlockingQueue<>();
+    // Queue should be instantiated from settings (max size, ...)
+    private final BlockingQueue<AnalyticsEvent> eventQueue;
 
-    private final EventConsumer eventConsumer;
+    private final AnalyticsEventConsumer analyticsEventConsumer;
 
     @Inject
-    public AnalyticsEventIngestService(AnalyticsCollectionResolver analyticsCollectionResolver, ClusterService clusterService, ThreadPool threadPool) {
-        this(AnalyticsEventFactory.INSTANCE, analyticsCollectionResolver, clusterService, threadPool);
-    }
-
     public AnalyticsEventIngestService(
         AnalyticsEventFactory analyticsEventFactory,
         AnalyticsCollectionResolver analyticsCollectionResolver,
+        AnalyticsEventConsumerFactory analyticsEventConsumerFactory,
         ClusterService clusterService,
-        ThreadPool threadPool
+        Settings settings
     ) {
+        this.eventQueue = new LinkedBlockingQueue<>();
         this.analyticsEventFactory = Objects.requireNonNull(analyticsEventFactory, "analyticsEventFactory");
         this.analyticsCollectionResolver = Objects.requireNonNull(analyticsCollectionResolver, "analyticsCollectionResolver");
         this.clusterService = Objects.requireNonNull(clusterService, "clusterService");
-        EventConsumerFactory eventConsumerFactory = LogEventConsumer.Factory::create;
-        this.eventConsumer = eventConsumerFactory.create(threadPool, eventQueue);
+        this.analyticsEventConsumer = analyticsEventConsumerFactory.create(eventQueue, settings);
 
-        // Should not be here.
-        this.eventConsumer.start();
+        clusterService.addListener(this);
+    }
+
+    @Override
+    public void clusterChanged(ClusterChangedEvent event) {
+        ClusterState state = event.state();
+        if (state.blocks().hasGlobalBlock(GatewayService.STATE_NOT_RECOVERED_BLOCK)) {
+            // wait until the gateway has recovered from disk before starting our ingest service
+            return;
+        }
+
+        if(analyticsEventConsumer.lifecycleState() == Lifecycle.State.INITIALIZED) {
+            this.analyticsEventConsumer.start();
+        }
     }
 
     /**
@@ -73,10 +80,7 @@ public class AnalyticsEventIngestService {
      * @param request the request containing the analytics event data
      * @param listener the listener to call once the event has been emitted
      */
-    public void emitEvent(
-        final PostAnalyticsEventAction.Request request,
-        final ActionListener<PostAnalyticsEventAction.Response> listener
-    ) {
+    public void postEvent(PostAnalyticsEventAction.Request request, ActionListener<PostAnalyticsEventAction.Response> listener) {
         try {
             analyticsCollectionResolver.collection(clusterService.state(), request.eventCollectionName());
             AnalyticsEvent event = analyticsEventFactory.fromRequest(request);
@@ -90,78 +94,6 @@ public class AnalyticsEventIngestService {
             }
         } catch (Exception e) {
             listener.onFailure(e);
-        }
-    }
-
-    interface EventConsumer {
-        void start();
-
-        void stop();
-    }
-
-    @FunctionalInterface
-    interface EventConsumerFactory {
-        EventConsumer create(ThreadPool threadPool, BlockingQueue<AnalyticsEvent> eventQueue);
-    }
-
-    public static class LogEventConsumer implements EventConsumer {
-        private static final Logger logger = LogManager.getLogger(AnalyticsEventIngestService.LogEventConsumer.class);
-
-        private static final Marker ANALYTICS_EVENT_MARKER = MarkerManager.getMarker("ANALYTICS_EVENT");
-
-        private final BlockingQueue<AnalyticsEvent> eventQueue;
-
-        private final ExecutorService executor;
-
-        private volatile boolean running = false;
-
-        public LogEventConsumer(ExecutorService executor, BlockingQueue<AnalyticsEvent> eventQueue) {
-            this.eventQueue = eventQueue;
-            this.executor = executor;
-        }
-
-        @Override
-        public void start() {
-            this.running = true;
-            this.executor.execute(() -> {
-                logger.info(LoggerMessageFormat.format(
-                    null, "analytics event consumer [{}] is up and running (tid[{}])",
-                    this.getClass().getName(),
-                    Thread.currentThread().getId()
-                ));
-                while (this.running) {
-                    try {
-                        logger.info(ANALYTICS_EVENT_MARKER, formatEvent(eventQueue.take()));
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void stop() {
-            this.running = false;
-            this.executor.shutdown();
-        }
-
-        /**
-         * Formats an analytics event as a JSON string.
-         *
-         * @param event the event to format
-         *
-         * @return the formatted JSON string
-         *
-         * @throws IOException if an I/O error occurs while formatting the JSON
-         */
-        private String formatEvent(AnalyticsEvent event) throws IOException {
-            return Strings.toString(event.toXContent(JsonXContent.contentBuilder(), ToXContent.EMPTY_PARAMS));
-        }
-
-        public static class Factory {
-            public static EventConsumer create(ThreadPool threadPool, BlockingQueue<AnalyticsEvent> eventQueue) {
-                return new LogEventConsumer(threadPool.executor(THREAD_POOL_NAME), eventQueue);
-            }
         }
     }
 }

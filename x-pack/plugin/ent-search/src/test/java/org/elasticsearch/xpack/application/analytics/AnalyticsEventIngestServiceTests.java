@@ -85,7 +85,7 @@ public class AnalyticsEventIngestServiceTests extends ESTestCase {
         ActionListener<PostAnalyticsEventAction.Response> listener = mock(ActionListener.class);
 
         // Send the event.
-        eventIngestService.emitEvent(request, listener);
+        eventIngestService.postEvent(request, listener);
 
         // Check no exception has been raised and the accepted response is sent.
         verify(listener, never()).onFailure(any());
@@ -130,7 +130,7 @@ public class AnalyticsEventIngestServiceTests extends ESTestCase {
         ActionListener<PostAnalyticsEventAction.Response> listener = mock(ActionListener.class);
 
         // Emit the event
-        eventIngestService.emitEvent(request, listener);
+        eventIngestService.postEvent(request, listener);
 
         // Verify responding through onFailure
         verify(listener, never()).onResponse(any());
@@ -166,7 +166,7 @@ public class AnalyticsEventIngestServiceTests extends ESTestCase {
         ActionListener<PostAnalyticsEventAction.Response> listener = mock(ActionListener.class);
 
         // Emit the event
-        eventIngestService.emitEvent(request, listener);
+        eventIngestService.postEvent(request, listener);
 
         // Verify responding through onFailure
         verify(listener, never()).onResponse(any());

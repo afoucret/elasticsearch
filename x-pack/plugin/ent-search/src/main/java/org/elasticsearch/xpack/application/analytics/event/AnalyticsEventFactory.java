@@ -44,10 +44,6 @@ public class AnalyticsEventFactory {
         .put(AnalyticsEvent.Type.SEARCH_CLICK, AnalyticsEventSearchClick::new)
         .immutableMap();
 
-    private AnalyticsEventFactory() {
-
-    }
-
     /**
      * Creates an {@link AnalyticsEvent} object from a {@link PostAnalyticsEventAction.Request} object.
      *

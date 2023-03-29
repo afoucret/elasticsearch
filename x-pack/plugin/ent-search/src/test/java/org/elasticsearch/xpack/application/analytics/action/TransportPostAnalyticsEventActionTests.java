@@ -35,7 +35,7 @@ public class TransportPostAnalyticsEventActionTests extends ESTestCase {
         ActionListener<PostAnalyticsEventAction.Response> listener = mock(ActionListener.class);
 
         transportAction.doExecute(mock(Task.class), request, listener);
-        verify(eventIngestService, times(1)).emitEvent(request, listener);
+        verify(eventIngestService, times(1)).postEvent(request, listener);
         verifyNoExceptionIsThrown(listener);
     }
 
@@ -50,7 +50,7 @@ public class TransportPostAnalyticsEventActionTests extends ESTestCase {
 
         transportAction.doExecute(mock(Task.class), request, listener);
 
-        verify(eventIngestService, never()).emitEvent(request, listener);
+        verify(eventIngestService, never()).postEvent(request, listener);
         verifyExceptionIsThrownOnInvalidLicence(listener);
     }
 

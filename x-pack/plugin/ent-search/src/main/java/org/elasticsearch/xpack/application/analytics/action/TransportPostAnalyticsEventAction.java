@@ -19,7 +19,7 @@ import org.elasticsearch.xpack.application.utils.LicenseUtils;
 
 /**
  * Transport implementation for the {@link PostAnalyticsEventAction}.
- * It executes the {@link AnalyticsEventIngestService#emitEvent} method if the XPack license is valid, else it calls
+ * It executes the {@link AnalyticsEventIngestService#postEvent} method if the XPack license is valid, else it calls
  * the listener's onFailure method with the appropriate exception.
  */
 public class TransportPostAnalyticsEventAction extends HandledTransportAction<
@@ -45,7 +45,7 @@ public class TransportPostAnalyticsEventAction extends HandledTransportAction<
     /**
      * Executes the actual handling of the action. It calls the {@link LicenseUtils#runIfSupportedLicense} method with
      * the XPack license state to check if the license is valid. If the license is valid, it calls the
-     * {@link AnalyticsEventIngestService#emitEvent} method with the request and listener. Else, it calls the listener's onFailure method
+     * {@link AnalyticsEventIngestService#postEvent} method with the request and listener. Else, it calls the listener's onFailure method
      * with the appropriate exception.
      *
      * @param task The {@link Task} associated with the action.
@@ -60,7 +60,7 @@ public class TransportPostAnalyticsEventAction extends HandledTransportAction<
     ) {
         LicenseUtils.runIfSupportedLicense(
             xPackLicenseState,
-            () -> this.eventService.emitEvent(request, listener),
+            () -> this.eventService.postEvent(request, listener),
             listener::onFailure
         );
     }
