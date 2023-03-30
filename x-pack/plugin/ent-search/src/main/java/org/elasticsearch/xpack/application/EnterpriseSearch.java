@@ -19,6 +19,7 @@ import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.settings.IndexScopedSettings;
+import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsFilter;
 import org.elasticsearch.env.Environment;
@@ -68,13 +69,12 @@ import org.elasticsearch.xpack.application.search.action.TransportPutSearchAppli
 import org.elasticsearch.xpack.core.XPackPlugin;
 import org.elasticsearch.xpack.core.XPackSettings;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-
-import static java.util.Collections.emptyList;
 
 public class EnterpriseSearch extends Plugin implements ActionPlugin, SystemIndexPlugin {
     public static final String APPLICATION_API_ENDPOINT = "_application";
@@ -183,14 +183,27 @@ public class EnterpriseSearch extends Plugin implements ActionPlugin, SystemInde
     }
 
     @Override
-    public List<ExecutorBuilder<?>> getExecutorBuilders(Settings unused) {
+    public List<Setting<?>> getSettings() {
         if (false == enabled) {
-            return emptyList();
+            return Collections.emptyList();
+        }
+
+        List<Setting<?>> settingList = new ArrayList<>();
+
+        settingList.addAll(AnalyticsEventIngestService.getAllSettings());
+
+        return Collections.unmodifiableList(settingList);
+    }
+
+    @Override
+    public List<ExecutorBuilder<?>> getExecutorBuilders(Settings settings) {
+        if (false == enabled) {
+            return Collections.emptyList();
         }
 
         return Collections.singletonList(
             new FixedExecutorBuilder(
-                Settings.EMPTY,
+                settings,
                 AnalyticsEventIngestService.THREAD_POOL_NAME,
                 1,
                 1,
