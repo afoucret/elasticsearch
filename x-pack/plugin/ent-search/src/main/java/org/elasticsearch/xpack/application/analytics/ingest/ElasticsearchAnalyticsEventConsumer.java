@@ -7,15 +7,16 @@
 
 package org.elasticsearch.xpack.application.analytics.ingest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.internal.Client;
 import org.elasticsearch.client.internal.OriginSettingClient;
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
@@ -49,22 +50,24 @@ public class ElasticsearchAnalyticsEventConsumer extends AbstractAnalyticsEventC
 
     @Override
     protected AnalyticsEvent getNextEvent() throws InterruptedException {
-        /*
-         * Using poll with a timeout ensure we have the ability to flush events to ES
-         * at a regular interval.
-         *
-         * TODO: make it configurable in settings.
-         */
-        AnalyticsEvent event = eventQueue.poll(1, TimeUnit.SECONDS);
+        synchronized (this) {
+            /*
+             * Using poll with a timeout ensure we have the ability to flush events to ES
+             * at a regular interval.
+             *
+             * TODO: make it configurable in settings.
+             */
+            AnalyticsEvent event = eventQueue.poll(1, TimeUnit.SECONDS);
 
-        if (Objects.isNull(event)) {
-            // No event has been received since more than 1 s.
-            // Flushing the data to ES and waiting for new event (blocking)
-            flush();
-            event = eventQueue.take();
+            if (Objects.isNull(event)) {
+                // No event has been received since more than 1 s.
+                // Flushing the data to ES and waiting for new event (blocking)
+                flush();
+                event = eventQueue.take();
+            }
+
+            return event;
         }
-
-        return event;
     }
 
     @Override
@@ -88,15 +91,20 @@ public class ElasticsearchAnalyticsEventConsumer extends AbstractAnalyticsEventC
             return;
         }
 
-        // TODO: is it atomic?
-        BulkRequestBuilder currentBulk = bulkRequestBuilder;
-        bulkRequestBuilder = client.prepareBulk();
+        // Execute the bulk operation.
+        ActionListener<BulkResponse> bulkResponseListener = ActionListener.wrap(
+            r -> {
+                if (r.hasFailures()) {
+                    // TODO: parse and report errors.
+                }
+            },
+            e -> logger.error("unable to execute bulk event create request", e)
+        );
 
-        // TODO: async?
-        try {
-            logger.info(Strings.toString(currentBulk.execute().get()));
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        synchronized (this) {
+            BulkRequestBuilder currentBulk = bulkRequestBuilder;
+            bulkRequestBuilder = client.prepareBulk();
+            currentBulk.execute(bulkResponseListener);
         }
     }
 

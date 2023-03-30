@@ -7,11 +7,11 @@
 
 package org.elasticsearch.xpack.application.analytics.ingest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.component.Lifecycle;
 import org.elasticsearch.common.component.LifecycleListener;
 import org.elasticsearch.common.logging.LoggerMessageFormat;
+import org.elasticsearch.logging.LogManager;
+import org.elasticsearch.logging.Logger;
 import org.elasticsearch.xpack.application.analytics.event.AnalyticsEvent;
 
 import java.util.concurrent.ExecutorService;
@@ -21,10 +21,8 @@ public abstract class AbstractAnalyticsEventConsumer implements AnalyticsEventCo
 
     private final ExecutorService executor;
 
-
     private Lifecycle.State state = Lifecycle.State.INITIALIZED;
 
-    @SuppressWarnings("checkstyle:RedundantModifier")
     public AbstractAnalyticsEventConsumer(ExecutorService executor) {
         this.executor = executor;
     }

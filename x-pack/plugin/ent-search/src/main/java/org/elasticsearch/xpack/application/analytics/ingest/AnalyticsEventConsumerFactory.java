@@ -9,22 +9,14 @@ package org.elasticsearch.xpack.application.analytics.ingest;
 
 import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.inject.Inject;
-import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.xpack.application.analytics.AnalyticsEventIngestService;
 import org.elasticsearch.xpack.application.analytics.event.AnalyticsEvent;
 
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class AnalyticsEventConsumerFactory {
-
-    public static final Setting<AnalyticsEventConsumer.Type> CONSUMER_TYPE_SETTING = Setting.enumSetting(
-        AnalyticsEventConsumer.Type.class,
-        "xpack.ent-search.enabled.analytics.consumer.type",
-        AnalyticsEventConsumer.Type.LOG,
-        Setting.Property.NodeScope,
-        Setting.Property.Final
-    );
 
     @FunctionalInterface
     private interface FactoryMethod {
@@ -45,6 +37,6 @@ public class AnalyticsEventConsumerFactory {
     }
 
     public AnalyticsEventConsumer create(BlockingQueue<AnalyticsEvent> queue, Settings settings) {
-        return factories.get(CONSUMER_TYPE_SETTING.get(settings)).create(queue, settings);
+        return factories.get(AnalyticsEventIngestService.CONSUMER_TYPE_SETTING.get(settings)).create(queue, settings);
     }
 }

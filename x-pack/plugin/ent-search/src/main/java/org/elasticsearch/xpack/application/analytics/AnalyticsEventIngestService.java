@@ -14,6 +14,7 @@ import org.elasticsearch.cluster.ClusterStateListener;
 import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.component.Lifecycle;
 import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.gateway.GatewayService;
 import org.elasticsearch.xpack.application.analytics.action.PostAnalyticsEventAction;
@@ -22,6 +23,7 @@ import org.elasticsearch.xpack.application.analytics.event.AnalyticsEventFactory
 import org.elasticsearch.xpack.application.analytics.ingest.AnalyticsEventConsumer;
 import org.elasticsearch.xpack.application.analytics.ingest.AnalyticsEventConsumerFactory;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,6 +35,21 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class AnalyticsEventIngestService implements ClusterStateListener {
     public static final String THREAD_POOL_NAME = "behavioral_analytics_event_ingest";
+
+    public static final String SETTINGS_PREFIX = "xpack.ent-search.analytics.ingest.event.";
+
+    public static final Setting<AnalyticsEventConsumer.Type> CONSUMER_TYPE_SETTING = Setting.enumSetting(
+        AnalyticsEventConsumer.Type.class,
+        SETTINGS_PREFIX + "consumer.type",
+        AnalyticsEventConsumer.Type.LOG,
+        Setting.Property.NodeScope,
+        Setting.Property.Final
+    );
+
+    public static List<Setting<?>> getAllSettings() {
+        return List.of(CONSUMER_TYPE_SETTING);
+    }
+
     private final ClusterService clusterService;
 
     private final AnalyticsCollectionResolver analyticsCollectionResolver;
