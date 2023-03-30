@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.elasticsearch.client.internal.Client;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -65,7 +64,7 @@ public class LogAnalyticsEventConsumer extends AbstractAnalyticsEventConsumer {
         private final ThreadPool threadPool;
 
         @Inject
-        public Factory(Client client, ThreadPool threadPool) {
+        public Factory(ThreadPool threadPool) {
             this.threadPool = threadPool;
         }
 
