@@ -7,9 +7,6 @@
 
 module org.elasticsearch.aiflow {
     requires org.elasticsearch.server;
-    requires org.elasticsearch.xcontent;
-    requires org.elasticsearch.base;
-    requires org.elasticsearch.logging;
 
     exports org.elasticsearch.xpack.aiflow;
 }

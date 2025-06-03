@@ -10,4 +10,5 @@ package org.elasticsearch.xpack.aiflow;
 import org.elasticsearch.plugins.Plugin;
 
 public class AiFlowPlugin extends Plugin {
+
 }
