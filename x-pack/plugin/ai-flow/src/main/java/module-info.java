@@ -7,6 +7,7 @@
 
 module org.elasticsearch.aiflow {
     requires org.elasticsearch.server;
+    requires io.modelcontextprotocol.sdk.mcp;
 
     exports org.elasticsearch.xpack.aiflow;
 }
