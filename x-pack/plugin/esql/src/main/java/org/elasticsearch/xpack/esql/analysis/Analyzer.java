@@ -174,6 +174,7 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
             new ResolveInference(),
             new ResolveLookupTables(),
             new ResolveFunctions(),
+            new ResolveInferenceFunctions(),
             new DateMillisToNanosInEsRelation()
         ),
         new Batch<>(
@@ -1307,6 +1308,13 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
                 }
             }
             return f;
+        }
+    }
+
+    private static class ResolveInferenceFunctions extends ParameterizedAnalyzerRule<LogicalPlan, AnalyzerContext> {
+        @Override
+        protected LogicalPlan rule(LogicalPlan plan, AnalyzerContext context) {
+            return plan;
         }
     }
 

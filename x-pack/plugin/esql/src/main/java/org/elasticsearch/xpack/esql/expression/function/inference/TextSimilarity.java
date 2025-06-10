@@ -22,7 +22,7 @@ import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
 import java.io.IOException;
 import java.util.List;
 
-public class TextSimilarity extends Function {
+public class TextSimilarity extends Function implements InferenceFunction {
 
     public static final NamedWriteableRegistry.Entry ENTRY = new NamedWriteableRegistry.Entry(Expression.class, "TextSimilarity", TextSimilarity::new);
 
@@ -83,5 +83,10 @@ public class TextSimilarity extends Function {
     @Override
     public String getWriteableName() {
         return ENTRY.name;
+    }
+
+    @Override
+    public Expression inferenceId() {
+        return inferenceId();
     }
 }
