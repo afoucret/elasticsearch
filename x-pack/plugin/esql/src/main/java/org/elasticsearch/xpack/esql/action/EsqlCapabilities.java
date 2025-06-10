@@ -1190,7 +1190,12 @@ public class EsqlCapabilities {
         /**
          * Support knn function
          */
-        KNN_FUNCTION(Build.current().isSnapshot());
+        KNN_FUNCTION(Build.current().isSnapshot()),
+
+        /**
+         * Support knn function
+         */
+        TEXT_SIMILARITY_FUNCTION(Build.current().isSnapshot());
 
         private final boolean enabled;
 

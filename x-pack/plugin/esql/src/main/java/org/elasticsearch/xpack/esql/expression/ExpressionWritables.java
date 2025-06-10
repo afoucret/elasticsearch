@@ -118,6 +118,7 @@ public class ExpressionWritables {
         entries.addAll(fullText());
         entries.addAll(unaryScalars());
         entries.addAll(vector());
+        entries.addAll(inference());
         return entries;
     }
 
@@ -258,6 +259,13 @@ public class ExpressionWritables {
 
     private static List<NamedWriteableRegistry.Entry> vector() {
         if (EsqlCapabilities.Cap.KNN_FUNCTION.isEnabled()) {
+            return List.of(Knn.ENTRY);
+        }
+        return List.of();
+    }
+
+    private static List<NamedWriteableRegistry.Entry> inference() {
+        if (EsqlCapabilities.Cap.TEXT_SIMILARITY_FUNCTION.isEnabled()) {
             return List.of(Knn.ENTRY);
         }
         return List.of();

@@ -33,6 +33,7 @@ public class PreAnalyzer {
         public final IndexMode indexMode;
         public final List<IndexPattern> indices;
         public final List<Enrich> enriches;
+        // TODO: ensure inference function are resolved too
         public final List<InferencePlan<?>> inferencePlans;
         public final List<IndexPattern> lookupIndices;
 
