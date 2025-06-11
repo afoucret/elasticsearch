@@ -10,15 +10,21 @@ package org.elasticsearch.xpack.esql.expression.function.inference;
 import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.xpack.esql.core.InvalidArgumentException;
 import org.elasticsearch.xpack.esql.core.expression.Alias;
 import org.elasticsearch.xpack.esql.core.expression.Attribute;
 import org.elasticsearch.xpack.esql.core.expression.Expression;
+import org.elasticsearch.xpack.esql.core.expression.Literal;
+import org.elasticsearch.xpack.esql.core.expression.MapExpression;
 import org.elasticsearch.xpack.esql.core.expression.ReferenceAttribute;
+import org.elasticsearch.xpack.esql.core.expression.TypeResolutions;
 import org.elasticsearch.xpack.esql.core.expression.UnresolvedAttribute;
 import org.elasticsearch.xpack.esql.core.tree.NodeInfo;
 import org.elasticsearch.xpack.esql.core.tree.Source;
 import org.elasticsearch.xpack.esql.core.type.DataType;
 import org.elasticsearch.xpack.esql.expression.function.FunctionInfo;
+import org.elasticsearch.xpack.esql.expression.function.MapParam;
+import org.elasticsearch.xpack.esql.expression.function.OptionalArgument;
 import org.elasticsearch.xpack.esql.expression.function.Param;
 import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
 import org.elasticsearch.xpack.esql.plan.logical.Drop;
@@ -30,7 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-public class TextSimilarity extends InferenceFunction {
+public class TextSimilarity extends InferenceFunction implements OptionalArgument {
 
     public static final NamedWriteableRegistry.Entry ENTRY = new NamedWriteableRegistry.Entry(Expression.class, "TextSimilarity", TextSimilarity::new);
 
@@ -45,11 +51,22 @@ public class TextSimilarity extends InferenceFunction {
     )
     public TextSimilarity(
         Source source,
-        @Param(name = "inferenceId", type = { "keyword", "text" }, description = "The inference id.") Expression inferenceId,
+        @Param(name = "rerankExpression", type = { "keyword", "text" }, description = "Fields used") Expression rerankExpression,
         @Param(name = "queryText", type = { "keyword", "text" }, description = "The query.") Expression queryText,
-        @Param(name = "rerankExpression", type = { "keyword", "text" }, description = "Fields used") Expression rerankExpression
+        @MapParam(
+            name = "options",
+            params = {
+                @MapParam.MapParamEntry(
+                    name = "inference_id",
+                    type = "keyword",
+                    valueHint = { ".rerank-v1-elasticsearch" },
+                    description = "Inference endpoint to use"
+                )
+            },
+            optional = true
+        ) Expression options
     ) {
-        super(source, inferenceId, List.of(inferenceId, queryText, rerankExpression));
+        super(source, inferenceIdFromOptions(options), List.of(rerankExpression, queryText));
         this.queryText = queryText;
         this.rerankExpression = rerankExpression;
     }
@@ -67,8 +84,8 @@ public class TextSimilarity extends InferenceFunction {
     public void writeTo(StreamOutput out) throws IOException {
         source().writeTo(out);
         out.writeNamedWriteable(inferenceId());
-        out.writeNamedWriteable(queryText);
         out.writeNamedWriteable(rerankExpression);
+        out.writeNamedWriteable(queryText);
     }
 
     @Override
@@ -101,5 +118,23 @@ public class TextSimilarity extends InferenceFunction {
         }
 
         return plan;
+    }
+
+    private static Expression inferenceIdFromOptions(Expression options) {
+        if (options != null) {
+            TypeResolution resolution = TypeResolutions.isMapExpression(options, ENTRY.name, TypeResolutions.ParamOrdinal.THIRD);
+
+            if (resolution.unresolved()) {
+                throw new InvalidArgumentException(resolution.message());
+            }
+
+            MapExpression mapOptions = (MapExpression) options;
+            Expression value = mapOptions.get("inference_id");
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return new Literal(Source.EMPTY, Rerank.DEFAULT_INFERENCE_ID, DataType.KEYWORD);
     }
 }
