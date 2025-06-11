@@ -12,6 +12,7 @@ import org.elasticsearch.common.logging.LoggerMessageFormat;
 import org.elasticsearch.compute.data.Block;
 import org.elasticsearch.core.Strings;
 import org.elasticsearch.index.IndexMode;
+import org.elasticsearch.logging.LogManager;
 import org.elasticsearch.logging.Logger;
 import org.elasticsearch.xpack.core.enrich.EnrichPolicy;
 import org.elasticsearch.xpack.esql.Column;
@@ -498,6 +499,7 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
             }
 
             if (plan instanceof Drop d) {
+                LogManager.getLogger(Analyzer.class).warn("Drop {}", childrenOutput);
                 return resolveDrop(d, childrenOutput);
             }
 
@@ -514,6 +516,7 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
             }
 
             if (plan instanceof Eval p) {
+                LogManager.getLogger(Analyzer.class).warn("Eval {}", childrenOutput);
                 return resolveEval(p, childrenOutput);
             }
 
