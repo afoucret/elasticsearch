@@ -8,11 +8,25 @@
 package org.elasticsearch.xpack.esql.expression.function.inference;
 
 import org.elasticsearch.xpack.esql.core.expression.Expression;
+import org.elasticsearch.xpack.esql.core.expression.function.Function;
+import org.elasticsearch.xpack.esql.core.tree.Source;
 import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
 
-public interface InferenceFunction {
+import java.util.List;
+import java.util.stream.Stream;
 
-    Expression inferenceId();
+public abstract class InferenceFunction extends Function {
 
-    LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan);
+    private final Expression inferenceId;
+
+    public <E> InferenceFunction(Source source, Expression inferenceId, List<Expression> children) {
+        super(source, Stream.concat(Stream.of(), children.stream()).toList());
+        this.inferenceId = inferenceId;
+    }
+
+    public Expression inferenceId() {
+        return inferenceId;
+    }
+
+    public abstract LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan);
 }

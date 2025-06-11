@@ -171,6 +171,10 @@ public class Rerank extends InferencePlan<Rerank> implements SortAgnostic, Surro
 
     @Override
     public LogicalPlan surrogate() {
+        if (scoreAttribute.equals(MetadataAttribute.SCORE) == false) {
+            return this;
+        }
+
         Order sortOrder = new Order(source(), scoreAttribute, Order.OrderDirection.DESC, Order.NullsPosition.ANY);
         return new OrderBy(source(), this, List.of(sortOrder));
     }
