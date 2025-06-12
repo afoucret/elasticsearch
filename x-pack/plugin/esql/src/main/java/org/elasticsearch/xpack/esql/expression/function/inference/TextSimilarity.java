@@ -25,6 +25,8 @@ import org.elasticsearch.xpack.esql.expression.function.Param;
 import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
 import org.elasticsearch.xpack.esql.plan.logical.Eval;
 import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
+import org.elasticsearch.xpack.esql.plan.logical.OrderBy;
+import org.elasticsearch.xpack.esql.plan.logical.UnaryPlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
 
 import java.io.IOException;
@@ -112,9 +114,9 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
 
     @Override
     public LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan) {
-        if (plan instanceof Eval eval) {
-            Rerank rerank = new Rerank(Source.EMPTY, eval.child(), inferenceId(), queryText, List.of(new Alias(rerankExpression.source(), rerankExpression.source().text(), rerankExpression))).withScoreAttribute(tmpAttribute);
-            plan = eval.replaceChild(rerank).transformExpressionsDown(TextSimilarity.class, textSimilarity -> textSimilarity.equals(this) ? new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name()) : textSimilarity);
+        if (plan instanceof UnaryPlan unary && (plan instanceof OrderBy || plan instanceof Eval)) {
+            Rerank rerank = new Rerank(Source.EMPTY, unary.child(), inferenceId(), queryText, List.of(new Alias(rerankExpression.source(), rerankExpression.source().text(), rerankExpression))).withScoreAttribute(tmpAttribute);
+            plan = unary.replaceChild(rerank).transformExpressionsDown(TextSimilarity.class, textSimilarity -> textSimilarity.equals(this) ? new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name()) : textSimilarity);
         }
 
         return plan;
