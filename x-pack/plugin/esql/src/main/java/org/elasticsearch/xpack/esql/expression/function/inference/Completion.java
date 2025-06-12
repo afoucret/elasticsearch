@@ -10,7 +10,6 @@ package org.elasticsearch.xpack.esql.expression.function.inference;
 import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.xpack.esql.core.expression.Alias;
 import org.elasticsearch.xpack.esql.core.expression.Attribute;
 import org.elasticsearch.xpack.esql.core.expression.Expression;
 import org.elasticsearch.xpack.esql.core.expression.ReferenceAttribute;
@@ -26,29 +25,25 @@ import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
 import org.elasticsearch.xpack.esql.plan.logical.Drop;
 import org.elasticsearch.xpack.esql.plan.logical.Eval;
 import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
-import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
+import org.elasticsearch.xpack.esql.plan.logical.inference.InferencePlan;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-public class TextSimilarity extends InferenceFunction implements OptionalArgument {
+public class Completion extends InferenceFunction implements OptionalArgument {
 
-    public static final NamedWriteableRegistry.Entry ENTRY = new NamedWriteableRegistry.Entry(Expression.class, "TextSimilarity", TextSimilarity::new);
+    public static final NamedWriteableRegistry.Entry ENTRY = new NamedWriteableRegistry.Entry(Expression.class, "Completion", Completion::new);
 
-    private final Expression queryText;
-
-    private final Expression rerankExpression;
-
+    private final Expression prompt;
 
     @FunctionInfo(
         returnType = "double",
         description = "Compute text similarity score using an inference model."
     )
-    public TextSimilarity(
+    public Completion(
         Source source,
-        @Param(name = "rerankExpression", type = { "keyword", "text" }, description = "Fields used") Expression rerankExpression,
-        @Param(name = "queryText", type = { "keyword", "text" }, description = "The query.") Expression queryText,
+        @Param(name = "prompt", type = { "keyword", "text" }, description = "Prompt") Expression prompt,
         @MapParam(
             name = "options",
             params = {
@@ -62,15 +57,13 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
             optional = true
         ) Expression options
     ) {
-        super(source, options, List.of(rerankExpression, queryText));
-        this.queryText = queryText;
-        this.rerankExpression = rerankExpression;
+        super(source, options, List.of(prompt, options));
+        this.prompt = prompt;
     }
 
-    public TextSimilarity(StreamInput in) throws IOException {
+    public Completion(StreamInput in) throws IOException {
         this(
             Source.readFrom((PlanStreamInput) in),
-            in.readNamedWriteable(Expression.class),
             in.readNamedWriteable(Expression.class),
             in.readNamedWriteable(Expression.class)
         );
@@ -79,24 +72,23 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         source().writeTo(out);
-        out.writeNamedWriteable(queryText);
-        out.writeNamedWriteable(rerankExpression);
+        out.writeNamedWriteable(prompt);
         out.writeNamedWriteable(options());
     }
 
     @Override
     public DataType dataType() {
-        return DataType.DOUBLE;
+        return DataType.KEYWORD;
     }
 
     @Override
     public Expression replaceChildren(List<Expression> newChildren) {
-        return new TextSimilarity(source(), newChildren.get(0), newChildren.get(1), newChildren.size() > 2 ? newChildren.get(2) : null);
+        return new Completion(source(), newChildren.get(0), newChildren.size() > 1 ? newChildren.get(1) : null);
     }
 
     @Override
     protected NodeInfo<? extends Expression> info() {
-        return NodeInfo.create(this, TextSimilarity::new, queryText, rerankExpression, options());
+        return NodeInfo.create(this, Completion::new, prompt, options());
     }
 
     @Override
@@ -107,12 +99,13 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
     @Override
     public LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan) {
         if (plan instanceof Eval eval) {
-            Attribute tmpAttribute = new ReferenceAttribute(Source.EMPTY, functionName() + "_" + UUID.randomUUID().toString(), dataType());
-            Rerank rerank = new Rerank(Source.EMPTY, eval.child(), inferenceId(), queryText, List.of(new Alias(rerankExpression.source(), rerankExpression.source().text(), rerankExpression))).withScoreAttribute(tmpAttribute);
-            plan = eval.replaceChild(rerank).transformExpressionsDown(TextSimilarity.class, textSimilarity -> textSimilarity.equals(this) ? tmpAttribute : textSimilarity);
+            Attribute tmpAttribute = new ReferenceAttribute(Source.EMPTY, functionName() + "_" + UUID.randomUUID(), dataType());
+            InferencePlan<?> completion = new org.elasticsearch.xpack.esql.plan.logical.inference.Completion(Source.EMPTY, eval.child(), inferenceId(), prompt, tmpAttribute);
+            plan = eval.replaceChild(completion).transformExpressionsDown(Completion.class, completionFunction -> completionFunction.equals(this) ? tmpAttribute : completionFunction);
             return new Drop(Source.EMPTY, plan, List.of(new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name())));
         }
 
         return plan;
     }
 }
+

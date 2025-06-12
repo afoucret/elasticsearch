@@ -1318,11 +1318,17 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
     private static class ResolveInferenceFunctions extends ParameterizedAnalyzerRule<LogicalPlan, AnalyzerContext> {
         @Override
         protected LogicalPlan rule(LogicalPlan plan, AnalyzerContext context) {
-            List<InferenceFunction> inferenceFunctions = new ArrayList<>();
-            plan.forEachExpressionDown(InferenceFunction.class, inferenceFunctions::add);
-            for (var inferenceFunction: inferenceFunctions) {
-                plan = inferenceFunction.rewriteInferenceFunctionToLogicalPlan(plan);
+
+            while (true) {
+                List<InferenceFunction> inferenceFunctions = new ArrayList<>();
+                plan.forEachExpressionDown(InferenceFunction.class, inferenceFunctions::add);
+                if (inferenceFunctions.isEmpty()) {
+                    break;
+                }
+
+                plan = inferenceFunctions.get(0).rewriteInferenceFunctionToLogicalPlan(plan);
             }
+
             return plan;
         }
     }

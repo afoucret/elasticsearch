@@ -52,6 +52,7 @@ import org.elasticsearch.xpack.esql.expression.function.fulltext.QueryString;
 import org.elasticsearch.xpack.esql.expression.function.fulltext.Term;
 import org.elasticsearch.xpack.esql.expression.function.grouping.Bucket;
 import org.elasticsearch.xpack.esql.expression.function.grouping.Categorize;
+import org.elasticsearch.xpack.esql.expression.function.inference.Completion;
 import org.elasticsearch.xpack.esql.expression.function.inference.TextSimilarity;
 import org.elasticsearch.xpack.esql.expression.function.scalar.conditional.Case;
 import org.elasticsearch.xpack.esql.expression.function.scalar.conditional.Greatest;
@@ -489,7 +490,8 @@ public class EsqlFunctionRegistry {
                 def(Term.class, bi(Term::new), "term"),
                 def(MatchPhrase.class, tri(MatchPhrase::new), "match_phrase"),
                 def(Knn.class, tri(Knn::new), "knn"),
-                def(TextSimilarity.class, tri(TextSimilarity::new), "text_similarity")
+                def(TextSimilarity.class, tri(TextSimilarity::new), "text_similarity"),
+                def(Completion.class, bi(Completion::new), "completion")
              } };
     }
 
