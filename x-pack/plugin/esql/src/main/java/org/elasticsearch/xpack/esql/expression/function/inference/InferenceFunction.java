@@ -8,6 +8,7 @@
 package org.elasticsearch.xpack.esql.expression.function.inference;
 
 import org.elasticsearch.xpack.esql.core.InvalidArgumentException;
+import org.elasticsearch.xpack.esql.core.expression.Attribute;
 import org.elasticsearch.xpack.esql.core.expression.Expression;
 import org.elasticsearch.xpack.esql.core.expression.Literal;
 import org.elasticsearch.xpack.esql.core.expression.MapExpression;
@@ -43,6 +44,8 @@ public abstract class InferenceFunction extends Function {
     }
 
     public abstract LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan);
+
+    public abstract List<Attribute> temporaryAttributes();
 
     private static Expression inferenceIdFromOptions(InferenceFunction f, Expression options) {
         if (options != null) {

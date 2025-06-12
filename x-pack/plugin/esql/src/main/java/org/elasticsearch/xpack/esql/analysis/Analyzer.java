@@ -1318,7 +1318,7 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
     private static class ResolveInferenceFunctions extends ParameterizedAnalyzerRule<LogicalPlan, AnalyzerContext> {
         @Override
         protected LogicalPlan rule(LogicalPlan plan, AnalyzerContext context) {
-
+            List<NamedExpression> temporaryAttributes = new ArrayList<>();
             while (true) {
                 List<InferenceFunction> inferenceFunctions = new ArrayList<>();
                 plan.forEachExpressionDown(InferenceFunction.class, inferenceFunctions::add);
@@ -1326,7 +1326,14 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
                     break;
                 }
 
-                plan = inferenceFunctions.get(0).rewriteInferenceFunctionToLogicalPlan(plan);
+                LogManager.getLogger(Analyzer.class).warn("Inference functions count [{}] in plan [{}]", inferenceFunctions.size(), plan.getClass());
+
+                plan = inferenceFunctions.getLast().rewriteInferenceFunctionToLogicalPlan(plan);
+                temporaryAttributes.addAll(inferenceFunctions.getLast().temporaryAttributes().stream().map(attr -> new UnresolvedAttribute(Source.EMPTY, attr.name())).toList());
+            }
+
+            if (temporaryAttributes.isEmpty() == false) {
+                plan = new Drop(Source.EMPTY, plan, temporaryAttributes);
             }
 
             return plan;

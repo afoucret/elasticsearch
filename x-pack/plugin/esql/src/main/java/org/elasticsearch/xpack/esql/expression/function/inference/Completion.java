@@ -22,7 +22,6 @@ import org.elasticsearch.xpack.esql.expression.function.MapParam;
 import org.elasticsearch.xpack.esql.expression.function.OptionalArgument;
 import org.elasticsearch.xpack.esql.expression.function.Param;
 import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
-import org.elasticsearch.xpack.esql.plan.logical.Drop;
 import org.elasticsearch.xpack.esql.plan.logical.Eval;
 import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.InferencePlan;
@@ -36,6 +35,8 @@ public class Completion extends InferenceFunction implements OptionalArgument {
     public static final NamedWriteableRegistry.Entry ENTRY = new NamedWriteableRegistry.Entry(Expression.class, "Completion", Completion::new);
 
     private final Expression prompt;
+
+    private final Attribute tmpAttribute;
 
     @FunctionInfo(
         returnType = "double",
@@ -59,6 +60,7 @@ public class Completion extends InferenceFunction implements OptionalArgument {
     ) {
         super(source, options, List.of(prompt, options));
         this.prompt = prompt;
+        this.tmpAttribute = new ReferenceAttribute(Source.EMPTY, ENTRY.name + "_" + UUID.randomUUID(), DataType.KEYWORD);
     }
 
     public Completion(StreamInput in) throws IOException {
@@ -99,13 +101,16 @@ public class Completion extends InferenceFunction implements OptionalArgument {
     @Override
     public LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan) {
         if (plan instanceof Eval eval) {
-            Attribute tmpAttribute = new ReferenceAttribute(Source.EMPTY, functionName() + "_" + UUID.randomUUID(), dataType());
             InferencePlan<?> completion = new org.elasticsearch.xpack.esql.plan.logical.inference.Completion(Source.EMPTY, eval.child(), inferenceId(), prompt, tmpAttribute);
-            plan = eval.replaceChild(completion).transformExpressionsDown(Completion.class, completionFunction -> completionFunction.equals(this) ? tmpAttribute : completionFunction);
-            return new Drop(Source.EMPTY, plan, List.of(new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name())));
+            plan = eval.replaceChild(completion).transformExpressionsDown(Completion.class, completionFunction -> completionFunction.equals(this) ? new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name()) : completionFunction);
         }
 
         return plan;
+    }
+
+    @Override
+    public List<Attribute> temporaryAttributes() {
+        return List.of(tmpAttribute);
     }
 }
 

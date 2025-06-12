@@ -23,7 +23,6 @@ import org.elasticsearch.xpack.esql.expression.function.MapParam;
 import org.elasticsearch.xpack.esql.expression.function.OptionalArgument;
 import org.elasticsearch.xpack.esql.expression.function.Param;
 import org.elasticsearch.xpack.esql.io.stream.PlanStreamInput;
-import org.elasticsearch.xpack.esql.plan.logical.Drop;
 import org.elasticsearch.xpack.esql.plan.logical.Eval;
 import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
@@ -39,6 +38,8 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
     private final Expression queryText;
 
     private final Expression rerankExpression;
+
+    private final Attribute tmpAttribute;
 
 
     @FunctionInfo(
@@ -65,6 +66,7 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
         super(source, options, List.of(rerankExpression, queryText));
         this.queryText = queryText;
         this.rerankExpression = rerankExpression;
+        this.tmpAttribute = new ReferenceAttribute(Source.EMPTY, ENTRY.name + "_" + UUID.randomUUID(), DataType.DOUBLE);
     }
 
     public TextSimilarity(StreamInput in) throws IOException {
@@ -104,13 +106,15 @@ public class TextSimilarity extends InferenceFunction implements OptionalArgumen
         return ENTRY.name;
     }
 
+    public List<Attribute> temporaryAttributes() {
+        return List.of(tmpAttribute);
+    }
+
     @Override
     public LogicalPlan rewriteInferenceFunctionToLogicalPlan(LogicalPlan plan) {
         if (plan instanceof Eval eval) {
-            Attribute tmpAttribute = new ReferenceAttribute(Source.EMPTY, functionName() + "_" + UUID.randomUUID().toString(), dataType());
             Rerank rerank = new Rerank(Source.EMPTY, eval.child(), inferenceId(), queryText, List.of(new Alias(rerankExpression.source(), rerankExpression.source().text(), rerankExpression))).withScoreAttribute(tmpAttribute);
-            plan = eval.replaceChild(rerank).transformExpressionsDown(TextSimilarity.class, textSimilarity -> textSimilarity.equals(this) ? tmpAttribute : textSimilarity);
-            return new Drop(Source.EMPTY, plan, List.of(new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name())));
+            plan = eval.replaceChild(rerank).transformExpressionsDown(TextSimilarity.class, textSimilarity -> textSimilarity.equals(this) ? new UnresolvedAttribute(Source.EMPTY, tmpAttribute.name()) : textSimilarity);
         }
 
         return plan;
