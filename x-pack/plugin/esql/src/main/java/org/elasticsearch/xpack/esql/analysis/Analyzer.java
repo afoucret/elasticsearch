@@ -96,6 +96,7 @@ import org.elasticsearch.xpack.esql.plan.logical.Rename;
 import org.elasticsearch.xpack.esql.plan.logical.RrfScoreEval;
 import org.elasticsearch.xpack.esql.plan.logical.UnresolvedRelation;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Completion;
+import org.elasticsearch.xpack.esql.plan.logical.inference.DenseVectorEmbedding;
 import org.elasticsearch.xpack.esql.plan.logical.inference.InferencePlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
 import org.elasticsearch.xpack.esql.plan.logical.join.Join;
@@ -498,6 +499,10 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
                 return resolveCompletion(c, childrenOutput);
             }
 
+            if (plan instanceof DenseVectorEmbedding embedding) {
+                return resolveDenseVectorEmbedding(embedding, childrenOutput);
+            }
+
             if (plan instanceof Drop d) {
                 LogManager.getLogger(Analyzer.class).warn("Drop {}", childrenOutput);
                 return resolveDrop(d, childrenOutput);
@@ -635,6 +640,21 @@ public class Analyzer extends ParameterizedRuleExecutor<LogicalPlan, AnalyzerCon
             }
 
             return new Completion(p.source(), p.child(), p.inferenceId(), prompt, targetField);
+        }
+
+        private LogicalPlan resolveDenseVectorEmbedding(DenseVectorEmbedding p, List<Attribute> childrenOutput) {
+            Attribute targetField = p.targetField();
+            Expression input = p.input();
+
+            if (targetField instanceof UnresolvedAttribute ua) {
+                targetField = new ReferenceAttribute(ua.source(), ua.name(), KEYWORD);
+            }
+
+            if (input.resolved() == false) {
+                input = input.transformUp(UnresolvedAttribute.class, ua -> maybeResolveAttribute(ua, childrenOutput));
+            }
+
+            return new DenseVectorEmbedding(p.source(), p.child(), p.inferenceId(), input, targetField);
         }
 
         private LogicalPlan resolveMvExpand(MvExpand p, List<Attribute> childrenOutput) {

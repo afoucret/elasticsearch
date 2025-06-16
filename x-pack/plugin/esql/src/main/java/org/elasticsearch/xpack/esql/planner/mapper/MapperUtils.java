@@ -28,6 +28,7 @@ import org.elasticsearch.xpack.esql.plan.logical.RrfScoreEval;
 import org.elasticsearch.xpack.esql.plan.logical.TimeSeriesAggregate;
 import org.elasticsearch.xpack.esql.plan.logical.UnaryPlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Completion;
+import org.elasticsearch.xpack.esql.plan.logical.inference.DenseVectorEmbedding;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
 import org.elasticsearch.xpack.esql.plan.logical.local.LocalRelation;
 import org.elasticsearch.xpack.esql.plan.logical.show.ShowInfo;
@@ -104,6 +105,10 @@ public class MapperUtils {
 
         if (p instanceof Completion completion) {
             return new CompletionExec(completion.source(), child, completion.inferenceId(), completion.prompt(), completion.targetField());
+        }
+
+        if (p instanceof DenseVectorEmbedding embedding) {
+            return new CompletionExec(embedding.source(), child, embedding.inferenceId(), embedding.input(), embedding.targetField());
         }
 
         if (p instanceof Enrich enrich) {

@@ -14,6 +14,7 @@ import org.elasticsearch.xpack.esql.expression.function.UnsupportedAttribute;
 import org.elasticsearch.xpack.esql.expression.function.aggregate.AggregateWritables;
 import org.elasticsearch.xpack.esql.expression.function.fulltext.FullTextWritables;
 import org.elasticsearch.xpack.esql.expression.function.inference.Completion;
+import org.elasticsearch.xpack.esql.expression.function.inference.DenseVectorEmbedding;
 import org.elasticsearch.xpack.esql.expression.function.inference.TextSimilarity;
 import org.elasticsearch.xpack.esql.expression.function.scalar.ScalarFunctionWritables;
 import org.elasticsearch.xpack.esql.expression.function.scalar.convert.FromBase64;
@@ -268,7 +269,7 @@ public class ExpressionWritables {
 
     private static List<NamedWriteableRegistry.Entry> inference() {
         if (EsqlCapabilities.Cap.TEXT_SIMILARITY_FUNCTION.isEnabled()) {
-            return List.of(Completion.ENTRY, TextSimilarity.ENTRY);
+            return List.of(Completion.ENTRY, TextSimilarity.ENTRY, DenseVectorEmbedding.ENTRY);
         }
         return List.of();
     }
