@@ -19,8 +19,10 @@ import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
+import org.elasticsearch.xpack.mcp.action.McpAction;
+import org.elasticsearch.xpack.mcp.action.TransportMcpAction;
+import org.elasticsearch.xpack.mcp.rest.RestMcpAction;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -29,11 +31,11 @@ public class McpPlugin extends Plugin implements ActionPlugin {
 
     @Override
     public List<ActionHandler> getActions() {
-        return List.of();
+        return List.of(new ActionHandler(McpAction.INSTANCE, TransportMcpAction.class));
     }
 
     @Override
-    public Collection<RestHandler> getRestHandlers(
+    public List<RestHandler> getRestHandlers(
         Settings settings,
         NamedWriteableRegistry namedWriteableRegistry,
         RestController restController,
@@ -44,6 +46,6 @@ public class McpPlugin extends Plugin implements ActionPlugin {
         Supplier<DiscoveryNodes> nodesInCluster,
         Predicate<NodeFeature> clusterSupportsFeature
     ) {
-        return List.of();
+        return List.of(new RestMcpAction());
     }
 }
