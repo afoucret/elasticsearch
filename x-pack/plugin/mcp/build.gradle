@@ -43,7 +43,7 @@ tasks.named("dependencyLicenses").configure {
 
 tasks.named("thirdPartyAudit").configure {
   ignoreMissingClasses(
-    // from reactory-netty metric collection
+    // from reactor-netty metric collection
     'io.micrometer.context.ContextAccessor',
     'io.micrometer.context.ContextRegistry',
     'io.micrometer.context.ContextSnapshot',
