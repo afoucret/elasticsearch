@@ -14,7 +14,8 @@ module org.elasticsearch.mcp {
     requires reactor.core;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.annotation;
+    requires io.modelcontextprotocol.sdk.mcp;
 
     exports org.elasticsearch.xpack.mcp;
-    exports org.elasticsearch.xpack.mcp.transport;
+    exports org.elasticsearch.xpack.mcp.rest;
 }
