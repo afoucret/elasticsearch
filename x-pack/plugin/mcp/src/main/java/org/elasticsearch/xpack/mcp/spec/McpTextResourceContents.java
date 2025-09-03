@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,12 +19,14 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpTextResourceContents(String uri, String mimeType, String text, Map<String, Object> meta) implements McpResourceContent {
+public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeType, @NotNull String text, Map<String, Object> meta)
+    implements
+        McpResourceContent {
 
-    private static final ParseField URI = new ParseField("uri");
-    private static final ParseField MIME_TYPE = new ParseField("mimeType");
-    private static final ParseField TEXT = new ParseField("text");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField URI_FIELD = new ParseField("uri");
+    private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
+    private static final ParseField TEXT_FIELD = new ParseField("text");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpTextResourceContents, Void> PARSER = new ConstructingObjectParser<>(
@@ -32,10 +35,10 @@ public record McpTextResourceContents(String uri, String mimeType, String text, 
     );
 
     static {
-        PARSER.declareString(constructorArg(), URI);
-        PARSER.declareString(constructorArg(), MIME_TYPE);
-        PARSER.declareString(constructorArg(), TEXT);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), URI_FIELD);
+        PARSER.declareString(constructorArg(), MIME_TYPE_FIELD);
+        PARSER.declareString(constructorArg(), TEXT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpTextResourceContents(StreamInput in) throws IOException {
@@ -59,16 +62,16 @@ public record McpTextResourceContents(String uri, String mimeType, String text, 
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (uri != null) {
-            builder.field(URI.getPreferredName(), uri);
+            builder.field(URI_FIELD.getPreferredName(), uri);
         }
         if (mimeType != null) {
-            builder.field(MIME_TYPE.getPreferredName(), mimeType);
+            builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
         }
         if (text != null) {
-            builder.field(TEXT.getPreferredName(), text);
+            builder.field(TEXT_FIELD.getPreferredName(), text);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

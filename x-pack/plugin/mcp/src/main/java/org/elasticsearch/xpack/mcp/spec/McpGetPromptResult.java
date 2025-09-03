@@ -6,6 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,22 +21,24 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpGetPromptResult(String description, List<McpPromptMessage> messages, Map<String, Object> meta) implements McpResult {
+public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, String description, Map<String, Object> meta)
+    implements
+        McpResult {
 
-    private static final ParseField DESCRIPTION = new ParseField("description");
-    private static final ParseField MESSAGES = new ParseField("messages");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
+    private static final ParseField MESSAGES_FIELD = new ParseField("messages");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpGetPromptResult, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_get_prompt_result",
-        args -> new McpGetPromptResult((String) args[0], (List<McpPromptMessage>) args[1], (Map<String, Object>) args[2])
+        args -> new McpGetPromptResult((List<McpPromptMessage>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareString(optionalConstructorArg(), DESCRIPTION);
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
+        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -44,8 +48,8 @@ public record McpGetPromptResult(String description, List<McpPromptMessage> mess
 
     public McpGetPromptResult(StreamInput in) throws IOException {
         this(
-            in.readOptionalString(),
             in.readCollectionAsList(McpPromptMessage::new),
+            in.readOptionalString(),
             in.readMap(StreamInput::readString, StreamInput::readGenericValue)
         );
     }
@@ -61,13 +65,13 @@ public record McpGetPromptResult(String description, List<McpPromptMessage> mess
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (description != null) {
-            builder.field(DESCRIPTION.getPreferredName(), description);
+            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (messages != null) {
-            builder.field(MESSAGES.getPreferredName(), messages);
+            builder.field(MESSAGES_FIELD.getPreferredName(), messages);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

@@ -24,10 +24,10 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         NamedWriteable,
         ToXContentObject {
 
-    private static final ParseField EXPERIMENTAL = new ParseField("experimental");
-    private static final ParseField ROOTS = new ParseField("roots");
-    private static final ParseField SAMPLING = new ParseField("sampling");
-    private static final ParseField ELICITATION = new ParseField("elicitation");
+    private static final ParseField EXPERIMENTAL_FIELD = new ParseField("experimental");
+    private static final ParseField ROOTS_FIELD = new ParseField("roots");
+    private static final ParseField SAMPLING_FIELD = new ParseField("sampling");
+    private static final ParseField ELICITATION_FIELD = new ParseField("elicitation");
     public static final String NAME = "mcp_client_capabilities";
 
     @SuppressWarnings("unchecked")
@@ -42,10 +42,10 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     );
 
     static {
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), EXPERIMENTAL);
-        PARSER.declareObject(optionalConstructorArg(), RootCapabilities.PARSER, ROOTS);
-        PARSER.declareObject(optionalConstructorArg(), Sampling.PARSER, SAMPLING);
-        PARSER.declareObject(optionalConstructorArg(), Elicitation.PARSER, ELICITATION);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), EXPERIMENTAL_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), RootCapabilities.PARSER, ROOTS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), Sampling.PARSER, SAMPLING_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), Elicitation.PARSER, ELICITATION_FIELD);
     }
 
     public McpClientCapabilities(StreamInput in) throws IOException {
@@ -74,16 +74,16 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (experimental != null) {
-            builder.field(EXPERIMENTAL.getPreferredName(), experimental);
+            builder.field(EXPERIMENTAL_FIELD.getPreferredName(), experimental);
         }
         if (roots != null) {
-            builder.field(ROOTS.getPreferredName(), roots);
+            builder.field(ROOTS_FIELD.getPreferredName(), roots);
         }
         if (sampling != null) {
-            builder.field(SAMPLING.getPreferredName(), sampling);
+            builder.field(SAMPLING_FIELD.getPreferredName(), sampling);
         }
         if (elicitation != null) {
-            builder.field(ELICITATION.getPreferredName(), elicitation);
+            builder.field(ELICITATION_FIELD.getPreferredName(), elicitation);
         }
         builder.endObject();
         return builder;

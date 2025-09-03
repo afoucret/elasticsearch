@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -18,10 +19,10 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpPromptMessage(McpRole role, McpContent content) implements NamedWriteable, ToXContentObject {
+public record McpPromptMessage(@NotNull McpRole role, @NotNull McpContent content) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField ROLE = new ParseField("role");
-    private static final ParseField CONTENT = new ParseField("content");
+    private static final ParseField ROLE_FIELD = new ParseField("role");
+    private static final ParseField CONTENT_FIELD = new ParseField("content");
     public static final String NAME = "mcp_prompt_message";
 
     public static final ConstructingObjectParser<McpPromptMessage, Void> PARSER = new ConstructingObjectParser<>(
@@ -30,8 +31,8 @@ public record McpPromptMessage(McpRole role, McpContent content) implements Name
     );
 
     static {
-        PARSER.declareString(constructorArg(), McpRole::valueOf, ROLE);
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT);
+        PARSER.declareString(constructorArg(), McpRole::valueOf, ROLE_FIELD);
+        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
     }
 
     public McpPromptMessage(StreamInput in) throws IOException {
@@ -53,10 +54,10 @@ public record McpPromptMessage(McpRole role, McpContent content) implements Name
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (role != null) {
-            builder.field(ROLE.getPreferredName(), role);
+            builder.field(ROLE_FIELD.getPreferredName(), role);
         }
         if (content != null) {
-            builder.field(CONTENT.getPreferredName(), content);
+            builder.field(CONTENT_FIELD.getPreferredName(), content);
         }
         builder.endObject();
         return builder;

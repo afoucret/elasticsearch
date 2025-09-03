@@ -22,8 +22,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpAnnotations(List<McpRole> audience, Double priority) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField AUDIENCE = new ParseField("audience");
-    private static final ParseField PRIORITY = new ParseField("priority");
+    private static final ParseField AUDIENCE_FIELD = new ParseField("audience");
+    private static final ParseField PRIORITY_FIELD = new ParseField("priority");
     public static final String NAME = "mcp_annotations";
 
     @SuppressWarnings("unchecked")
@@ -36,8 +36,8 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
     );
 
     static {
-        PARSER.declareStringArray(optionalConstructorArg(), AUDIENCE);
-        PARSER.declareDouble(optionalConstructorArg(), PRIORITY);
+        PARSER.declareStringArray(optionalConstructorArg(), AUDIENCE_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), PRIORITY_FIELD);
     }
 
     public McpAnnotations(StreamInput in) throws IOException {
@@ -59,10 +59,10 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (audience != null) {
-            builder.field(AUDIENCE.getPreferredName(), audience);
+            builder.field(AUDIENCE_FIELD.getPreferredName(), audience);
         }
         if (priority != null) {
-            builder.field(PRIORITY.getPreferredName(), priority);
+            builder.field(PRIORITY_FIELD.getPreferredName(), priority);
         }
         builder.endObject();
         return builder;

@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -20,10 +21,10 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) implements NamedWriteable, ToXContentObject {
+public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Object> meta) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField LEVEL = new ParseField("level");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField LEVEL_FIELD = new ParseField("level");
+    private static final ParseField META_FIELD = new ParseField("_meta");
     public static final String NAME = "mcp_logging_set_level_request";
 
     @SuppressWarnings("unchecked")
@@ -33,8 +34,8 @@ public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) 
     );
 
     static {
-        PARSER.declareString(constructorArg(), LEVEL);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), LEVEL_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpLoggingSetLevelRequest(StreamInput in) throws IOException {
@@ -56,10 +57,10 @@ public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) 
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (level != null) {
-            builder.field(LEVEL.getPreferredName(), level);
+            builder.field(LEVEL_FIELD.getPreferredName(), level);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

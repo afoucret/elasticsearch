@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,10 +19,10 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Object> meta) implements McpResult {
+public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<String, Object> meta) implements McpResult {
 
-    private static final ParseField MESSAGE = new ParseField("message");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField MESSAGE_FIELD = new ParseField("message");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCreateMessageResult, Void> PARSER = new ConstructingObjectParser<>(
@@ -30,8 +31,8 @@ public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Obj
     );
 
     static {
-        PARSER.declareObject(constructorArg(), McpSamplingMessage.PARSER, MESSAGE);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareObject(constructorArg(), McpSamplingMessage.PARSER, MESSAGE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -53,10 +54,10 @@ public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Obj
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (message != null) {
-            builder.field(MESSAGE.getPreferredName(), message);
+            builder.field(MESSAGE_FIELD.getPreferredName(), message);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

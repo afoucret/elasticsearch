@@ -24,10 +24,10 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
         NamedWriteable,
         ToXContentObject {
 
-    private static final ParseField HINTS = new ParseField("hints");
-    private static final ParseField COST_PRIORITY = new ParseField("costPriority");
-    private static final ParseField SPEED_PRIORITY = new ParseField("speedPriority");
-    private static final ParseField INTELLIGENCE_PRIORITY = new ParseField("intelligencePriority");
+    private static final ParseField HINTS_FIELD = new ParseField("hints");
+    private static final ParseField COST_PRIORITY_FIELD = new ParseField("costPriority");
+    private static final ParseField SPEED_PRIORITY_FIELD = new ParseField("speedPriority");
+    private static final ParseField INTELLIGENCE_PRIORITY_FIELD = new ParseField("intelligencePriority");
     public static final String NAME = "mcp_model_preferences";
 
     @SuppressWarnings("unchecked")
@@ -37,10 +37,10 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
     );
 
     static {
-        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpModelHint.PARSER.parse(p, null), HINTS);
-        PARSER.declareDouble(optionalConstructorArg(), COST_PRIORITY);
-        PARSER.declareDouble(optionalConstructorArg(), SPEED_PRIORITY);
-        PARSER.declareDouble(optionalConstructorArg(), INTELLIGENCE_PRIORITY);
+        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpModelHint.PARSER.parse(p, null), HINTS_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), COST_PRIORITY_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), SPEED_PRIORITY_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), INTELLIGENCE_PRIORITY_FIELD);
     }
 
     public McpModelPreferences(StreamInput in) throws IOException {
@@ -64,16 +64,16 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (hints != null) {
-            builder.field(HINTS.getPreferredName(), hints);
+            builder.field(HINTS_FIELD.getPreferredName(), hints);
         }
         if (costPriority != null) {
-            builder.field(COST_PRIORITY.getPreferredName(), costPriority);
+            builder.field(COST_PRIORITY_FIELD.getPreferredName(), costPriority);
         }
         if (speedPriority != null) {
-            builder.field(SPEED_PRIORITY.getPreferredName(), speedPriority);
+            builder.field(SPEED_PRIORITY_FIELD.getPreferredName(), speedPriority);
         }
         if (intelligencePriority != null) {
-            builder.field(INTELLIGENCE_PRIORITY.getPreferredName(), intelligencePriority);
+            builder.field(INTELLIGENCE_PRIORITY_FIELD.getPreferredName(), intelligencePriority);
         }
         builder.endObject();
         return builder;

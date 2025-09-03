@@ -27,12 +27,12 @@ public record McpToolAnnotations(
     Boolean returnDirect
 ) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField READ_ONLY_HINT = new ParseField("readOnlyHint");
-    private static final ParseField DESTRUCTIVE_HINT = new ParseField("destructiveHint");
-    private static final ParseField IDEMPOTENT_HINT = new ParseField("idempotentHint");
-    private static final ParseField OPEN_WORLD_HINT = new ParseField("openWorldHint");
-    private static final ParseField RETURN_DIRECT = new ParseField("returnDirect");
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField READ_ONLY_HINT_FIELD = new ParseField("readOnlyHint");
+    private static final ParseField DESTRUCTIVE_HINT_FIELD = new ParseField("destructiveHint");
+    private static final ParseField IDEMPOTENT_HINT_FIELD = new ParseField("idempotentHint");
+    private static final ParseField OPEN_WORLD_HINT_FIELD = new ParseField("openWorldHint");
+    private static final ParseField RETURN_DIRECT_FIELD = new ParseField("returnDirect");
     public static final String NAME = "mcp_tool_annotations";
 
     public static final ConstructingObjectParser<McpToolAnnotations, Void> PARSER = new ConstructingObjectParser<>(
@@ -48,12 +48,12 @@ public record McpToolAnnotations(
     );
 
     static {
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareBoolean(optionalConstructorArg(), READ_ONLY_HINT);
-        PARSER.declareBoolean(optionalConstructorArg(), DESTRUCTIVE_HINT);
-        PARSER.declareBoolean(optionalConstructorArg(), IDEMPOTENT_HINT);
-        PARSER.declareBoolean(optionalConstructorArg(), OPEN_WORLD_HINT);
-        PARSER.declareBoolean(optionalConstructorArg(), RETURN_DIRECT);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), READ_ONLY_HINT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), DESTRUCTIVE_HINT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), IDEMPOTENT_HINT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), OPEN_WORLD_HINT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), RETURN_DIRECT_FIELD);
     }
 
     public McpToolAnnotations(StreamInput in) throws IOException {
@@ -86,22 +86,22 @@ public record McpToolAnnotations(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (readOnlyHint != null) {
-            builder.field(READ_ONLY_HINT.getPreferredName(), readOnlyHint);
+            builder.field(READ_ONLY_HINT_FIELD.getPreferredName(), readOnlyHint);
         }
         if (destructiveHint != null) {
-            builder.field(DESTRUCTIVE_HINT.getPreferredName(), destructiveHint);
+            builder.field(DESTRUCTIVE_HINT_FIELD.getPreferredName(), destructiveHint);
         }
         if (idempotentHint != null) {
-            builder.field(IDEMPOTENT_HINT.getPreferredName(), idempotentHint);
+            builder.field(IDEMPOTENT_HINT_FIELD.getPreferredName(), idempotentHint);
         }
         if (openWorldHint != null) {
-            builder.field(OPEN_WORLD_HINT.getPreferredName(), openWorldHint);
+            builder.field(OPEN_WORLD_HINT_FIELD.getPreferredName(), openWorldHint);
         }
         if (returnDirect != null) {
-            builder.field(RETURN_DIRECT.getPreferredName(), returnDirect);
+            builder.field(RETURN_DIRECT_FIELD.getPreferredName(), returnDirect);
         }
         builder.endObject();
         return builder;

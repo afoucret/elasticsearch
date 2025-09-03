@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,11 +19,13 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpProgressNotification(String progressToken, McpContent content, Map<String, Object> meta) implements McpNotification {
+public record McpProgressNotification(@NotNull String progressToken, @NotNull McpContent content, Map<String, Object> meta)
+    implements
+        McpNotification {
 
-    private static final ParseField PROGRESS_TOKEN = new ParseField("progressToken");
-    private static final ParseField CONTENT = new ParseField("content");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField PROGRESS_TOKEN_FIELD = new ParseField("progressToken");
+    private static final ParseField CONTENT_FIELD = new ParseField("content");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpProgressNotification, Void> PARSER = new ConstructingObjectParser<>(
@@ -31,9 +34,9 @@ public record McpProgressNotification(String progressToken, McpContent content, 
     );
 
     static {
-        PARSER.declareString(constructorArg(), PROGRESS_TOKEN);
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), PROGRESS_TOKEN_FIELD);
+        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpProgressNotification(StreamInput in) throws IOException {
@@ -56,13 +59,13 @@ public record McpProgressNotification(String progressToken, McpContent content, 
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (progressToken != null) {
-            builder.field(PROGRESS_TOKEN.getPreferredName(), progressToken);
+            builder.field(PROGRESS_TOKEN_FIELD.getPreferredName(), progressToken);
         }
         if (content != null) {
-            builder.field(CONTENT.getPreferredName(), content);
+            builder.field(CONTENT_FIELD.getPreferredName(), content);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

@@ -19,7 +19,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpRootsListChangedNotification(Map<String, Object> meta) implements McpNotification {
 
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpRootsListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
@@ -28,7 +28,7 @@ public record McpRootsListChangedNotification(Map<String, Object> meta) implemen
     );
 
     static {
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpRootsListChangedNotification(StreamInput in) throws IOException {
@@ -44,7 +44,7 @@ public record McpRootsListChangedNotification(Map<String, Object> meta) implemen
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

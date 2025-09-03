@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,18 +20,18 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpInitializeResult(
-    String protocolVersion,
+    @NotNull String protocolVersion,
     McpServerCapabilities capabilities,
     McpImplementation serverInfo,
     String instructions,
     Map<String, Object> meta
 ) implements McpResult {
 
-    private static final ParseField PROTOCOL_VERSION = new ParseField("protocolVersion");
-    private static final ParseField CAPABILITIES = new ParseField("capabilities");
-    private static final ParseField SERVER_INFO = new ParseField("serverInfo");
-    private static final ParseField INSTRUCTIONS = new ParseField("instructions");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField PROTOCOL_VERSION_FIELD = new ParseField("protocolVersion");
+    private static final ParseField CAPABILITIES_FIELD = new ParseField("capabilities");
+    private static final ParseField SERVER_INFO_FIELD = new ParseField("serverInfo");
+    private static final ParseField INSTRUCTIONS_FIELD = new ParseField("instructions");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpInitializeResult, Void> PARSER = new ConstructingObjectParser<>(
@@ -45,11 +46,11 @@ public record McpInitializeResult(
     );
 
     static {
-        PARSER.declareString(constructorArg(), PROTOCOL_VERSION);
-        PARSER.declareObject(optionalConstructorArg(), McpServerCapabilities.PARSER, CAPABILITIES);
-        PARSER.declareObject(optionalConstructorArg(), McpImplementation.PARSER, SERVER_INFO);
-        PARSER.declareString(optionalConstructorArg(), INSTRUCTIONS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), PROTOCOL_VERSION_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpServerCapabilities.PARSER, CAPABILITIES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpImplementation.PARSER, SERVER_INFO_FIELD);
+        PARSER.declareString(optionalConstructorArg(), INSTRUCTIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -80,19 +81,19 @@ public record McpInitializeResult(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (protocolVersion != null) {
-            builder.field(PROTOCOL_VERSION.getPreferredName(), protocolVersion);
+            builder.field(PROTOCOL_VERSION_FIELD.getPreferredName(), protocolVersion);
         }
         if (capabilities != null) {
-            builder.field(CAPABILITIES.getPreferredName(), capabilities);
+            builder.field(CAPABILITIES_FIELD.getPreferredName(), capabilities);
         }
         if (serverInfo != null) {
-            builder.field(SERVER_INFO.getPreferredName(), serverInfo);
+            builder.field(SERVER_INFO_FIELD.getPreferredName(), serverInfo);
         }
         if (instructions != null) {
-            builder.field(INSTRUCTIONS.getPreferredName(), instructions);
+            builder.field(INSTRUCTIONS_FIELD.getPreferredName(), instructions);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

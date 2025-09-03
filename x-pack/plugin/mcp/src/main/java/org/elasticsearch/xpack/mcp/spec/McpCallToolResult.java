@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,14 +20,19 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCallToolResult(List<McpContent> content, Boolean isError, Map<String, Object> structuredContent, Map<String, Object> meta)
+public record McpCallToolResult(
+    @NotNull List<McpContent> content,
+    Boolean isError,
+    Map<String, Object> structuredContent,
+    Map<String, Object> meta
+)
     implements
         McpResult {
 
-    private static final ParseField CONTENT = new ParseField("content");
-    private static final ParseField IS_ERROR = new ParseField("isError");
-    private static final ParseField STRUCTURED_CONTENT = new ParseField("structuredContent");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField CONTENT_FIELD = new ParseField("content");
+    private static final ParseField IS_ERROR_FIELD = new ParseField("isError");
+    private static final ParseField STRUCTURED_CONTENT_FIELD = new ParseField("structuredContent");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCallToolResult, Void> PARSER = new ConstructingObjectParser<>(
@@ -40,10 +46,10 @@ public record McpCallToolResult(List<McpContent> content, Boolean isError, Map<S
     );
 
     static {
-        PARSER.declareNamedObjects(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT);
-        PARSER.declareBoolean(optionalConstructorArg(), IS_ERROR);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), STRUCTURED_CONTENT);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareNamedObjects(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), IS_ERROR_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), STRUCTURED_CONTENT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -72,16 +78,16 @@ public record McpCallToolResult(List<McpContent> content, Boolean isError, Map<S
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (content != null) {
-            builder.field(CONTENT.getPreferredName(), content);
+            builder.field(CONTENT_FIELD.getPreferredName(), content);
         }
         if (isError != null) {
-            builder.field(IS_ERROR.getPreferredName(), isError);
+            builder.field(IS_ERROR_FIELD.getPreferredName(), isError);
         }
         if (structuredContent != null) {
-            builder.field(STRUCTURED_CONTENT.getPreferredName(), structuredContent);
+            builder.field(STRUCTURED_CONTENT_FIELD.getPreferredName(), structuredContent);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

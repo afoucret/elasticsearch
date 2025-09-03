@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -21,7 +22,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpCreateMessageRequest(
-    List<McpSamplingMessage> messages,
+    @NotNull List<McpSamplingMessage> messages,
     McpModelPreferences modelPreferences,
     String systemPrompt,
     Boolean includeContext,
@@ -32,15 +33,15 @@ public record McpCreateMessageRequest(
     Map<String, Object> meta
 ) implements McpRequest {
 
-    private static final ParseField MESSAGES = new ParseField("messages");
-    private static final ParseField MODEL_PREFERENCES = new ParseField("modelPreferences");
-    private static final ParseField SYSTEM_PROMPT = new ParseField("systemPrompt");
-    private static final ParseField INCLUDE_CONTEXT = new ParseField("includeContext");
-    private static final ParseField TEMPERATURE = new ParseField("temperature");
-    private static final ParseField MAX_TOKENS = new ParseField("maxTokens");
-    private static final ParseField STOP_SEQUENCES = new ParseField("stopSequences");
-    private static final ParseField METADATA = new ParseField("metadata");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField MESSAGES_FIELD = new ParseField("messages");
+    private static final ParseField MODEL_PREFERENCES_FIELD = new ParseField("modelPreferences");
+    private static final ParseField SYSTEM_PROMPT_FIELD = new ParseField("systemPrompt");
+    private static final ParseField INCLUDE_CONTEXT_FIELD = new ParseField("includeContext");
+    private static final ParseField TEMPERATURE_FIELD = new ParseField("temperature");
+    private static final ParseField MAX_TOKENS_FIELD = new ParseField("maxTokens");
+    private static final ParseField STOP_SEQUENCES_FIELD = new ParseField("stopSequences");
+    private static final ParseField METADATA_FIELD = new ParseField("metadata");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCreateMessageRequest, Void> PARSER = new ConstructingObjectParser<>(
@@ -59,15 +60,15 @@ public record McpCreateMessageRequest(
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpSamplingMessage.PARSER.parse(p, null), MESSAGES);
-        PARSER.declareObject(optionalConstructorArg(), McpModelPreferences.PARSER, MODEL_PREFERENCES);
-        PARSER.declareString(optionalConstructorArg(), SYSTEM_PROMPT);
-        PARSER.declareBoolean(optionalConstructorArg(), INCLUDE_CONTEXT);
-        PARSER.declareDouble(optionalConstructorArg(), TEMPERATURE);
-        PARSER.declareInt(optionalConstructorArg(), MAX_TOKENS);
-        PARSER.declareStringArray(optionalConstructorArg(), STOP_SEQUENCES);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), METADATA);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpSamplingMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpModelPreferences.PARSER, MODEL_PREFERENCES_FIELD);
+        PARSER.declareString(optionalConstructorArg(), SYSTEM_PROMPT_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), INCLUDE_CONTEXT_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), TEMPERATURE_FIELD);
+        PARSER.declareInt(optionalConstructorArg(), MAX_TOKENS_FIELD);
+        PARSER.declareStringArray(optionalConstructorArg(), STOP_SEQUENCES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), METADATA_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -106,31 +107,31 @@ public record McpCreateMessageRequest(
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (messages != null) {
-            builder.field(MESSAGES.getPreferredName(), messages);
+            builder.field(MESSAGES_FIELD.getPreferredName(), messages);
         }
         if (modelPreferences != null) {
-            builder.field(MODEL_PREFERENCES.getPreferredName(), modelPreferences);
+            builder.field(MODEL_PREFERENCES_FIELD.getPreferredName(), modelPreferences);
         }
         if (systemPrompt != null) {
-            builder.field(SYSTEM_PROMPT.getPreferredName(), systemPrompt);
+            builder.field(SYSTEM_PROMPT_FIELD.getPreferredName(), systemPrompt);
         }
         if (includeContext != null) {
-            builder.field(INCLUDE_CONTEXT.getPreferredName(), includeContext);
+            builder.field(INCLUDE_CONTEXT_FIELD.getPreferredName(), includeContext);
         }
         if (temperature != null) {
-            builder.field(TEMPERATURE.getPreferredName(), temperature);
+            builder.field(TEMPERATURE_FIELD.getPreferredName(), temperature);
         }
         if (maxTokens != null) {
-            builder.field(MAX_TOKENS.getPreferredName(), maxTokens);
+            builder.field(MAX_TOKENS_FIELD.getPreferredName(), maxTokens);
         }
         if (stopSequences != null) {
-            builder.field(STOP_SEQUENCES.getPreferredName(), stopSequences);
+            builder.field(STOP_SEQUENCES_FIELD.getPreferredName(), stopSequences);
         }
         if (metadata != null) {
-            builder.field(METADATA.getPreferredName(), metadata);
+            builder.field(METADATA_FIELD.getPreferredName(), metadata);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

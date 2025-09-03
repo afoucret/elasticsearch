@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -21,23 +22,22 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpTool(
-    String name,
+    @NotNull String name,
+    @NotNull String description,
     String title,
-    String description,
     McpJsonSchema inputSchema,
     Map<String, Object> outputSchema,
     McpToolAnnotations annotations,
     Map<String, Object> meta
 ) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField DESCRIPTION = new ParseField("description");
-    private static final ParseField INPUT_SCHEMA = new ParseField("inputSchema");
-    private static final ParseField OUTPUT_SCHEMA = new ParseField("outputSchema");
-    private static final ParseField ANNOTATIONS = new ParseField("annotations");
-    private static final ParseField META = new ParseField("_meta");
-    public static final String NAME_FIELD = "mcp_tool";
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
+    private static final ParseField INPUT_SCHEMA_FIELD = new ParseField("inputSchema");
+    private static final ParseField OUTPUT_SCHEMA_FIELD = new ParseField("outputSchema");
+    private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");
+    private static final ParseField META_FIELD = new ParseField("_meta");
+    public static final String NAME = "mcp_tool";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpTool, Void> PARSER = new ConstructingObjectParser<>(
@@ -54,13 +54,13 @@ public record McpTool(
     );
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareString(constructorArg(), DESCRIPTION);
-        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, INPUT_SCHEMA);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), OUTPUT_SCHEMA);
-        PARSER.declareObject(optionalConstructorArg(), McpToolAnnotations.PARSER, ANNOTATIONS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), new ParseField("name"));
+        PARSER.declareString(constructorArg(), DESCRIPTION_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, INPUT_SCHEMA_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), OUTPUT_SCHEMA_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpToolAnnotations.PARSER, ANNOTATIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpTool(StreamInput in) throws IOException {
@@ -77,7 +77,7 @@ public record McpTool(
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -95,25 +95,25 @@ public record McpTool(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(new ParseField("name").getPreferredName(), name);
         }
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (description != null) {
-            builder.field(DESCRIPTION.getPreferredName(), description);
+            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (inputSchema != null) {
-            builder.field(INPUT_SCHEMA.getPreferredName(), inputSchema);
+            builder.field(INPUT_SCHEMA_FIELD.getPreferredName(), inputSchema);
         }
         if (outputSchema != null) {
-            builder.field(OUTPUT_SCHEMA.getPreferredName(), outputSchema);
+            builder.field(OUTPUT_SCHEMA_FIELD.getPreferredName(), outputSchema);
         }
         if (annotations != null) {
-            builder.field(ANNOTATIONS.getPreferredName(), annotations);
+            builder.field(ANNOTATIONS_FIELD.getPreferredName(), annotations);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

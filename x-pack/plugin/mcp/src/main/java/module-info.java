@@ -12,6 +12,7 @@ module org.elasticsearch.xpack.mcp {
     requires org.elasticsearch.xcore;
 
     requires io.modelcontextprotocol.sdk.mcp;
+    requires unboundid.ldapsdk;
 
     exports org.elasticsearch.xpack.mcp;
     exports org.elasticsearch.xpack.mcp.rest;

@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,10 +20,10 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCompleteResult(List<String> completions, Map<String, Object> meta) implements McpResult {
+public record McpCompleteResult(@NotNull List<String> completions, Map<String, Object> meta) implements McpResult {
 
-    private static final ParseField COMPLETIONS = new ParseField("completions");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField COMPLETIONS_FIELD = new ParseField("completions");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCompleteResult, Void> PARSER = new ConstructingObjectParser<>(
@@ -31,8 +32,8 @@ public record McpCompleteResult(List<String> completions, Map<String, Object> me
     );
 
     static {
-        PARSER.declareStringArray(constructorArg(), COMPLETIONS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareStringArray(constructorArg(), COMPLETIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -54,10 +55,10 @@ public record McpCompleteResult(List<String> completions, Map<String, Object> me
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (completions != null) {
-            builder.field(COMPLETIONS.getPreferredName(), completions);
+            builder.field(COMPLETIONS_FIELD.getPreferredName(), completions);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

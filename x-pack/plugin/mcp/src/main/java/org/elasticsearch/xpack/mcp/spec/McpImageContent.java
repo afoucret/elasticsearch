@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -16,9 +17,9 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpImageContent(String url) implements McpContent {
+public record McpImageContent(@NotNull String url) implements McpContent {
 
-    private static final ParseField URL = new ParseField("url");
+    private static final ParseField URL_FIELD = new ParseField("url");
 
     public static final ConstructingObjectParser<McpImageContent, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_image_content",
@@ -26,7 +27,7 @@ public record McpImageContent(String url) implements McpContent {
     );
 
     static {
-        PARSER.declareString(constructorArg(), URL);
+        PARSER.declareString(constructorArg(), URL_FIELD);
     }
 
     public McpImageContent(StreamInput in) throws IOException {
@@ -46,7 +47,7 @@ public record McpImageContent(String url) implements McpContent {
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(URL.getPreferredName(), url);
+        builder.field(URL_FIELD.getPreferredName(), url);
         builder.endObject();
         return builder;
     }

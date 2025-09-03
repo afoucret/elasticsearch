@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -19,22 +20,21 @@ import java.io.IOException;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpImplementation(String name, String title, String version) implements NamedWriteable, ToXContentObject {
+public record McpImplementation(@NotNull String name, String title, @NotNull String version) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField VERSION = new ParseField("version");
-    public static final String NAME_FIELD = "mcp_implementation";
-
+    public static final String NAME = "mcp_implementation";
     public static final ConstructingObjectParser<McpImplementation, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_implementation",
+        NAME,
         args -> new McpImplementation((String) args[0], (String) args[1], (String) args[2])
     );
+    private static final ParseField NAME_FIELD = new ParseField("name");
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField VERSION_FIELD = new ParseField("version");
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareString(constructorArg(), VERSION);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareString(constructorArg(), VERSION_FIELD);
     }
 
     public McpImplementation(StreamInput in) throws IOException {
@@ -43,7 +43,7 @@ public record McpImplementation(String name, String title, String version) imple
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -57,13 +57,13 @@ public record McpImplementation(String name, String title, String version) imple
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (version != null) {
-            builder.field(VERSION.getPreferredName(), version);
+            builder.field(VERSION_FIELD.getPreferredName(), version);
         }
         builder.endObject();
         return builder;

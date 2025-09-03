@@ -6,6 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,11 +20,11 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record JSONRPCNotification(String jsonrpc, String method, Map<String, Object> params) implements JSONRPCMessage {
+public record JSONRPCNotification(@NotNull String jsonrpc, @NotNull String method, Map<String, Object> params) implements JSONRPCMessage {
 
-    private static final ParseField JSONRPC = new ParseField("jsonrpc");
-    private static final ParseField METHOD = new ParseField("method");
-    private static final ParseField PARAMS = new ParseField("params");
+    private static final ParseField JSONRPC_FIELD = new ParseField("jsonrpc");
+    private static final ParseField METHOD_FIELD = new ParseField("method");
+    private static final ParseField PARAMS_FIELD = new ParseField("params");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCNotification, Void> PARSER = new ConstructingObjectParser<>(
@@ -31,9 +33,9 @@ public record JSONRPCNotification(String jsonrpc, String method, Map<String, Obj
     );
 
     static {
-        PARSER.declareString(constructorArg(), JSONRPC);
-        PARSER.declareString(constructorArg(), METHOD);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PARAMS);
+        PARSER.declareString(constructorArg(), JSONRPC_FIELD);
+        PARSER.declareString(constructorArg(), METHOD_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PARAMS_FIELD);
     }
 
     public JSONRPCNotification(StreamInput in) throws IOException {
@@ -50,10 +52,10 @@ public record JSONRPCNotification(String jsonrpc, String method, Map<String, Obj
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(JSONRPC.getPreferredName(), jsonrpc);
-        builder.field(METHOD.getPreferredName(), method);
+        builder.field(JSONRPC_FIELD.getPreferredName(), jsonrpc);
+        builder.field(METHOD_FIELD.getPreferredName(), method);
         if (params != null) {
-            builder.field(PARAMS.getPreferredName(), this.params);
+            builder.field(PARAMS_FIELD.getPreferredName(), this.params);
         }
         builder.endObject();
         return builder;

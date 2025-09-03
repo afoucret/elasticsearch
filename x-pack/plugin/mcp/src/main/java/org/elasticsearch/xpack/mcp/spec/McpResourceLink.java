@@ -6,6 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -16,7 +18,7 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpResourceLink(String uri) implements McpContent {
+public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     private static final ParseField URI = new ParseField("uri");
 

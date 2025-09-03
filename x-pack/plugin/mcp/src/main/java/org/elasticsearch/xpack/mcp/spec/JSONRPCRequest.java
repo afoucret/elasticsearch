@@ -6,6 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,12 +20,14 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record JSONRPCRequest(String jsonrpc, String method, String id, Map<String, Object> params) implements JSONRPCMessage {
+public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @NotNull String id, Map<String, Object> params)
+    implements
+        JSONRPCMessage {
 
-    private static final ParseField JSONRPC = new ParseField("jsonrpc");
-    private static final ParseField METHOD = new ParseField("method");
-    private static final ParseField ID = new ParseField("id");
-    private static final ParseField PARAMS = new ParseField("params");
+    private static final ParseField JSONRPC_FIELD = new ParseField("jsonrpc");
+    private static final ParseField METHOD_FIELD = new ParseField("method");
+    private static final ParseField ID_FIELD = new ParseField("id");
+    private static final ParseField PARAMS_FIELD = new ParseField("params");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCRequest, Void> PARSER = new ConstructingObjectParser<>(
@@ -32,10 +36,10 @@ public record JSONRPCRequest(String jsonrpc, String method, String id, Map<Strin
     );
 
     static {
-        PARSER.declareString(constructorArg(), JSONRPC);
-        PARSER.declareString(constructorArg(), METHOD);
-        PARSER.declareString(constructorArg(), ID);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PARAMS);
+        PARSER.declareString(constructorArg(), JSONRPC_FIELD);
+        PARSER.declareString(constructorArg(), METHOD_FIELD);
+        PARSER.declareString(constructorArg(), ID_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PARAMS_FIELD);
     }
 
     public JSONRPCRequest(StreamInput in) throws IOException {
@@ -53,11 +57,11 @@ public record JSONRPCRequest(String jsonrpc, String method, String id, Map<Strin
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(JSONRPC.getPreferredName(), jsonrpc);
-        builder.field(METHOD.getPreferredName(), method);
-        builder.field(ID.getPreferredName(), id);
+        builder.field(JSONRPC_FIELD.getPreferredName(), jsonrpc);
+        builder.field(METHOD_FIELD.getPreferredName(), method);
+        builder.field(ID_FIELD.getPreferredName(), id);
         if (params != null) {
-            builder.field(PARAMS.getPreferredName(), this.params);
+            builder.field(PARAMS_FIELD.getPreferredName(), this.params);
         }
         builder.endObject();
         return builder;

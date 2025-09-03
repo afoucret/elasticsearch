@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -21,21 +22,25 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpPrompt(String name, String title, String description, List<McpPromptArgument> arguments, Map<String, Object> meta)
-    implements
-        NamedWriteable,
-        ToXContentObject {
+public record McpPrompt(
+    @NotNull String name,
+    String title,
+    String description,
+    List<McpPromptArgument> arguments,
+    Map<String, Object> meta
+) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField DESCRIPTION = new ParseField("description");
-    private static final ParseField ARGUMENTS = new ParseField("arguments");
-    private static final ParseField META = new ParseField("_meta");
-    public static final String NAME_FIELD = "mcp_prompt";
+    public static final String NAME = "mcp_prompt";
+
+    private static final ParseField NAME_FIELD = new ParseField("name");
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
+    private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpPrompt, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_prompt",
+        NAME,
         args -> new McpPrompt(
             (String) args[0],
             (String) args[1],
@@ -46,11 +51,11 @@ public record McpPrompt(String name, String title, String description, List<McpP
     );
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareString(optionalConstructorArg(), DESCRIPTION);
-        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpPromptArgument.PARSER.parse(p, null), ARGUMENTS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
+        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpPromptArgument.PARSER.parse(p, null), ARGUMENTS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpPrompt(StreamInput in) throws IOException {
@@ -65,7 +70,7 @@ public record McpPrompt(String name, String title, String description, List<McpP
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -81,19 +86,19 @@ public record McpPrompt(String name, String title, String description, List<McpP
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (description != null) {
-            builder.field(DESCRIPTION.getPreferredName(), description);
+            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (arguments != null) {
-            builder.field(ARGUMENTS.getPreferredName(), arguments);
+            builder.field(ARGUMENTS_FIELD.getPreferredName(), arguments);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,11 +20,13 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpGetPromptRequest(String name, Map<String, Object> arguments, Map<String, Object> meta) implements McpRequest {
+public record McpGetPromptRequest(@NotNull String name, Map<String, Object> arguments, Map<String, Object> meta)
+    implements
+        McpRequest {
 
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField ARGUMENTS = new ParseField("arguments");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField NAME_FIELD = new ParseField("name");
+    private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpGetPromptRequest, Void> PARSER = new ConstructingObjectParser<>(
@@ -32,9 +35,9 @@ public record McpGetPromptRequest(String name, Map<String, Object> arguments, Ma
     );
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), ARGUMENTS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), ARGUMENTS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -61,13 +64,13 @@ public record McpGetPromptRequest(String name, Map<String, Object> arguments, Ma
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         if (arguments != null) {
-            builder.field(ARGUMENTS.getPreferredName(), arguments);
+            builder.field(ARGUMENTS_FIELD.getPreferredName(), arguments);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

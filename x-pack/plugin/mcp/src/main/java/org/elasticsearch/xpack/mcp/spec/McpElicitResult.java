@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -18,10 +19,10 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitResult(Map<String, Object> result, Map<String, Object> meta) implements McpResult {
+public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, Object> meta) implements McpResult {
 
-    private static final ParseField RESULT = new ParseField("result");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField RESULT_FIELD = new ParseField("result");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpElicitResult, Void> PARSER = new ConstructingObjectParser<>(
@@ -30,8 +31,8 @@ public record McpElicitResult(Map<String, Object> result, Map<String, Object> me
     );
 
     static {
-        PARSER.declareObject(constructorArg(), (p, c) -> p.map(), RESULT);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareObject(constructorArg(), (p, c) -> p.map(), RESULT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -56,10 +57,10 @@ public record McpElicitResult(Map<String, Object> result, Map<String, Object> me
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (result != null) {
-            builder.field(RESULT.getPreferredName(), result);
+            builder.field(RESULT_FIELD.getPreferredName(), result);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

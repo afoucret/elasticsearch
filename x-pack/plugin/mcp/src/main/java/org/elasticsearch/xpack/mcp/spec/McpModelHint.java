@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -18,18 +19,19 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpModelHint(String name) implements NamedWriteable, ToXContentObject {
+public record McpModelHint(@NotNull String name) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField NAME = new ParseField("name");
-    public static final String NAME_FIELD = "mcp_model_hint";
+    public static final String NAME = "mcp_model_hint";
+
+    private static final ParseField NAME_FIELD = new ParseField("name");
 
     public static final ConstructingObjectParser<McpModelHint, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_model_hint",
+        NAME,
         args -> new McpModelHint((String) args[0])
     );
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
     }
 
     public McpModelHint(StreamInput in) throws IOException {
@@ -38,7 +40,7 @@ public record McpModelHint(String name) implements NamedWriteable, ToXContentObj
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -50,7 +52,7 @@ public record McpModelHint(String name) implements NamedWriteable, ToXContentObj
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         builder.endObject();
         return builder;

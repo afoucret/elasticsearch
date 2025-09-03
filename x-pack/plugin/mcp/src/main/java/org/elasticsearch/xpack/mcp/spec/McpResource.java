@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -21,8 +22,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpResource(
-    String uri,
-    String name,
+    @NotNull String uri,
+    @NotNull String name,
     String title,
     String description,
     String mimeType,
@@ -31,19 +32,20 @@ public record McpResource(
     Map<String, Object> meta
 ) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField URI = new ParseField("uri");
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField DESCRIPTION = new ParseField("description");
-    private static final ParseField MIME_TYPE = new ParseField("mimeType");
-    private static final ParseField SIZE = new ParseField("size");
-    private static final ParseField ANNOTATIONS = new ParseField("annotations");
-    private static final ParseField META = new ParseField("_meta");
-    public static final String NAME_FIELD = "mcp_resource";
+    public static final String NAME = "mcp_resource";
+
+    private static final ParseField URI_FIELD = new ParseField("uri");
+    private static final ParseField NAME_FIELD = new ParseField("name");
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
+    private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
+    private static final ParseField SIZE_FIELD = new ParseField("size");
+    private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpResource, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_resource",
+        NAME,
         args -> new McpResource(
             (String) args[0],
             (String) args[1],
@@ -57,14 +59,14 @@ public record McpResource(
     );
 
     static {
-        PARSER.declareString(constructorArg(), URI);
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareString(optionalConstructorArg(), DESCRIPTION);
-        PARSER.declareString(optionalConstructorArg(), MIME_TYPE);
-        PARSER.declareLong(optionalConstructorArg(), SIZE);
-        PARSER.declareObject(optionalConstructorArg(), McpAnnotations.PARSER, ANNOTATIONS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), URI_FIELD);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
+        PARSER.declareString(optionalConstructorArg(), MIME_TYPE_FIELD);
+        PARSER.declareLong(optionalConstructorArg(), SIZE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpAnnotations.PARSER, ANNOTATIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpResource(StreamInput in) throws IOException {
@@ -82,7 +84,7 @@ public record McpResource(
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -101,28 +103,28 @@ public record McpResource(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (uri != null) {
-            builder.field(URI.getPreferredName(), uri);
+            builder.field(URI_FIELD.getPreferredName(), uri);
         }
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (description != null) {
-            builder.field(DESCRIPTION.getPreferredName(), description);
+            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (mimeType != null) {
-            builder.field(MIME_TYPE.getPreferredName(), mimeType);
+            builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
         }
         if (size != null) {
-            builder.field(SIZE.getPreferredName(), size);
+            builder.field(SIZE_FIELD.getPreferredName(), size);
         }
         if (annotations != null) {
-            builder.field(ANNOTATIONS.getPreferredName(), annotations);
+            builder.field(ANNOTATIONS_FIELD.getPreferredName(), annotations);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

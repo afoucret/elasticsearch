@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -19,16 +20,17 @@ import java.io.IOException;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpPromptArgument(String name, String title, String description, Boolean required)
+public record McpPromptArgument(@NotNull String name, String title, String description, Boolean required)
     implements
         NamedWriteable,
         ToXContentObject {
 
-    private static final ParseField NAME = new ParseField("name");
-    private static final ParseField TITLE = new ParseField("title");
-    private static final ParseField DESCRIPTION = new ParseField("description");
-    private static final ParseField REQUIRED = new ParseField("required");
-    public static final String NAME_FIELD = "mcp_prompt_argument";
+    public static final String NAME = "mcp_prompt_argument";
+
+    private static final ParseField NAME_FIELD = new ParseField("name");
+    private static final ParseField TITLE_FIELD = new ParseField("title");
+    private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
+    private static final ParseField REQUIRED_FIELD = new ParseField("required");
 
     public static final ConstructingObjectParser<McpPromptArgument, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_argument",
@@ -36,10 +38,10 @@ public record McpPromptArgument(String name, String title, String description, B
     );
 
     static {
-        PARSER.declareString(constructorArg(), NAME);
-        PARSER.declareString(optionalConstructorArg(), TITLE);
-        PARSER.declareString(optionalConstructorArg(), DESCRIPTION);
-        PARSER.declareBoolean(optionalConstructorArg(), REQUIRED);
+        PARSER.declareString(constructorArg(), NAME_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
+        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), REQUIRED_FIELD);
     }
 
     public McpPromptArgument(StreamInput in) throws IOException {
@@ -48,7 +50,7 @@ public record McpPromptArgument(String name, String title, String description, B
 
     @Override
     public String getWriteableName() {
-        return NAME_FIELD;
+        return NAME;
     }
 
     @Override
@@ -63,16 +65,16 @@ public record McpPromptArgument(String name, String title, String description, B
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (name != null) {
-            builder.field(NAME.getPreferredName(), name);
+            builder.field(NAME_FIELD.getPreferredName(), name);
         }
         if (title != null) {
-            builder.field(TITLE.getPreferredName(), title);
+            builder.field(TITLE_FIELD.getPreferredName(), title);
         }
         if (description != null) {
-            builder.field(DESCRIPTION.getPreferredName(), description);
+            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (required != null) {
-            builder.field(REQUIRED.getPreferredName(), required);
+            builder.field(REQUIRED_FIELD.getPreferredName(), required);
         }
         builder.endObject();
         return builder;

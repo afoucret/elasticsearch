@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -16,9 +17,9 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpTextContent(String text) implements McpContent {
+public record McpTextContent(@NotNull String text) implements McpContent {
 
-    private static final ParseField TEXT = new ParseField("text");
+    private static final ParseField TEXT_FIELD = new ParseField("text");
 
     public static final ConstructingObjectParser<McpTextContent, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_text_content",
@@ -26,7 +27,7 @@ public record McpTextContent(String text) implements McpContent {
     );
 
     static {
-        PARSER.declareString(constructorArg(), TEXT);
+        PARSER.declareString(constructorArg(), TEXT_FIELD);
     }
 
     public McpTextContent(StreamInput in) throws IOException {
@@ -46,7 +47,7 @@ public record McpTextContent(String text) implements McpContent {
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(TEXT.getPreferredName(), text);
+        builder.field(TEXT_FIELD.getPreferredName(), text);
         builder.endObject();
         return builder;
     }

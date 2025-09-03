@@ -29,12 +29,12 @@ public record McpJsonSchema(
     Map<String, Object> definitions
 ) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField TYPE = new ParseField("type");
-    private static final ParseField PROPERTIES = new ParseField("properties");
-    private static final ParseField REQUIRED = new ParseField("required");
-    private static final ParseField ADDITIONAL_PROPERTIES = new ParseField("additionalProperties");
-    private static final ParseField DEFS = new ParseField("$defs");
-    private static final ParseField DEFINITIONS = new ParseField("definitions");
+    private static final ParseField TYPE_FIELD = new ParseField("type");
+    private static final ParseField PROPERTIES_FIELD = new ParseField("properties");
+    private static final ParseField REQUIRED_FIELD = new ParseField("required");
+    private static final ParseField ADDITIONAL_PROPERTIES_FIELD = new ParseField("additionalProperties");
+    private static final ParseField DEFS_FIELD = new ParseField("$defs");
+    private static final ParseField DEFINITIONS_FIELD = new ParseField("definitions");
     public static final String NAME = "mcp_json_schema";
 
     @SuppressWarnings("unchecked")
@@ -51,12 +51,12 @@ public record McpJsonSchema(
     );
 
     static {
-        PARSER.declareString(optionalConstructorArg(), TYPE);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PROPERTIES);
-        PARSER.declareStringArray(optionalConstructorArg(), REQUIRED);
-        PARSER.declareBoolean(optionalConstructorArg(), ADDITIONAL_PROPERTIES);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DEFS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DEFINITIONS);
+        PARSER.declareString(optionalConstructorArg(), TYPE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PROPERTIES_FIELD);
+        PARSER.declareStringArray(optionalConstructorArg(), REQUIRED_FIELD);
+        PARSER.declareBoolean(optionalConstructorArg(), ADDITIONAL_PROPERTIES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DEFS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DEFINITIONS_FIELD);
     }
 
     public McpJsonSchema(StreamInput in) throws IOException {
@@ -89,22 +89,22 @@ public record McpJsonSchema(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (type != null) {
-            builder.field(TYPE.getPreferredName(), type);
+            builder.field(TYPE_FIELD.getPreferredName(), type);
         }
         if (properties != null) {
-            builder.field(PROPERTIES.getPreferredName(), properties);
+            builder.field(PROPERTIES_FIELD.getPreferredName(), properties);
         }
         if (required != null) {
-            builder.field(REQUIRED.getPreferredName(), required);
+            builder.field(REQUIRED_FIELD.getPreferredName(), required);
         }
         if (additionalProperties != null) {
-            builder.field(ADDITIONAL_PROPERTIES.getPreferredName(), additionalProperties);
+            builder.field(ADDITIONAL_PROPERTIES_FIELD.getPreferredName(), additionalProperties);
         }
         if (defs != null) {
-            builder.field(DEFS.getPreferredName(), defs);
+            builder.field(DEFS_FIELD.getPreferredName(), defs);
         }
         if (definitions != null) {
-            builder.field(DEFINITIONS.getPreferredName(), definitions);
+            builder.field(DEFINITIONS_FIELD.getPreferredName(), definitions);
         }
         builder.endObject();
         return builder;

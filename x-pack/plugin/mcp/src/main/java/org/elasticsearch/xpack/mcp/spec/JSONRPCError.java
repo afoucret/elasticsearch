@@ -6,6 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -20,13 +22,16 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record JSONRPCError(int code, String message, Map<String, Object> data) implements NamedWriteable, ToXContentObject {
+public record JSONRPCError(@NotNull int code, @NotNull String message, Map<String, Object> data)
+    implements
+        NamedWriteable,
+        ToXContentObject {
 
     public static final String NAME = "jsonrpc_error";
 
-    private static final ParseField CODE = new ParseField("code");
-    private static final ParseField MESSAGE = new ParseField("message");
-    private static final ParseField DATA = new ParseField("data");
+    private static final ParseField CODE_FIELD = new ParseField("code");
+    private static final ParseField MESSAGE_FIELD = new ParseField("message");
+    private static final ParseField DATA_FIELD = new ParseField("data");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCError, Void> PARSER = new ConstructingObjectParser<>(
@@ -35,9 +40,9 @@ public record JSONRPCError(int code, String message, Map<String, Object> data) i
     );
 
     static {
-        PARSER.declareInt(constructorArg(), CODE);
-        PARSER.declareString(constructorArg(), MESSAGE);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DATA);
+        PARSER.declareInt(constructorArg(), CODE_FIELD);
+        PARSER.declareString(constructorArg(), MESSAGE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), DATA_FIELD);
     }
 
     public JSONRPCError(StreamInput in) throws IOException {
@@ -59,10 +64,10 @@ public record JSONRPCError(int code, String message, Map<String, Object> data) i
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(CODE.getPreferredName(), code);
-        builder.field(MESSAGE.getPreferredName(), message);
+        builder.field(CODE_FIELD.getPreferredName(), code);
+        builder.field(MESSAGE_FIELD.getPreferredName(), message);
         if (data != null) {
-            builder.field(DATA.getPreferredName(), data);
+            builder.field(DATA_FIELD.getPreferredName(), data);
         }
         builder.endObject();
         return builder;

@@ -6,6 +6,7 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,11 +20,11 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpRequest {
+public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpRequest {
 
-    private static final ParseField PROMPT = new ParseField("prompt");
-    private static final ParseField SCHEMA = new ParseField("schema");
-    private static final ParseField META = new ParseField("_meta");
+    private static final ParseField PROMPT_FIELD = new ParseField("prompt");
+    private static final ParseField SCHEMA_FIELD = new ParseField("schema");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpElicitRequest, Void> PARSER = new ConstructingObjectParser<>(
@@ -32,9 +33,9 @@ public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, 
     );
 
     static {
-        PARSER.declareString(constructorArg(), PROMPT);
-        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, SCHEMA);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+        PARSER.declareString(constructorArg(), PROMPT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, SCHEMA_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     @Override
@@ -61,13 +62,13 @@ public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, 
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (prompt != null) {
-            builder.field(PROMPT.getPreferredName(), prompt);
+            builder.field(PROMPT_FIELD.getPreferredName(), prompt);
         }
         if (schema != null) {
-            builder.field(SCHEMA.getPreferredName(), schema);
+            builder.field(SCHEMA_FIELD.getPreferredName(), schema);
         }
         if (meta != null) {
-            builder.field(META.getPreferredName(), meta);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

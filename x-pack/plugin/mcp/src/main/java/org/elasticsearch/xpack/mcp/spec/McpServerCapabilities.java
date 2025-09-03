@@ -28,12 +28,12 @@ public record McpServerCapabilities(
     ToolCapabilities tools
 ) implements NamedWriteable, ToXContentObject {
 
-    private static final ParseField COMPLETIONS = new ParseField("completions");
-    private static final ParseField EXPERIMENTAL = new ParseField("experimental");
-    private static final ParseField LOGGING = new ParseField("logging");
-    private static final ParseField PROMPTS = new ParseField("prompts");
-    private static final ParseField RESOURCES = new ParseField("resources");
-    private static final ParseField TOOLS = new ParseField("tools");
+    private static final ParseField COMPLETIONS_FIELD = new ParseField("completions");
+    private static final ParseField EXPERIMENTAL_FIELD = new ParseField("experimental");
+    private static final ParseField LOGGING_FIELD = new ParseField("logging");
+    private static final ParseField PROMPTS_FIELD = new ParseField("prompts");
+    private static final ParseField RESOURCES_FIELD = new ParseField("resources");
+    private static final ParseField TOOLS_FIELD = new ParseField("tools");
     public static final String NAME = "mcp_server_capabilities";
 
     @SuppressWarnings("unchecked")
@@ -50,12 +50,12 @@ public record McpServerCapabilities(
     );
 
     static {
-        PARSER.declareObject(optionalConstructorArg(), CompletionCapabilities.PARSER, COMPLETIONS);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), EXPERIMENTAL);
-        PARSER.declareObject(optionalConstructorArg(), LoggingCapabilities.PARSER, LOGGING);
-        PARSER.declareObject(optionalConstructorArg(), PromptCapabilities.PARSER, PROMPTS);
-        PARSER.declareObject(optionalConstructorArg(), ResourceCapabilities.PARSER, RESOURCES);
-        PARSER.declareObject(optionalConstructorArg(), ToolCapabilities.PARSER, TOOLS);
+        PARSER.declareObject(optionalConstructorArg(), CompletionCapabilities.PARSER, COMPLETIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), EXPERIMENTAL_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), LoggingCapabilities.PARSER, LOGGING_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), PromptCapabilities.PARSER, PROMPTS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), ResourceCapabilities.PARSER, RESOURCES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), ToolCapabilities.PARSER, TOOLS_FIELD);
     }
 
     public McpServerCapabilities(StreamInput in) throws IOException {
@@ -88,22 +88,22 @@ public record McpServerCapabilities(
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         if (completions != null) {
-            builder.field(COMPLETIONS.getPreferredName(), completions);
+            builder.field(COMPLETIONS_FIELD.getPreferredName(), completions);
         }
         if (experimental != null) {
-            builder.field(EXPERIMENTAL.getPreferredName(), experimental);
+            builder.field(EXPERIMENTAL_FIELD.getPreferredName(), experimental);
         }
         if (logging != null) {
-            builder.field(LOGGING.getPreferredName(), logging);
+            builder.field(LOGGING_FIELD.getPreferredName(), logging);
         }
         if (prompts != null) {
-            builder.field(PROMPTS.getPreferredName(), prompts);
+            builder.field(PROMPTS_FIELD.getPreferredName(), prompts);
         }
         if (resources != null) {
-            builder.field(RESOURCES.getPreferredName(), resources);
+            builder.field(RESOURCES_FIELD.getPreferredName(), resources);
         }
         if (tools != null) {
-            builder.field(TOOLS.getPreferredName(), tools);
+            builder.field(TOOLS_FIELD.getPreferredName(), tools);
         }
         builder.endObject();
         return builder;
