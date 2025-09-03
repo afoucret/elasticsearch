@@ -23,6 +23,8 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
     implements
         McpResourceContent {
 
+    public static final String NAME = "mcp_text_resource_contents";
+
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
     private static final ParseField TEXT_FIELD = new ParseField("text");
@@ -61,15 +63,9 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (uri != null) {
-            builder.field(URI_FIELD.getPreferredName(), uri);
-        }
-        if (mimeType != null) {
-            builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
-        }
-        if (text != null) {
-            builder.field(TEXT_FIELD.getPreferredName(), text);
-        }
+        builder.field(URI_FIELD.getPreferredName(), uri);
+        builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
+        builder.field(TEXT_FIELD.getPreferredName(), text);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }
@@ -79,6 +75,6 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
 
     @Override
     public String getWriteableName() {
-        return "text";
+        return NAME;
     }
 }

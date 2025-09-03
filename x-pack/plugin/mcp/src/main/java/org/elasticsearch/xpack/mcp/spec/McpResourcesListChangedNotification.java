@@ -19,11 +19,13 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpResourcesListChangedNotification(Map<String, Object> meta) implements McpNotification {
 
+    public static final String NAME = "mcp_resources_list_changed_notification";
+
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpResourcesListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_resources_list_changed_notification",
+        NAME,
         args -> new McpResourcesListChangedNotification((Map<String, Object>) args[0])
     );
 
@@ -52,6 +54,6 @@ public record McpResourcesListChangedNotification(Map<String, Object> meta) impl
 
     @Override
     public String getWriteableName() {
-        return "resources_list_changed";
+        return NAME;
     }
 }

@@ -21,12 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpLoggingMessageNotification(@NotNull String message, Map<String, Object> meta) implements McpNotification {
 
+    public static final String NAME = "mcp_logging_message_notification";
+
     private static final ParseField MESSAGE_FIELD = new ParseField("message");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpLoggingMessageNotification, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_logging_message_notification",
+        NAME,
         args -> new McpLoggingMessageNotification((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -48,9 +50,7 @@ public record McpLoggingMessageNotification(@NotNull String message, Map<String,
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (message != null) {
-            builder.field(MESSAGE_FIELD.getPreferredName(), message);
-        }
+        builder.field(MESSAGE_FIELD.getPreferredName(), message);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }
@@ -60,6 +60,6 @@ public record McpLoggingMessageNotification(@NotNull String message, Map<String,
 
     @Override
     public String getWriteableName() {
-        return "mcp_logging_message_notification";
+        return NAME;
     }
 }

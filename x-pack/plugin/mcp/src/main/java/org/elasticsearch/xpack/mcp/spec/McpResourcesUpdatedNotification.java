@@ -21,12 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, Object> meta) implements McpNotification {
 
+    public static final String NAME = "mcp_resources_updated_notification";
+
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpResourcesUpdatedNotification, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_resources_updated_notification",
+        mcp_resources_updated_notification,
         args -> new McpResourcesUpdatedNotification((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -58,6 +60,6 @@ public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, O
 
     @Override
     public String getWriteableName() {
-        return "resources_updated";
+        return NAME;
     }
 }

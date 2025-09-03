@@ -25,13 +25,15 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     implements
         McpResult {
 
+    public static final String NAME = "mcp_get_prompt_result";
+
     private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
     private static final ParseField MESSAGES_FIELD = new ParseField("messages");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpGetPromptResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_get_prompt_result",
+        NAME,
         args -> new McpGetPromptResult((List<McpPromptMessage>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -43,7 +45,7 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
 
     @Override
     public String getWriteableName() {
-        return "mcp_get_prompt_result";
+        return NAME;
     }
 
     public McpGetPromptResult(StreamInput in) throws IOException {

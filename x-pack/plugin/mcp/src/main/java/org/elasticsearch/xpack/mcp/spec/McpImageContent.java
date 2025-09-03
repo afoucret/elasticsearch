@@ -19,6 +19,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 
 public record McpImageContent(@NotNull String url) implements McpContent {
 
+    public static final String NAME = "mcp_image_content";
     private static final ParseField URL_FIELD = new ParseField("url");
 
     public static final ConstructingObjectParser<McpImageContent, Void> PARSER = new ConstructingObjectParser<>(
@@ -36,7 +37,7 @@ public record McpImageContent(@NotNull String url) implements McpContent {
 
     @Override
     public String getWriteableName() {
-        return "image";
+        return NAME;
     }
 
     @Override

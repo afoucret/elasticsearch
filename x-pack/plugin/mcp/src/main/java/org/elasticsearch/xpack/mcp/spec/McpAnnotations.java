@@ -22,13 +22,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpAnnotations(List<McpRole> audience, Double priority) implements NamedWriteable, ToXContentObject {
 
+    public static final String NAME = "mcp_annotations";
+
     private static final ParseField AUDIENCE_FIELD = new ParseField("audience");
     private static final ParseField PRIORITY_FIELD = new ParseField("priority");
-    public static final String NAME = "mcp_annotations";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpAnnotations, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_annotations",
+        NAME,
         args -> new McpAnnotations(
             args[0] == null ? null : ((List<String>) args[0]).stream().map(McpRole::valueOf).collect(Collectors.toList()),
             (Double) args[1]

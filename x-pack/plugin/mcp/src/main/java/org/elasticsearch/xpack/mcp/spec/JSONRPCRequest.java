@@ -24,6 +24,8 @@ public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @N
     implements
         JSONRPCMessage {
 
+    public static final String NAME = "jsonrpc_request";
+
     private static final ParseField JSONRPC_FIELD = new ParseField("jsonrpc");
     private static final ParseField METHOD_FIELD = new ParseField("method");
     private static final ParseField ID_FIELD = new ParseField("id");
@@ -31,7 +33,7 @@ public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @N
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "jsonrpc_request",
+        NAME,
         args -> new JSONRPCRequest((String) args[0], (String) args[1], (String) args[2], (Map<String, Object>) args[3])
     );
 

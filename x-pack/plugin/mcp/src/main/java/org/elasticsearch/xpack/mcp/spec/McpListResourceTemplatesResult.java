@@ -26,13 +26,15 @@ public record McpListResourceTemplatesResult(
     Map<String, Object> meta
 ) implements McpResult {
 
+    public static final String NAME = "mcp_list_resource_templates_result";
+
     private static final ParseField RESOURCE_TEMPLATES_FIELD = new ParseField("resourceTemplates");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListResourceTemplatesResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_list_resource_templates_result",
+        NAME,
         args -> new McpListResourceTemplatesResult((List<McpResourceTemplate>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -44,7 +46,7 @@ public record McpListResourceTemplatesResult(
 
     @Override
     public String getWriteableName() {
-        return "mcp_list_resource_templates_result";
+        return NAME;
     }
 
     public McpListResourceTemplatesResult(StreamInput in) throws IOException {
@@ -65,9 +67,7 @@ public record McpListResourceTemplatesResult(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (resourceTemplates != null) {
-            builder.field(RESOURCE_TEMPLATES_FIELD.getPreferredName(), resourceTemplates);
-        }
+        builder.field(RESOURCE_TEMPLATES_FIELD.getPreferredName(), resourceTemplates);
         if (nextCursor != null) {
             builder.field(NEXT_CURSOR_FIELD.getPreferredName(), nextCursor);
         }

@@ -110,7 +110,7 @@ public record McpServerCapabilities(
     }
 
     public record CompletionCapabilities() implements NamedWriteable, ToXContentObject {
-        public static final String NAME = "completion_capabilities";
+        public static final String NAME = "mcp_server_capabilities_completion_capabilities";
         public static final ConstructingObjectParser<CompletionCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "completion_capabilities",
             args -> new CompletionCapabilities()
@@ -137,7 +137,7 @@ public record McpServerCapabilities(
     }
 
     public record LoggingCapabilities() implements NamedWriteable, ToXContentObject {
-        public static final String NAME = "logging_capabilities";
+        public static final String NAME = "mcp_server_capabilities_logging_capabilities";
         public static final ConstructingObjectParser<LoggingCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "logging_capabilities",
             args -> new LoggingCapabilities()
@@ -165,7 +165,7 @@ public record McpServerCapabilities(
 
     public record PromptCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
-        public static final String NAME = "prompt_capabilities";
+        public static final String NAME = "mcp_server_capabilities_prompt_capabilities";
 
         public static final ConstructingObjectParser<PromptCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "prompt_capabilities",
@@ -204,7 +204,7 @@ public record McpServerCapabilities(
     public record ResourceCapabilities(Boolean subscribe, Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField SUBSCRIBE = new ParseField("subscribe");
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
-        public static final String NAME = "resource_capabilities";
+        public static final String NAME = "mcp_server_capabilities_resource_capabilities";
 
         public static final ConstructingObjectParser<ResourceCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "resource_capabilities",
@@ -247,7 +247,7 @@ public record McpServerCapabilities(
 
     public record ToolCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
-        public static final String NAME = "tool_capabilities";
+        public static final String NAME = "mcp_server_capabilities_tool_capabilities";
 
         public static final ConstructingObjectParser<ToolCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "tool_capabilities",

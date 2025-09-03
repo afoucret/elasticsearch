@@ -19,6 +19,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpPromptsListChangedNotification(Map<String, Object> meta) implements McpNotification {
 
+    public static final String NAME = "mcp_prompts_list_changed_notification";
+
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
@@ -52,6 +54,6 @@ public record McpPromptsListChangedNotification(Map<String, Object> meta) implem
 
     @Override
     public String getWriteableName() {
-        return "prompts_list_changed";
+        return NAME;
     }
 }

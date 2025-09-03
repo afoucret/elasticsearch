@@ -19,6 +19,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg
 
 public record McpTextContent(@NotNull String text) implements McpContent {
 
+    public static final String NAME = "mcp_text_content";
     private static final ParseField TEXT_FIELD = new ParseField("text");
 
     public static final ConstructingObjectParser<McpTextContent, Void> PARSER = new ConstructingObjectParser<>(
@@ -36,7 +37,7 @@ public record McpTextContent(@NotNull String text) implements McpContent {
 
     @Override
     public String getWriteableName() {
-        return "text";
+        return NAME;
     }
 
     @Override

@@ -21,12 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, Object> meta) implements McpResult {
 
+    public static final String NAME = "mcp_elicit_result";
+
     private static final ParseField RESULT_FIELD = new ParseField("result");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpElicitResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_elicit_result",
+        NAME,
         args -> new McpElicitResult((Map<String, Object>) args[0], (Map<String, Object>) args[1])
     );
 
@@ -37,7 +39,7 @@ public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, O
 
     @Override
     public String getWriteableName() {
-        return "mcp_elicit_result";
+        return NAME;
     }
 
     public McpElicitResult(StreamInput in) throws IOException {

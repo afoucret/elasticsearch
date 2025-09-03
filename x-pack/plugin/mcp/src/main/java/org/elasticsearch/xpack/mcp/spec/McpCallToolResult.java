@@ -29,6 +29,8 @@ public record McpCallToolResult(
     implements
         McpResult {
 
+    public static final String NAME = "mcp_call_tool_result";
+
     private static final ParseField CONTENT_FIELD = new ParseField("content");
     private static final ParseField IS_ERROR_FIELD = new ParseField("isError");
     private static final ParseField STRUCTURED_CONTENT_FIELD = new ParseField("structuredContent");
@@ -36,7 +38,7 @@ public record McpCallToolResult(
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCallToolResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_call_tool_result",
+        NAME,
         args -> new McpCallToolResult(
             (List<McpContent>) args[0],
             (Boolean) args[1],
@@ -54,7 +56,7 @@ public record McpCallToolResult(
 
     @Override
     public String getWriteableName() {
-        return "mcp_call_tool_result";
+        return NAME;
     }
 
     public McpCallToolResult(StreamInput in) throws IOException {

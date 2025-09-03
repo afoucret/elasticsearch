@@ -22,12 +22,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpUnsubscribeRequest(@NotNull String uri, Map<String, Object> meta) implements McpRequest {
 
+    public static final String NAME = "mcp_unsubscribe_request";
+
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpUnsubscribeRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_unsubscribe_request",
+        NAME,
         args -> new McpUnsubscribeRequest((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -38,7 +40,7 @@ public record McpUnsubscribeRequest(@NotNull String uri, Map<String, Object> met
 
     @Override
     public String getWriteableName() {
-        return "mcp_unsubscribe_request";
+        return NAME;
     }
 
     public McpUnsubscribeRequest(StreamInput in) throws IOException {

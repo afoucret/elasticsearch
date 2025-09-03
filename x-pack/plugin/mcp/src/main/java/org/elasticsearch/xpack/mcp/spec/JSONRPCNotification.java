@@ -22,13 +22,15 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record JSONRPCNotification(@NotNull String jsonrpc, @NotNull String method, Map<String, Object> params) implements JSONRPCMessage {
 
+    public static final String NAME = "jsonrpc_notification";
+
     private static final ParseField JSONRPC_FIELD = new ParseField("jsonrpc");
     private static final ParseField METHOD_FIELD = new ParseField("method");
     private static final ParseField PARAMS_FIELD = new ParseField("params");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCNotification, Void> PARSER = new ConstructingObjectParser<>(
-        "jsonrpc_notification",
+        NAME,
         args -> new JSONRPCNotification((String) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 

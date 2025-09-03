@@ -27,16 +27,17 @@ public record McpToolAnnotations(
     Boolean returnDirect
 ) implements NamedWriteable, ToXContentObject {
 
+    public static final String NAME = "mcp_tool_annotations";
+    
     private static final ParseField TITLE_FIELD = new ParseField("title");
     private static final ParseField READ_ONLY_HINT_FIELD = new ParseField("readOnlyHint");
     private static final ParseField DESTRUCTIVE_HINT_FIELD = new ParseField("destructiveHint");
     private static final ParseField IDEMPOTENT_HINT_FIELD = new ParseField("idempotentHint");
     private static final ParseField OPEN_WORLD_HINT_FIELD = new ParseField("openWorldHint");
     private static final ParseField RETURN_DIRECT_FIELD = new ParseField("returnDirect");
-    public static final String NAME = "mcp_tool_annotations";
 
     public static final ConstructingObjectParser<McpToolAnnotations, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_tool_annotations",
+        NAME,
         args -> new McpToolAnnotations(
             (String) args[0],
             (Boolean) args[1],

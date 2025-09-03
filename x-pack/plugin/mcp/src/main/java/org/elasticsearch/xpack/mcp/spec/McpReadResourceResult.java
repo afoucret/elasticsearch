@@ -22,12 +22,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, Map<String, Object> meta) implements McpResult {
 
+    public static final String NAME = "mcp_read_resource_result";
+
     private static final ParseField CONTENTS_FIELD = new ParseField("contents");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpReadResourceResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_read_resource_result",
+        NAME,
         args -> new McpReadResourceResult((List<McpResourceContent>) args[0], (Map<String, Object>) args[1])
     );
 
@@ -38,7 +40,7 @@ public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, 
 
     @Override
     public String getWriteableName() {
-        return "mcp_read_resource_result";
+        return NAME;
     }
 
     public McpReadResourceResult(StreamInput in) throws IOException {
@@ -57,9 +59,7 @@ public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (contents != null) {
-            builder.field(CONTENTS_FIELD.getPreferredName(), contents);
-        }
+        builder.field(CONTENTS_FIELD.getPreferredName(), contents);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

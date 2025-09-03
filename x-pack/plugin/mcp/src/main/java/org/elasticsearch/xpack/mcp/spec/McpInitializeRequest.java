@@ -27,6 +27,8 @@ public record McpInitializeRequest(
     Map<String, Object> meta
 ) implements McpRequest {
 
+    public static final String NAME = "mcp_initialize_request";
+
     private static final ParseField PROTOCOL_VERSION_FIELD = new ParseField("protocolVersion");
     private static final ParseField CAPABILITIES_FIELD = new ParseField("capabilities");
     private static final ParseField CLIENT_INFO_FIELD = new ParseField("clientInfo");
@@ -34,7 +36,7 @@ public record McpInitializeRequest(
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpInitializeRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_initialize_request",
+        NAME,
         args -> new McpInitializeRequest(
             (String) args[0],
             (McpClientCapabilities) args[1],
@@ -52,7 +54,7 @@ public record McpInitializeRequest(
 
     @Override
     public String getWriteableName() {
-        return "mcp_initialize_request";
+        return NAME;
     }
 
     public McpInitializeRequest(StreamInput in) throws IOException {

@@ -22,13 +22,15 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpListRootsResult(@NotNull List<McpResource> roots, String nextCursor, Map<String, Object> meta) implements McpResult {
 
+    public static final String NAME = "mcp_list_roots_result";
+
     private static final ParseField ROOTS_FIELD = new ParseField("roots");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListRootsResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_list_roots_result",
+        NAME,
         args -> new McpListRootsResult((List<McpResource>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -40,7 +42,7 @@ public record McpListRootsResult(@NotNull List<McpResource> roots, String nextCu
 
     @Override
     public String getWriteableName() {
-        return "mcp_list_roots_result";
+        return NAME;
     }
 
     public McpListRootsResult(StreamInput in) throws IOException {
@@ -61,9 +63,7 @@ public record McpListRootsResult(@NotNull List<McpResource> roots, String nextCu
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (roots != null) {
-            builder.field(ROOTS_FIELD.getPreferredName(), roots);
-        }
+        builder.field(ROOTS_FIELD.getPreferredName(), roots);
         if (nextCursor != null) {
             builder.field(NEXT_CURSOR_FIELD.getPreferredName(), nextCursor);
         }

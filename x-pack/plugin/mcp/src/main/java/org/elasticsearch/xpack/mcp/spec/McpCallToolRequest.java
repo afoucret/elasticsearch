@@ -25,13 +25,15 @@ public record McpCallToolRequest(@NotNull String name, Map<String, Object> argum
     implements
         McpRequest {
 
+    public static final String NAME = "mcp_call_tool_request";
+
     private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCallToolRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_call_tool_request",
+        NAME,
         args -> new McpCallToolRequest((String) args[0], (Map<String, Object>) args[1], (Map<String, Object>) args[2])
     );
 
@@ -43,7 +45,7 @@ public record McpCallToolRequest(@NotNull String name, Map<String, Object> argum
 
     @Override
     public String getWriteableName() {
-        return "mcp_call_tool_request";
+        return NAME;
     }
 
     public McpCallToolRequest(StreamInput in) throws IOException {

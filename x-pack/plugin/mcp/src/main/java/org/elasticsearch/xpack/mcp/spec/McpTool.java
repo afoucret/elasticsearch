@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -30,14 +31,16 @@ public record McpTool(
     McpToolAnnotations annotations,
     Map<String, Object> meta
 ) implements NamedWriteable, ToXContentObject {
+    
+    public static final String NAME = "mcp_tool";
 
+    private static final ParseField NAME_FIELD = new ParseField("title");
     private static final ParseField TITLE_FIELD = new ParseField("title");
     private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
     private static final ParseField INPUT_SCHEMA_FIELD = new ParseField("inputSchema");
     private static final ParseField OUTPUT_SCHEMA_FIELD = new ParseField("outputSchema");
     private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");
     private static final ParseField META_FIELD = new ParseField("_meta");
-    public static final String NAME = "mcp_tool";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpTool, Void> PARSER = new ConstructingObjectParser<>(
@@ -54,7 +57,7 @@ public record McpTool(
     );
 
     static {
-        PARSER.declareString(constructorArg(), new ParseField("name"));
+        PARSER.declareString(constructorArg(), NAME_FIELD);
         PARSER.declareString(constructorArg(), DESCRIPTION_FIELD);
         PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
         PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, INPUT_SCHEMA_FIELD);
@@ -94,7 +97,7 @@ public record McpTool(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(new ParseField("name").getPreferredName(), name);
+        builder.field(NAME_FIELD.getPreferredName(), name);
         builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         if (title != null) {
             builder.field(TITLE_FIELD.getPreferredName(), title);

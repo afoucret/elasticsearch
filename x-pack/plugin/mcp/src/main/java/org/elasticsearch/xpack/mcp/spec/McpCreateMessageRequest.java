@@ -33,6 +33,8 @@ public record McpCreateMessageRequest(
     Map<String, Object> meta
 ) implements McpRequest {
 
+    public static final String NAME = "mcp_create_message_request";
+
     private static final ParseField MESSAGES_FIELD = new ParseField("messages");
     private static final ParseField MODEL_PREFERENCES_FIELD = new ParseField("modelPreferences");
     private static final ParseField SYSTEM_PROMPT_FIELD = new ParseField("systemPrompt");
@@ -45,7 +47,7 @@ public record McpCreateMessageRequest(
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCreateMessageRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_create_message_request",
+        NAME,
         args -> new McpCreateMessageRequest(
             (List<McpSamplingMessage>) args[0],
             (McpModelPreferences) args[1],
@@ -73,7 +75,7 @@ public record McpCreateMessageRequest(
 
     @Override
     public String getWriteableName() {
-        return "mcp_create_message_request";
+        return NAME;
     }
 
     public McpCreateMessageRequest(StreamInput in) throws IOException {

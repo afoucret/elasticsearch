@@ -24,6 +24,8 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
     implements
         McpResourceContent {
 
+    public static final String NAME = "mcp_blob_resource_contents";
+
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
     private static final ParseField BLOB_FIELD = new ParseField("blob");
@@ -31,7 +33,7 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpBlobResourceContents, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_blob_resource_contents",
+        NAME,
         args -> new McpBlobResourceContents((String) args[0], (String) args[1], (String) args[2], (Map<String, Object>) args[3])
     );
 
@@ -74,6 +76,6 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
 
     @Override
     public String getWriteableName() {
-        return "blob";
+        return NAME;
     }
 }

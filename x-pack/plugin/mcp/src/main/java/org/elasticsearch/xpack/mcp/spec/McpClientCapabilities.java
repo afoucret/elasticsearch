@@ -24,15 +24,16 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         NamedWriteable,
         ToXContentObject {
 
+    public static final String NAME = "mcp_client_capabilities";
+
     private static final ParseField EXPERIMENTAL_FIELD = new ParseField("experimental");
     private static final ParseField ROOTS_FIELD = new ParseField("roots");
     private static final ParseField SAMPLING_FIELD = new ParseField("sampling");
     private static final ParseField ELICITATION_FIELD = new ParseField("elicitation");
-    public static final String NAME = "mcp_client_capabilities";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpClientCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_client_capabilities",
+        NAME,
         args -> new McpClientCapabilities(
             (Map<String, Object>) args[0],
             (RootCapabilities) args[1],
@@ -92,7 +93,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     public record RootCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
 
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
-        public static final String NAME = "root_capabilities";
+        public static final String NAME = "mcp_client_capabilities_root_capabilities";
 
         public static final ConstructingObjectParser<RootCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "root_capabilities",
@@ -130,7 +131,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
     public record Sampling() implements NamedWriteable, ToXContentObject {
 
-        public static final String NAME = "sampling";
+        public static final String NAME = "mcp_client_capabilities_sampling";
 
         public static final ConstructingObjectParser<Sampling, Void> PARSER = new ConstructingObjectParser<>(
             "sampling",
@@ -159,7 +160,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
     public record Elicitation() implements NamedWriteable, ToXContentObject {
 
-        public static final String NAME = "elicitation";
+        public static final String NAME = "mcp_client_capabilities_elicitation";
 
         public static final ConstructingObjectParser<Elicitation, Void> PARSER = new ConstructingObjectParser<>(
             "elicitation",

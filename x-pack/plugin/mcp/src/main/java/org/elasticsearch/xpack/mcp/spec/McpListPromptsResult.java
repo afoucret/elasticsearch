@@ -24,13 +24,15 @@ public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String next
     implements
         McpResult {
 
+    public static final String NAME = "mcp_list_prompts_result";
+
     private static final ParseField PROMPTS_FIELD = new ParseField("prompts");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListPromptsResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_list_prompts_result",
+        NAME,
         args -> new McpListPromptsResult((List<McpPrompt>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -42,7 +44,7 @@ public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String next
 
     @Override
     public String getWriteableName() {
-        return "mcp_list_prompts_result";
+        return NAME;
     }
 
     public McpListPromptsResult(StreamInput in) throws IOException {
@@ -63,9 +65,7 @@ public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String next
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (prompts != null) {
-            builder.field(PROMPTS_FIELD.getPreferredName(), prompts);
-        }
+        builder.field(PROMPTS_FIELD.getPreferredName(), prompts);
         if (nextCursor != null) {
             builder.field(NEXT_CURSOR_FIELD.getPreferredName(), nextCursor);
         }

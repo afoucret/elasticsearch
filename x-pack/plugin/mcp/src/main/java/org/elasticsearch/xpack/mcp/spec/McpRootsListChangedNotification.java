@@ -19,6 +19,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpRootsListChangedNotification(Map<String, Object> meta) implements McpNotification {
 
+    public static final String NAME = "roots_list_changed";
+
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
@@ -52,6 +54,6 @@ public record McpRootsListChangedNotification(Map<String, Object> meta) implemen
 
     @Override
     public String getWriteableName() {
-        return "roots_list_changed";
+        return NAME;
     }
 }

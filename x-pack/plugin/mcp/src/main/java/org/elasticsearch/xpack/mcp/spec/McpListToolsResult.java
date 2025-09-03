@@ -22,13 +22,15 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor, Map<String, Object> meta) implements McpResult {
 
+    public static final String NAME = "mcp_list_tools_result";
+
     private static final ParseField TOOLS_FIELD = new ParseField("tools");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListToolsResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_list_tools_result",
+        NAME,
         args -> new McpListToolsResult((List<McpTool>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -40,7 +42,7 @@ public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor
 
     @Override
     public String getWriteableName() {
-        return "mcp_list_tools_result";
+        return NAME;
     }
 
     public McpListToolsResult(StreamInput in) throws IOException {
@@ -61,9 +63,7 @@ public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (tools != null) {
-            builder.field(TOOLS_FIELD.getPreferredName(), tools);
-        }
+        builder.field(TOOLS_FIELD.getPreferredName(), tools);
         if (nextCursor != null) {
             builder.field(NEXT_CURSOR_FIELD.getPreferredName(), nextCursor);
         }

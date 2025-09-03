@@ -35,7 +35,7 @@ public record JSONRPCError(@NotNull int code, @NotNull String message, Map<Strin
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<JSONRPCError, Void> PARSER = new ConstructingObjectParser<>(
-        "jsonrpc_error",
+        NAME,
         args -> new JSONRPCError((int) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 

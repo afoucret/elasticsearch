@@ -22,12 +22,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpCompleteRequest(@NotNull String query, Map<String, Object> meta) implements McpRequest {
 
+    public static final String NAME = "mcp_complete_request";
+
     private static final ParseField QUERY_FIELD = new ParseField("query");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCompleteRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_complete_request",
+        NAME,
         args -> new McpCompleteRequest((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -38,7 +40,7 @@ public record McpCompleteRequest(@NotNull String query, Map<String, Object> meta
 
     @Override
     public String getWriteableName() {
-        return "mcp_complete_request";
+        return NAME;
     }
 
     public McpCompleteRequest(StreamInput in) throws IOException {

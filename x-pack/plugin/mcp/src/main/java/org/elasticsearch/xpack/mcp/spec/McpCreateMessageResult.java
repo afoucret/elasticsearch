@@ -21,12 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<String, Object> meta) implements McpResult {
 
+    public static final String NAME = "mcp_create_message_result";
+
     private static final ParseField MESSAGE_FIELD = new ParseField("message");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCreateMessageResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_create_message_result",
+        NAME,
         args -> new McpCreateMessageResult((McpSamplingMessage) args[0], (Map<String, Object>) args[1])
     );
 
@@ -37,7 +39,7 @@ public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<St
 
     @Override
     public String getWriteableName() {
-        return "mcp_create_message_result";
+        return NAME;
     }
 
     public McpCreateMessageResult(StreamInput in) throws IOException {

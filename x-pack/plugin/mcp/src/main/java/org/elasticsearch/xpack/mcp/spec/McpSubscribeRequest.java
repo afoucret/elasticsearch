@@ -22,12 +22,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta) implements McpRequest {
 
+    public static final String NAME = "mcp_subscribe_request";
+
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpSubscribeRequest, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_subscribe_request",
+        NAME,
         args -> new McpSubscribeRequest((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -38,7 +40,7 @@ public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta)
 
     @Override
     public String getWriteableName() {
-        return "mcp_subscribe_request";
+        return NAME;
     }
 
     public McpSubscribeRequest(StreamInput in) throws IOException {
@@ -54,9 +56,7 @@ public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta)
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (uri != null) {
-            builder.field(URI_FIELD.getPreferredName(), uri);
-        }
+        builder.field(URI_FIELD.getPreferredName(), uri);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }
