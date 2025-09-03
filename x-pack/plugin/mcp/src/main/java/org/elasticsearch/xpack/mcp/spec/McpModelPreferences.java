@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -21,13 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpModelPreferences(List<McpModelHint> hints, Double costPriority, Double speedPriority, Double intelligencePriority)
     implements
-        Writeable,
+        NamedWriteable,
         ToXContentObject {
 
     private static final ParseField HINTS = new ParseField("hints");
     private static final ParseField COST_PRIORITY = new ParseField("costPriority");
     private static final ParseField SPEED_PRIORITY = new ParseField("speedPriority");
     private static final ParseField INTELLIGENCE_PRIORITY = new ParseField("intelligencePriority");
+    public static final String NAME = "mcp_model_preferences";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpModelPreferences, Void> PARSER = new ConstructingObjectParser<>(
@@ -44,6 +45,11 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
 
     public McpModelPreferences(StreamInput in) throws IOException {
         this(in.readCollectionAsList(McpModelHint::new), in.readOptionalDouble(), in.readOptionalDouble(), in.readOptionalDouble());
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

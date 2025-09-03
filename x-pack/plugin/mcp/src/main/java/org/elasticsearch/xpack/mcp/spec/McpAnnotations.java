@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -20,10 +20,11 @@ import java.util.stream.Collectors;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpAnnotations(List<McpRole> audience, Double priority) implements Writeable, ToXContentObject {
+public record McpAnnotations(List<McpRole> audience, Double priority) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField AUDIENCE = new ParseField("audience");
     private static final ParseField PRIORITY = new ParseField("priority");
+    public static final String NAME = "mcp_annotations";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpAnnotations, Void> PARSER = new ConstructingObjectParser<>(
@@ -41,6 +42,11 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
 
     public McpAnnotations(StreamInput in) throws IOException {
         this(in.readOptionalCollectionAsList(McpRole::readFrom), in.readOptionalDouble());
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

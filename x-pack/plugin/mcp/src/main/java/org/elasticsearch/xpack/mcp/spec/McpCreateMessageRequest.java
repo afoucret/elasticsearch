@@ -8,10 +8,9 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -31,7 +30,7 @@ public record McpCreateMessageRequest(
     List<String> stopSequences,
     Map<String, Object> metadata,
     Map<String, Object> meta
-) implements Writeable, ToXContentObject {
+) implements McpRequest {
 
     private static final ParseField MESSAGES = new ParseField("messages");
     private static final ParseField MODEL_PREFERENCES = new ParseField("modelPreferences");
@@ -71,6 +70,11 @@ public record McpCreateMessageRequest(
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
     }
 
+    @Override
+    public String getWriteableName() {
+        return "mcp_create_message_request";
+    }
+
     public McpCreateMessageRequest(StreamInput in) throws IOException {
         this(
             in.readCollectionAsList(McpSamplingMessage::new),
@@ -99,7 +103,7 @@ public record McpCreateMessageRequest(
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (messages != null) {
             builder.field(MESSAGES.getPreferredName(), messages);

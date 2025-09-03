@@ -8,10 +8,9 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -25,7 +24,7 @@ public record McpInitializeRequest(
     McpClientCapabilities capabilities,
     McpImplementation clientInfo,
     Map<String, Object> meta
-) implements Writeable, ToXContentObject {
+) implements McpRequest {
 
     private static final ParseField PROTOCOL_VERSION = new ParseField("protocolVersion");
     private static final ParseField CAPABILITIES = new ParseField("capabilities");
@@ -50,6 +49,11 @@ public record McpInitializeRequest(
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
     }
 
+    @Override
+    public String getWriteableName() {
+        return "mcp_initialize_request";
+    }
+
     public McpInitializeRequest(StreamInput in) throws IOException {
         this(
             in.readString(),
@@ -68,7 +72,7 @@ public record McpInitializeRequest(
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (protocolVersion != null) {
             builder.field(PROTOCOL_VERSION.getPreferredName(), protocolVersion);

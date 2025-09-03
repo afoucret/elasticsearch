@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -19,11 +19,12 @@ import java.io.IOException;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpImplementation(String name, String title, String version) implements Writeable, ToXContentObject {
+public record McpImplementation(String name, String title, String version) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField NAME = new ParseField("name");
     private static final ParseField TITLE = new ParseField("title");
     private static final ParseField VERSION = new ParseField("version");
+    public static final String NAME_FIELD = "mcp_implementation";
 
     public static final ConstructingObjectParser<McpImplementation, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_implementation",
@@ -38,6 +39,11 @@ public record McpImplementation(String name, String title, String version) imple
 
     public McpImplementation(StreamInput in) throws IOException {
         this(in.readString(), in.readOptionalString(), in.readString());
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME_FIELD;
     }
 
     @Override

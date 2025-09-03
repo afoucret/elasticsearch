@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -19,10 +19,11 @@ import java.util.Locale;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpSamplingMessage(McpRole role, McpContent content) implements Writeable, ToXContentObject {
+public record McpSamplingMessage(McpRole role, McpContent content) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField ROLE = new ParseField("role");
     private static final ParseField CONTENT = new ParseField("content");
+    public static final String NAME = "mcp_sampling_message";
 
     public static final ConstructingObjectParser<McpSamplingMessage, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_sampling_message",
@@ -36,6 +37,11 @@ public record McpSamplingMessage(McpRole role, McpContent content) implements Wr
 
     public McpSamplingMessage(StreamInput in) throws IOException {
         this(in.readEnum(McpRole.class), in.readNamedWriteable(McpContent.class));
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

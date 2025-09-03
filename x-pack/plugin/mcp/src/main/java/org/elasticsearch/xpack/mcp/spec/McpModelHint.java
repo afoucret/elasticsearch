@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -18,9 +18,10 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpModelHint(String name) implements Writeable, ToXContentObject {
+public record McpModelHint(String name) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField NAME = new ParseField("name");
+    public static final String NAME_FIELD = "mcp_model_hint";
 
     public static final ConstructingObjectParser<McpModelHint, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_model_hint",
@@ -33,6 +34,11 @@ public record McpModelHint(String name) implements Writeable, ToXContentObject {
 
     public McpModelHint(StreamInput in) throws IOException {
         this(in.readOptionalString());
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME_FIELD;
     }
 
     @Override

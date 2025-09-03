@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -23,8 +21,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpCallToolResult(List<McpContent> content, Boolean isError, Map<String, Object> structuredContent, Map<String, Object> meta)
     implements
-        Writeable,
-        ToXContentObject {
+        McpResult {
 
     private static final ParseField CONTENT = new ParseField("content");
     private static final ParseField IS_ERROR = new ParseField("isError");
@@ -47,6 +44,11 @@ public record McpCallToolResult(List<McpContent> content, Boolean isError, Map<S
         PARSER.declareBoolean(optionalConstructorArg(), IS_ERROR);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), STRUCTURED_CONTENT);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_call_tool_result";
     }
 
     public McpCallToolResult(StreamInput in) throws IOException {

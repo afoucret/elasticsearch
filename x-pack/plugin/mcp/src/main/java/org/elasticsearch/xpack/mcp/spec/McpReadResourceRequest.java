@@ -8,10 +8,9 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpReadResourceRequest(String uri, Map<String, Object> meta) implements Writeable, ToXContentObject {
+public record McpReadResourceRequest(String uri, Map<String, Object> meta) implements McpRequest {
 
     private static final ParseField URI = new ParseField("uri");
     private static final ParseField META = new ParseField("_meta");
@@ -36,6 +35,11 @@ public record McpReadResourceRequest(String uri, Map<String, Object> meta) imple
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
     }
 
+    @Override
+    public String getWriteableName() {
+        return "mcp_read_resource_request";
+    }
+
     public McpReadResourceRequest(StreamInput in) throws IOException {
         this(in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
     }
@@ -47,7 +51,7 @@ public record McpReadResourceRequest(String uri, Map<String, Object> meta) imple
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (uri != null) {
             builder.field(URI.getPreferredName(), uri);

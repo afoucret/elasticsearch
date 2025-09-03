@@ -8,10 +8,9 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -20,10 +19,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpGetPromptRequest(String name, Map<String, Object> arguments, Map<String, Object> meta)
-    implements
-        Writeable,
-        ToXContentObject {
+public record McpGetPromptRequest(String name, Map<String, Object> arguments, Map<String, Object> meta) implements McpRequest {
 
     private static final ParseField NAME = new ParseField("name");
     private static final ParseField ARGUMENTS = new ParseField("arguments");
@@ -39,6 +35,11 @@ public record McpGetPromptRequest(String name, Map<String, Object> arguments, Ma
         PARSER.declareString(constructorArg(), NAME);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), ARGUMENTS);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_get_prompt_request";
     }
 
     public McpGetPromptRequest(StreamInput in) throws IOException {
@@ -57,7 +58,7 @@ public record McpGetPromptRequest(String name, Map<String, Object> arguments, Ma
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (name != null) {
             builder.field(NAME.getPreferredName(), name);

@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -20,7 +18,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Object> meta) implements Writeable, ToXContentObject {
+public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Object> meta) implements McpResult {
 
     private static final ParseField MESSAGE = new ParseField("message");
     private static final ParseField META = new ParseField("_meta");
@@ -34,6 +32,11 @@ public record McpCreateMessageResult(McpSamplingMessage message, Map<String, Obj
     static {
         PARSER.declareObject(constructorArg(), McpSamplingMessage.PARSER, MESSAGE);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_create_message_result";
     }
 
     public McpCreateMessageResult(StreamInput in) throws IOException {

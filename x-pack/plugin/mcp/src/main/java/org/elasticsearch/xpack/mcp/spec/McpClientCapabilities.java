@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -21,13 +21,14 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpClientCapabilities(Map<String, Object> experimental, RootCapabilities roots, Sampling sampling, Elicitation elicitation)
     implements
-        Writeable,
+        NamedWriteable,
         ToXContentObject {
 
     private static final ParseField EXPERIMENTAL = new ParseField("experimental");
     private static final ParseField ROOTS = new ParseField("roots");
     private static final ParseField SAMPLING = new ParseField("sampling");
     private static final ParseField ELICITATION = new ParseField("elicitation");
+    public static final String NAME = "mcp_client_capabilities";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpClientCapabilities, Void> PARSER = new ConstructingObjectParser<>(
@@ -57,6 +58,11 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     }
 
     @Override
+    public String getWriteableName() {
+        return NAME;
+    }
+
+    @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeMap(experimental, StreamOutput::writeString, StreamOutput::writeGenericValue);
         out.writeOptionalWriteable(roots);
@@ -83,9 +89,10 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         return builder;
     }
 
-    public record RootCapabilities(Boolean listChanged) implements Writeable, ToXContentObject {
+    public record RootCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
 
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
+        public static final String NAME = "root_capabilities";
 
         public static final ConstructingObjectParser<RootCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "root_capabilities",
@@ -98,6 +105,11 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public RootCapabilities(StreamInput in) throws IOException {
             this(in.readOptionalBoolean());
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override
@@ -116,7 +128,9 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         }
     }
 
-    public record Sampling() implements Writeable, ToXContentObject {
+    public record Sampling() implements NamedWriteable, ToXContentObject {
+
+        public static final String NAME = "sampling";
 
         public static final ConstructingObjectParser<Sampling, Void> PARSER = new ConstructingObjectParser<>(
             "sampling",
@@ -125,6 +139,11 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public Sampling(StreamInput in) {
             this();
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override
@@ -138,7 +157,9 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         }
     }
 
-    public record Elicitation() implements Writeable, ToXContentObject {
+    public record Elicitation() implements NamedWriteable, ToXContentObject {
+
+        public static final String NAME = "elicitation";
 
         public static final ConstructingObjectParser<Elicitation, Void> PARSER = new ConstructingObjectParser<>(
             "elicitation",
@@ -147,6 +168,11 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public Elicitation(StreamInput in) {
             this();
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override

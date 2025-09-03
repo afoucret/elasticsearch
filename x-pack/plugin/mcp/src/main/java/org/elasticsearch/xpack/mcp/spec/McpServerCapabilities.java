@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -26,7 +26,7 @@ public record McpServerCapabilities(
     PromptCapabilities prompts,
     ResourceCapabilities resources,
     ToolCapabilities tools
-) implements Writeable, ToXContentObject {
+) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField COMPLETIONS = new ParseField("completions");
     private static final ParseField EXPERIMENTAL = new ParseField("experimental");
@@ -34,6 +34,7 @@ public record McpServerCapabilities(
     private static final ParseField PROMPTS = new ParseField("prompts");
     private static final ParseField RESOURCES = new ParseField("resources");
     private static final ParseField TOOLS = new ParseField("tools");
+    public static final String NAME = "mcp_server_capabilities";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpServerCapabilities, Void> PARSER = new ConstructingObjectParser<>(
@@ -66,6 +67,11 @@ public record McpServerCapabilities(
             in.readOptionalWriteable(ResourceCapabilities::new),
             in.readOptionalWriteable(ToolCapabilities::new)
         );
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override
@@ -103,7 +109,8 @@ public record McpServerCapabilities(
         return builder;
     }
 
-    public record CompletionCapabilities() implements Writeable, ToXContentObject {
+    public record CompletionCapabilities() implements NamedWriteable, ToXContentObject {
+        public static final String NAME = "completion_capabilities";
         public static final ConstructingObjectParser<CompletionCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "completion_capabilities",
             args -> new CompletionCapabilities()
@@ -114,6 +121,11 @@ public record McpServerCapabilities(
         }
 
         @Override
+        public String getWriteableName() {
+            return NAME;
+        }
+
+        @Override
         public void writeTo(StreamOutput out) {}
 
         @Override
@@ -124,7 +136,8 @@ public record McpServerCapabilities(
         }
     }
 
-    public record LoggingCapabilities() implements Writeable, ToXContentObject {
+    public record LoggingCapabilities() implements NamedWriteable, ToXContentObject {
+        public static final String NAME = "logging_capabilities";
         public static final ConstructingObjectParser<LoggingCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "logging_capabilities",
             args -> new LoggingCapabilities()
@@ -135,6 +148,11 @@ public record McpServerCapabilities(
         }
 
         @Override
+        public String getWriteableName() {
+            return NAME;
+        }
+
+        @Override
         public void writeTo(StreamOutput out) {}
 
         @Override
@@ -145,8 +163,9 @@ public record McpServerCapabilities(
         }
     }
 
-    public record PromptCapabilities(Boolean listChanged) implements Writeable, ToXContentObject {
+    public record PromptCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
+        public static final String NAME = "prompt_capabilities";
 
         public static final ConstructingObjectParser<PromptCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "prompt_capabilities",
@@ -159,6 +178,11 @@ public record McpServerCapabilities(
 
         public PromptCapabilities(StreamInput in) throws IOException {
             this(in.readOptionalBoolean());
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override
@@ -177,9 +201,10 @@ public record McpServerCapabilities(
         }
     }
 
-    public record ResourceCapabilities(Boolean subscribe, Boolean listChanged) implements Writeable, ToXContentObject {
+    public record ResourceCapabilities(Boolean subscribe, Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField SUBSCRIBE = new ParseField("subscribe");
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
+        public static final String NAME = "resource_capabilities";
 
         public static final ConstructingObjectParser<ResourceCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "resource_capabilities",
@@ -193,6 +218,11 @@ public record McpServerCapabilities(
 
         public ResourceCapabilities(StreamInput in) throws IOException {
             this(in.readOptionalBoolean(), in.readOptionalBoolean());
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override
@@ -215,8 +245,9 @@ public record McpServerCapabilities(
         }
     }
 
-    public record ToolCapabilities(Boolean listChanged) implements Writeable, ToXContentObject {
+    public record ToolCapabilities(Boolean listChanged) implements NamedWriteable, ToXContentObject {
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
+        public static final String NAME = "tool_capabilities";
 
         public static final ConstructingObjectParser<ToolCapabilities, Void> PARSER = new ConstructingObjectParser<>(
             "tool_capabilities",
@@ -229,6 +260,11 @@ public record McpServerCapabilities(
 
         public ToolCapabilities(StreamInput in) throws IOException {
             this(in.readOptionalBoolean());
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
         }
 
         @Override

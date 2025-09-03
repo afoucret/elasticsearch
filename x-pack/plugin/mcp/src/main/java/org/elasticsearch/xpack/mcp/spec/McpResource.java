@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -29,7 +29,7 @@ public record McpResource(
     Long size,
     McpAnnotations annotations,
     Map<String, Object> meta
-) implements Writeable, ToXContentObject {
+) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField URI = new ParseField("uri");
     private static final ParseField NAME = new ParseField("name");
@@ -39,6 +39,7 @@ public record McpResource(
     private static final ParseField SIZE = new ParseField("size");
     private static final ParseField ANNOTATIONS = new ParseField("annotations");
     private static final ParseField META = new ParseField("_meta");
+    public static final String NAME_FIELD = "mcp_resource";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpResource, Void> PARSER = new ConstructingObjectParser<>(
@@ -77,6 +78,11 @@ public record McpResource(
             in.readOptionalWriteable(McpAnnotations::new),
             in.readMap(StreamInput::readString, StreamInput::readGenericValue)
         );
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME_FIELD;
     }
 
     @Override

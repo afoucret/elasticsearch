@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -20,7 +20,9 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record JSONRPCError(int code, String message, Map<String, Object> data) implements Writeable, ToXContentObject {
+public record JSONRPCError(int code, String message, Map<String, Object> data) implements NamedWriteable, ToXContentObject {
+
+    public static final String NAME = "jsonrpc_error";
 
     private static final ParseField CODE = new ParseField("code");
     private static final ParseField MESSAGE = new ParseField("message");
@@ -40,6 +42,11 @@ public record JSONRPCError(int code, String message, Map<String, Object> data) i
 
     public JSONRPCError(StreamInput in) throws IOException {
         this(in.readInt(), in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

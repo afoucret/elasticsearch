@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -18,10 +18,11 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
-public record McpPromptMessage(McpRole role, McpContent content) implements Writeable, ToXContentObject {
+public record McpPromptMessage(McpRole role, McpContent content) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField ROLE = new ParseField("role");
     private static final ParseField CONTENT = new ParseField("content");
+    public static final String NAME = "mcp_prompt_message";
 
     public static final ConstructingObjectParser<McpPromptMessage, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_message",
@@ -35,6 +36,11 @@ public record McpPromptMessage(McpRole role, McpContent content) implements Writ
 
     public McpPromptMessage(StreamInput in) throws IOException {
         this(in.readEnum(McpRole.class), in.readNamedWriteable(McpContent.class));
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

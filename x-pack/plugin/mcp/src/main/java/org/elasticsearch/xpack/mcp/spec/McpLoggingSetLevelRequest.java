@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -20,10 +20,11 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) implements Writeable, ToXContentObject {
+public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField LEVEL = new ParseField("level");
     private static final ParseField META = new ParseField("_meta");
+    public static final String NAME = "mcp_logging_set_level_request";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpLoggingSetLevelRequest, Void> PARSER = new ConstructingObjectParser<>(
@@ -38,6 +39,11 @@ public record McpLoggingSetLevelRequest(String level, Map<String, Object> meta) 
 
     public McpLoggingSetLevelRequest(StreamInput in) throws IOException {
         this(in.readOptionalString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

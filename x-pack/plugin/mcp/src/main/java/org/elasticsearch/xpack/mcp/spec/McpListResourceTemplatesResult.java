@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -23,8 +21,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpListResourceTemplatesResult(List<McpResourceTemplate> resourceTemplates, String nextCursor, Map<String, Object> meta)
     implements
-        Writeable,
-        ToXContentObject {
+        McpResult {
 
     private static final ParseField RESOURCE_TEMPLATES = new ParseField("resourceTemplates");
     private static final ParseField NEXT_CURSOR = new ParseField("nextCursor");
@@ -40,6 +37,11 @@ public record McpListResourceTemplatesResult(List<McpResourceTemplate> resourceT
         PARSER.declareObjectArray(constructorArg(), (p, c) -> McpResourceTemplate.PARSER.parse(p, null), RESOURCE_TEMPLATES);
         PARSER.declareString(optionalConstructorArg(), NEXT_CURSOR);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_list_resource_templates_result";
     }
 
     public McpListResourceTemplatesResult(StreamInput in) throws IOException {

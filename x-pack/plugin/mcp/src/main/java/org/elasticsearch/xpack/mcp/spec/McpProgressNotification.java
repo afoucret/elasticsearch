@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -20,10 +18,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpProgressNotification(String progressToken, McpContent content, Map<String, Object> meta)
-    implements
-        Writeable,
-        ToXContentObject {
+public record McpProgressNotification(String progressToken, McpContent content, Map<String, Object> meta) implements McpNotification {
 
     private static final ParseField PROGRESS_TOKEN = new ParseField("progressToken");
     private static final ParseField CONTENT = new ParseField("content");
@@ -43,6 +38,11 @@ public record McpProgressNotification(String progressToken, McpContent content, 
 
     public McpProgressNotification(StreamInput in) throws IOException {
         this(in.readString(), in.readNamedWriteable(McpContent.class), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_progress_notification";
     }
 
     @Override

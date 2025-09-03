@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -19,12 +19,16 @@ import java.io.IOException;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpPromptArgument(String name, String title, String description, Boolean required) implements Writeable, ToXContentObject {
+public record McpPromptArgument(String name, String title, String description, Boolean required)
+    implements
+        NamedWriteable,
+        ToXContentObject {
 
     private static final ParseField NAME = new ParseField("name");
     private static final ParseField TITLE = new ParseField("title");
     private static final ParseField DESCRIPTION = new ParseField("description");
     private static final ParseField REQUIRED = new ParseField("required");
+    public static final String NAME_FIELD = "mcp_prompt_argument";
 
     public static final ConstructingObjectParser<McpPromptArgument, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_argument",
@@ -40,6 +44,11 @@ public record McpPromptArgument(String name, String title, String description, B
 
     public McpPromptArgument(StreamInput in) throws IOException {
         this(in.readString(), in.readOptionalString(), in.readOptionalString(), in.readOptionalBoolean());
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME_FIELD;
     }
 
     @Override

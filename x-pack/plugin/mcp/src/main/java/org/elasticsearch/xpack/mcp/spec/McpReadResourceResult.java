@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpReadResourceResult(List<McpResourceContent> contents, Map<String, Object> meta) implements Writeable, ToXContentObject {
+public record McpReadResourceResult(List<McpResourceContent> contents, Map<String, Object> meta) implements McpResult {
 
     private static final ParseField CONTENTS = new ParseField("contents");
     private static final ParseField META = new ParseField("_meta");
@@ -35,6 +33,11 @@ public record McpReadResourceResult(List<McpResourceContent> contents, Map<Strin
     static {
         PARSER.declareNamedObjects(constructorArg(), (p, c, n) -> p.namedObject(McpResourceContent.class, n, c), CONTENTS);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_read_resource_result";
     }
 
     public McpReadResourceResult(StreamInput in) throws IOException {

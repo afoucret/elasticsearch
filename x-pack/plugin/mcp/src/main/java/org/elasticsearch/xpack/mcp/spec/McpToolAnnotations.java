@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -25,7 +25,7 @@ public record McpToolAnnotations(
     Boolean idempotentHint,
     Boolean openWorldHint,
     Boolean returnDirect
-) implements Writeable, ToXContentObject {
+) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField TITLE = new ParseField("title");
     private static final ParseField READ_ONLY_HINT = new ParseField("readOnlyHint");
@@ -33,6 +33,7 @@ public record McpToolAnnotations(
     private static final ParseField IDEMPOTENT_HINT = new ParseField("idempotentHint");
     private static final ParseField OPEN_WORLD_HINT = new ParseField("openWorldHint");
     private static final ParseField RETURN_DIRECT = new ParseField("returnDirect");
+    public static final String NAME = "mcp_tool_annotations";
 
     public static final ConstructingObjectParser<McpToolAnnotations, Void> PARSER = new ConstructingObjectParser<>(
         "mcp_tool_annotations",
@@ -64,6 +65,11 @@ public record McpToolAnnotations(
             in.readOptionalBoolean(),
             in.readOptionalBoolean()
         );
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

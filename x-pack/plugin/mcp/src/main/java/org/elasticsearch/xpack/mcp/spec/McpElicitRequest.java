@@ -8,10 +8,9 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, Object> meta) implements Writeable, ToXContentObject {
+public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpRequest {
 
     private static final ParseField PROMPT = new ParseField("prompt");
     private static final ParseField SCHEMA = new ParseField("schema");
@@ -36,6 +35,11 @@ public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, 
         PARSER.declareString(constructorArg(), PROMPT);
         PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, SCHEMA);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_elicit_request";
     }
 
     public McpElicitRequest(StreamInput in) throws IOException {
@@ -54,7 +58,7 @@ public record McpElicitRequest(String prompt, McpJsonSchema schema, Map<String, 
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         if (prompt != null) {
             builder.field(PROMPT.getPreferredName(), prompt);

@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -23,7 +23,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpPrompt(String name, String title, String description, List<McpPromptArgument> arguments, Map<String, Object> meta)
     implements
-        Writeable,
+        NamedWriteable,
         ToXContentObject {
 
     private static final ParseField NAME = new ParseField("name");
@@ -31,6 +31,7 @@ public record McpPrompt(String name, String title, String description, List<McpP
     private static final ParseField DESCRIPTION = new ParseField("description");
     private static final ParseField ARGUMENTS = new ParseField("arguments");
     private static final ParseField META = new ParseField("_meta");
+    public static final String NAME_FIELD = "mcp_prompt";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpPrompt, Void> PARSER = new ConstructingObjectParser<>(
@@ -60,6 +61,11 @@ public record McpPrompt(String name, String title, String description, List<McpP
             in.readCollectionAsList(McpPromptArgument::new),
             in.readMap(StreamInput::readString, StreamInput::readGenericValue)
         );
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME_FIELD;
     }
 
     @Override

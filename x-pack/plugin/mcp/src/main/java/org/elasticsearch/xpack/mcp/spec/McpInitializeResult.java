@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -26,7 +24,7 @@ public record McpInitializeResult(
     McpImplementation serverInfo,
     String instructions,
     Map<String, Object> meta
-) implements Writeable, ToXContentObject {
+) implements McpResult {
 
     private static final ParseField PROTOCOL_VERSION = new ParseField("protocolVersion");
     private static final ParseField CAPABILITIES = new ParseField("capabilities");
@@ -52,6 +50,11 @@ public record McpInitializeResult(
         PARSER.declareObject(optionalConstructorArg(), McpImplementation.PARSER, SERVER_INFO);
         PARSER.declareString(optionalConstructorArg(), INSTRUCTIONS);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_initialize_result";
     }
 
     public McpInitializeResult(StreamInput in) throws IOException {

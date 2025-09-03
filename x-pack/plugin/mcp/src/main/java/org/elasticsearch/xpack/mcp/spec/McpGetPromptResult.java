@@ -8,10 +8,8 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -21,10 +19,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpGetPromptResult(String description, List<McpPromptMessage> messages, Map<String, Object> meta)
-    implements
-        Writeable,
-        ToXContentObject {
+public record McpGetPromptResult(String description, List<McpPromptMessage> messages, Map<String, Object> meta) implements McpResult {
 
     private static final ParseField DESCRIPTION = new ParseField("description");
     private static final ParseField MESSAGES = new ParseField("messages");
@@ -40,6 +35,11 @@ public record McpGetPromptResult(String description, List<McpPromptMessage> mess
         PARSER.declareString(optionalConstructorArg(), DESCRIPTION);
         PARSER.declareObjectArray(constructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return "mcp_get_prompt_result";
     }
 
     public McpGetPromptResult(StreamInput in) throws IOException {

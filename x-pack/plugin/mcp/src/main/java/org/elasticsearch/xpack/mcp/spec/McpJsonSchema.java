@@ -6,9 +6,9 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
-import org.elasticsearch.common.io.stream.Writeable;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -27,7 +27,7 @@ public record McpJsonSchema(
     Boolean additionalProperties,
     Map<String, Object> defs,
     Map<String, Object> definitions
-) implements Writeable, ToXContentObject {
+) implements NamedWriteable, ToXContentObject {
 
     private static final ParseField TYPE = new ParseField("type");
     private static final ParseField PROPERTIES = new ParseField("properties");
@@ -35,6 +35,7 @@ public record McpJsonSchema(
     private static final ParseField ADDITIONAL_PROPERTIES = new ParseField("additionalProperties");
     private static final ParseField DEFS = new ParseField("$defs");
     private static final ParseField DEFINITIONS = new ParseField("definitions");
+    public static final String NAME = "mcp_json_schema";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpJsonSchema, Void> PARSER = new ConstructingObjectParser<>(
@@ -67,6 +68,11 @@ public record McpJsonSchema(
             in.readMap(StreamInput::readString, StreamInput::readGenericValue),
             in.readMap(StreamInput::readString, StreamInput::readGenericValue)
         );
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override
