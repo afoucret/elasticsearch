@@ -31,11 +31,17 @@ import java.util.function.Supplier;
 public class McpPlugin extends Plugin implements ActionPlugin {
 
     @Override
-    public Collection<RestHandler> getRestHandlers(Settings settings, NamedWriteableRegistry namedWriteableRegistry, RestController restController, ClusterSettings clusterSettings, IndexScopedSettings indexScopedSettings, SettingsFilter settingsFilter, IndexNameExpressionResolver indexNameExpressionResolver, Supplier<DiscoveryNodes> nodesInCluster, Predicate<NodeFeature> clusterSupportsFeature) {
-        return List.of(
-            new RestGetMcpSessionAction(),
-            new RestDeleteMcpSessionAction(),
-            new RestPostMcpAction()
-        );
+    public Collection<RestHandler> getRestHandlers(
+        Settings settings,
+        NamedWriteableRegistry namedWriteableRegistry,
+        RestController restController,
+        ClusterSettings clusterSettings,
+        IndexScopedSettings indexScopedSettings,
+        SettingsFilter settingsFilter,
+        IndexNameExpressionResolver indexNameExpressionResolver,
+        Supplier<DiscoveryNodes> nodesInCluster,
+        Predicate<NodeFeature> clusterSupportsFeature
+    ) {
+        return List.of(new RestGetMcpSessionAction(), new RestDeleteMcpSessionAction(), new RestPostMcpAction());
     }
 }

@@ -5,17 +5,15 @@
  * 2.0.
  */
 
-module org.elasticsearch.mcp {
+module org.elasticsearch.xpack.mcp {
     requires org.elasticsearch.base;
     requires org.elasticsearch.server;
     requires org.elasticsearch.xcontent;
     requires org.elasticsearch.xcore;
 
-    requires reactor.core;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.annotation;
     requires io.modelcontextprotocol.sdk.mcp;
 
     exports org.elasticsearch.xpack.mcp;
     exports org.elasticsearch.xpack.mcp.rest;
+    exports org.elasticsearch.xpack.mcp.spec;
 }

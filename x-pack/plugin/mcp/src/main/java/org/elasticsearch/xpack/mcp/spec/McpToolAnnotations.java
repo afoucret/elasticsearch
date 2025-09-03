@@ -1,0 +1,103 @@
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0; you may not use this file except in compliance with the Elastic License
+ * 2.0.
+ */
+package org.elasticsearch.xpack.mcp.spec;
+
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.io.stream.Writeable;
+import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ParseField;
+import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.XContentBuilder;
+
+import java.io.IOException;
+
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
+
+public record McpToolAnnotations(
+    String title,
+    Boolean readOnlyHint,
+    Boolean destructiveHint,
+    Boolean idempotentHint,
+    Boolean openWorldHint,
+    Boolean returnDirect
+) implements Writeable, ToXContentObject {
+
+    private static final ParseField TITLE = new ParseField("title");
+    private static final ParseField READ_ONLY_HINT = new ParseField("readOnlyHint");
+    private static final ParseField DESTRUCTIVE_HINT = new ParseField("destructiveHint");
+    private static final ParseField IDEMPOTENT_HINT = new ParseField("idempotentHint");
+    private static final ParseField OPEN_WORLD_HINT = new ParseField("openWorldHint");
+    private static final ParseField RETURN_DIRECT = new ParseField("returnDirect");
+
+    public static final ConstructingObjectParser<McpToolAnnotations, Void> PARSER = new ConstructingObjectParser<>(
+        "mcp_tool_annotations",
+        args -> new McpToolAnnotations(
+            (String) args[0],
+            (Boolean) args[1],
+            (Boolean) args[2],
+            (Boolean) args[3],
+            (Boolean) args[4],
+            (Boolean) args[5]
+        )
+    );
+
+    static {
+        PARSER.declareString(optionalConstructorArg(), TITLE);
+        PARSER.declareBoolean(optionalConstructorArg(), READ_ONLY_HINT);
+        PARSER.declareBoolean(optionalConstructorArg(), DESTRUCTIVE_HINT);
+        PARSER.declareBoolean(optionalConstructorArg(), IDEMPOTENT_HINT);
+        PARSER.declareBoolean(optionalConstructorArg(), OPEN_WORLD_HINT);
+        PARSER.declareBoolean(optionalConstructorArg(), RETURN_DIRECT);
+    }
+
+    public McpToolAnnotations(StreamInput in) throws IOException {
+        this(
+            in.readOptionalString(),
+            in.readOptionalBoolean(),
+            in.readOptionalBoolean(),
+            in.readOptionalBoolean(),
+            in.readOptionalBoolean(),
+            in.readOptionalBoolean()
+        );
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeOptionalString(title);
+        out.writeOptionalBoolean(readOnlyHint);
+        out.writeOptionalBoolean(destructiveHint);
+        out.writeOptionalBoolean(idempotentHint);
+        out.writeOptionalBoolean(openWorldHint);
+        out.writeOptionalBoolean(returnDirect);
+    }
+
+    @Override
+    public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+        builder.startObject();
+        if (title != null) {
+            builder.field(TITLE.getPreferredName(), title);
+        }
+        if (readOnlyHint != null) {
+            builder.field(READ_ONLY_HINT.getPreferredName(), readOnlyHint);
+        }
+        if (destructiveHint != null) {
+            builder.field(DESTRUCTIVE_HINT.getPreferredName(), destructiveHint);
+        }
+        if (idempotentHint != null) {
+            builder.field(IDEMPOTENT_HINT.getPreferredName(), idempotentHint);
+        }
+        if (openWorldHint != null) {
+            builder.field(OPEN_WORLD_HINT.getPreferredName(), openWorldHint);
+        }
+        if (returnDirect != null) {
+            builder.field(RETURN_DIRECT.getPreferredName(), returnDirect);
+        }
+        builder.endObject();
+        return builder;
+    }
+}
