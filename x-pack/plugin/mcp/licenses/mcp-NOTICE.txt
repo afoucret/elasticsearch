@@ -1,0 +1,2 @@
+mcp-java-sdk
+Copyright (c) 2025 the original author or authors.
