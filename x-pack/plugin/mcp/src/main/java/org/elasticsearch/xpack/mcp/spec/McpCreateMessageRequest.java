@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -31,7 +32,7 @@ public record McpCreateMessageRequest(
     List<String> stopSequences,
     Map<String, Object> metadata,
     Map<String, Object> meta
-) implements McpRequest {
+) implements McpServerRequest {
 
     public static final String NAME = "mcp_create_message_request";
 
@@ -87,8 +88,8 @@ public record McpCreateMessageRequest(
             in.readOptionalDouble(),
             in.readOptionalVInt(),
             in.readOptionalStringCollectionAsList(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap),
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -101,8 +102,8 @@ public record McpCreateMessageRequest(
         out.writeOptionalDouble(temperature);
         out.writeOptionalVInt(maxTokens);
         out.writeOptionalStringCollection(stopSequences);
-        out.writeMap(metadata, StreamOutput::writeString, StreamOutput::writeGenericValue);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, metadata);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

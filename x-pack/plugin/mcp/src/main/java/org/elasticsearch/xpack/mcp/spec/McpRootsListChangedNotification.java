@@ -17,7 +17,12 @@ import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpRootsListChangedNotification(Map<String, Object> meta) implements McpNotification {
+/**
+ * A notification from the client to the server, informing it that the list of roots has changed.
+ *
+ * @param meta Additional metadata.
+ */
+public record McpRootsListChangedNotification(Map<String, Object> meta) implements McpClientNotification {
 
     public static final String NAME = "roots_list_changed";
 
@@ -34,12 +39,12 @@ public record McpRootsListChangedNotification(Map<String, Object> meta) implemen
     }
 
     public McpRootsListChangedNotification(StreamInput in) throws IOException {
-        this(in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

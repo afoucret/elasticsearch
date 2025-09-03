@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -20,7 +21,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor, Map<String, Object> meta) implements McpResult {
+public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor, Map<String, Object> meta) implements McpServerResult {
 
     public static final String NAME = "mcp_list_tools_result";
 
@@ -46,18 +47,14 @@ public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor
     }
 
     public McpListToolsResult(StreamInput in) throws IOException {
-        this(
-            in.readCollectionAsList(McpTool::new),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readCollectionAsList(McpTool::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(tools);
         out.writeOptionalString(nextCursor);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

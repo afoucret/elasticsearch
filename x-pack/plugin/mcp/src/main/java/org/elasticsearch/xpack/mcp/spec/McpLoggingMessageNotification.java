@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,7 +20,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpLoggingMessageNotification(@NotNull String message, Map<String, Object> meta) implements McpNotification {
+public record McpLoggingMessageNotification(@NotNull String message, Map<String, Object> meta) implements McpServerNotification {
 
     public static final String NAME = "mcp_logging_message_notification";
 
@@ -38,13 +39,13 @@ public record McpLoggingMessageNotification(@NotNull String message, Map<String,
     }
 
     public McpLoggingMessageNotification(StreamInput in) throws IOException {
-        this(in.readOptionalString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(message);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(message);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

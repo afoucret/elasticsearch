@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,14 +20,11 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpImageContent(
-    @NotNull String data,
-    @NotNull String mimeType,
-    McpAnnotations annotations,
-    Map<String, Object> meta
-) implements McpContent {
+public record McpAudioContent(@NotNull String data, @NotNull String mimeType, McpAnnotations annotations, Map<String, Object> meta)
+    implements
+        McpContent {
 
-    public static final String NAME = "image";
+    public static final String NAME = "audio";
 
     private static final ParseField DATA_FIELD = new ParseField("data");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
@@ -34,14 +32,9 @@ public record McpImageContent(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpImageContent, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpAudioContent, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpImageContent(
-            (String) args[0],
-            (String) args[1],
-            (McpAnnotations) args[2],
-            (Map<String, Object>) args[3]
-        )
+        args -> new McpAudioContent((String) args[0], (String) args[1], (McpAnnotations) args[2], (Map<String, Object>) args[3])
     );
 
     static {
@@ -51,13 +44,8 @@ public record McpImageContent(
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
-    public McpImageContent(StreamInput in) throws IOException {
-        this(
-            in.readString(),
-            in.readString(),
-            in.readOptionalWriteable(McpAnnotations::new),
-            in.readOptional(StreamInput::readGenericMap)
-        );
+    public McpAudioContent(StreamInput in) throws IOException {
+        this(in.readString(), in.readString(), in.readOptionalWriteable(McpAnnotations::new), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override

@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -25,7 +26,9 @@ public record McpInitializeResult(
     McpImplementation serverInfo,
     String instructions,
     Map<String, Object> meta
-) implements McpResult {
+) implements McpServerResult {
+
+    public static final String NAME = "mcp_initialize_result";
 
     private static final ParseField PROTOCOL_VERSION_FIELD = new ParseField("protocolVersion");
     private static final ParseField CAPABILITIES_FIELD = new ParseField("capabilities");
@@ -35,7 +38,7 @@ public record McpInitializeResult(
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpInitializeResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_initialize_result",
+        NAME,
         args -> new McpInitializeResult(
             (String) args[0],
             (McpServerCapabilities) args[1],
@@ -55,7 +58,7 @@ public record McpInitializeResult(
 
     @Override
     public String getWriteableName() {
-        return "mcp_initialize_result";
+        return NAME;
     }
 
     public McpInitializeResult(StreamInput in) throws IOException {
@@ -64,7 +67,7 @@ public record McpInitializeResult(
             in.readOptionalWriteable(McpServerCapabilities::new),
             in.readOptionalWriteable(McpImplementation::new),
             in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -74,7 +77,7 @@ public record McpInitializeResult(
         out.writeOptionalWriteable(capabilities);
         out.writeOptionalWriteable(serverInfo);
         out.writeOptionalString(instructions);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

@@ -51,7 +51,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
     public McpClientCapabilities(StreamInput in) throws IOException {
         this(
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
+            in.readOptional(StreamInput::readGenericMap),
             in.readOptionalWriteable(RootCapabilities::new),
             in.readOptionalWriteable(Sampling::new),
             in.readOptionalWriteable(Elicitation::new)
@@ -65,7 +65,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeMap(experimental, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, experimental);
         out.writeOptionalWriteable(roots);
         out.writeOptionalWriteable(sampling);
         out.writeOptionalWriteable(elicitation);

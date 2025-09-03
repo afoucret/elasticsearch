@@ -45,7 +45,7 @@ public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @N
     }
 
     public JSONRPCRequest(StreamInput in) throws IOException {
-        this(in.readString(), in.readString(), in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readString(), in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
@@ -53,7 +53,12 @@ public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @N
         out.writeString(jsonrpc);
         out.writeString(method);
         out.writeString(id);
-        out.writeMap(params, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, params);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

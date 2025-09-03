@@ -24,6 +24,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 public record McpImplementation(@NotNull String name, @NotNull String version, String title) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_implementation";
+
     public static final ConstructingObjectParser<McpImplementation, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpImplementation((String) args[0], (String) args[1], (String) args[2])

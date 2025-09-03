@@ -23,7 +23,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, String description, Map<String, Object> meta)
     implements
-        McpResult {
+        McpServerResult {
 
     public static final String NAME = "mcp_get_prompt_result";
 
@@ -49,18 +49,14 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     }
 
     public McpGetPromptResult(StreamInput in) throws IOException {
-        this(
-            in.readCollectionAsList(McpPromptMessage::new),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readCollectionAsList(McpPromptMessage::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeOptionalString(description);
         out.writeCollection(messages);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -22,7 +23,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String nextCursor, Map<String, Object> meta)
     implements
-        McpResult {
+        McpServerResult {
 
     public static final String NAME = "mcp_list_prompts_result";
 
@@ -48,18 +49,14 @@ public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String next
     }
 
     public McpListPromptsResult(StreamInput in) throws IOException {
-        this(
-            in.readCollectionAsList(McpPrompt::new),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readCollectionAsList(McpPrompt::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(prompts);
         out.writeOptionalString(nextCursor);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

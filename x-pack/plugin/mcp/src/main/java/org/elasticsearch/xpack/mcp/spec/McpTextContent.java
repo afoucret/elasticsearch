@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -14,25 +15,40 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpTextContent(@NotNull String text) implements McpContent {
+/**
+ * Text provided to or from an LLM.
+ *
+ * @param text        The text content of the message.
+ * @param annotations Optional annotations for the client.
+ * @param meta        Additional metadata.
+ */
+public record McpTextContent(@NotNull String text, McpAnnotations annotations, Map<String, Object> meta) implements McpContent {
 
     public static final String NAME = "mcp_text_content";
-    private static final ParseField TEXT_FIELD = new ParseField("text");
 
+    private static final ParseField TEXT_FIELD = new ParseField("text");
+    private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");
+    private static final ParseField META_FIELD = new ParseField("meta");
+
+    @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpTextContent, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_text_content",
-        args -> new McpTextContent((String) args[0])
+        NAME,
+        args -> new McpTextContent((String) args[0], (McpAnnotations) args[1], (Map<String, Object>) args[2])
     );
 
     static {
         PARSER.declareString(constructorArg(), TEXT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> McpAnnotations.PARSER.parse(p, null), ANNOTATIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
     }
 
     public McpTextContent(StreamInput in) throws IOException {
-        this(in.readString());
+        this(in.readString(), in.readOptionalWriteable(McpAnnotations::new), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
@@ -43,12 +59,20 @@ public record McpTextContent(@NotNull String text) implements McpContent {
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(text);
+        out.writeOptionalWriteable(annotations);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         builder.field(TEXT_FIELD.getPreferredName(), text);
+        if (annotations != null) {
+            builder.field(ANNOTATIONS_FIELD.getPreferredName(), annotations);
+        }
+        if (meta != null) {
+            builder.field(META_FIELD.getPreferredName(), annotations);
+        }
         builder.endObject();
         return builder;
     }

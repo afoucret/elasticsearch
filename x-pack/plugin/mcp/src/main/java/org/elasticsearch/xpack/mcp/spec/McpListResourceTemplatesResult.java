@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -24,7 +25,7 @@ public record McpListResourceTemplatesResult(
     @NotNull List<McpResourceTemplate> resourceTemplates,
     String nextCursor,
     Map<String, Object> meta
-) implements McpResult {
+) implements McpServerResult {
 
     public static final String NAME = "mcp_list_resource_templates_result";
 
@@ -50,18 +51,14 @@ public record McpListResourceTemplatesResult(
     }
 
     public McpListResourceTemplatesResult(StreamInput in) throws IOException {
-        this(
-            in.readCollectionAsList(McpResourceTemplate::new),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readCollectionAsList(McpResourceTemplate::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(resourceTemplates);
         out.writeOptionalString(nextCursor);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

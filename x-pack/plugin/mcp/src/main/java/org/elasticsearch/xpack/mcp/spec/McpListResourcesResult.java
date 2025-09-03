@@ -23,7 +23,9 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpListResourcesResult(@NotNull List<McpResource> resources, String nextCursor, Map<String, Object> meta)
     implements
-        McpResult {
+        McpServerResult {
+
+    public static final String NAME = "mcp_list_resources_result";
 
     private static final ParseField RESOURCES_FIELD = new ParseField("resources");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");
@@ -31,7 +33,7 @@ public record McpListResourcesResult(@NotNull List<McpResource> resources, Strin
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListResourcesResult, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_list_resources_result",
+        NAME,
         args -> new McpListResourcesResult((List<McpResource>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
@@ -43,22 +45,18 @@ public record McpListResourcesResult(@NotNull List<McpResource> resources, Strin
 
     @Override
     public String getWriteableName() {
-        return "mcp_list_resources_result";
+        return NAME;
     }
 
     public McpListResourcesResult(StreamInput in) throws IOException {
-        this(
-            in.readCollectionAsList(McpResource::new),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readCollectionAsList(McpResource::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(resources);
         out.writeOptionalString(nextCursor);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -20,7 +21,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCompleteResult(@NotNull List<String> completions, Map<String, Object> meta) implements McpResult {
+public record McpCompleteResult(@NotNull List<String> completions, Map<String, Object> meta) implements McpServerResult {
 
     public static final String NAME = "mcp_complete_result";
 
@@ -44,13 +45,13 @@ public record McpCompleteResult(@NotNull List<String> completions, Map<String, O
     }
 
     public McpCompleteResult(StreamInput in) throws IOException {
-        this(in.readOptionalStringCollectionAsList(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readStringCollectionAsList(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalStringCollection(completions);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeStringCollection(completions);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

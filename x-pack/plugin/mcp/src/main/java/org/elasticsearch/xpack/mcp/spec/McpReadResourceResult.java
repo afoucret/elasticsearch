@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -20,7 +21,13 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, Map<String, Object> meta) implements McpResult {
+/**
+ * The server's response to a resources/read request from the client.
+ *
+ * @param contents The contents of the resource.
+ * @param meta     Additional metadata.
+ */
+public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, Map<String, Object> meta) implements McpServerResult {
 
     public static final String NAME = "mcp_read_resource_result";
 
@@ -44,16 +51,13 @@ public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, 
     }
 
     public McpReadResourceResult(StreamInput in) throws IOException {
-        this(
-            in.readNamedWriteableCollectionAsList(McpResourceContent.class),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readNamedWriteableCollectionAsList(McpResourceContent.class), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeNamedWriteableCollection(contents);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

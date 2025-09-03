@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -20,7 +21,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpRequest {
+public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpServerRequest {
 
     public static final String NAME = "mcp_elicit_request";
 
@@ -46,18 +47,14 @@ public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map
     }
 
     public McpElicitRequest(StreamInput in) throws IOException {
-        this(
-            in.readOptionalString(),
-            in.readOptionalWriteable(McpJsonSchema::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readString(), in.readOptionalWriteable(McpJsonSchema::new), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(prompt);
+        out.writeString(prompt);
         out.writeOptionalWriteable(schema);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

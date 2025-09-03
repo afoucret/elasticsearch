@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -16,28 +17,41 @@ import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent content) implements NamedWriteable, ToXContentObject {
+/**
+ * Describes a message issued to or received from an LLM API.
+ *
+ * @param role    The role of the message sender.
+ * @param content The content of the message.
+ * @param meta    Additional metadata.
+ */
+public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent content, Map<String, Object> meta)
+    implements
+        NamedWriteable,
+        ToXContentObject {
 
     private static final ParseField ROLE_FIELD = new ParseField("role");
     private static final ParseField CONTENT_FIELD = new ParseField("content");
     public static final String NAME = "mcp_sampling_message";
 
+    @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpSamplingMessage, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_sampling_message",
-        args -> new McpSamplingMessage((McpRole) args[0], (McpContent) args[1])
+        NAME,
+        args -> new McpSamplingMessage((McpRole) args[0], (McpContent) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareString(constructorArg(), s -> McpRole.valueOf(s.toUpperCase(Locale.ROOT)), ROLE_FIELD);
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareString(constructorArg(), McpRole::valueOf, new ParseField("role"));
+        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), new ParseField("content"));
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
     }
 
     public McpSamplingMessage(StreamInput in) throws IOException {
-        this(in.readEnum(McpRole.class), in.readNamedWriteable(McpContent.class));
+        this(in.readEnum(McpRole.class), in.readNamedWriteable(McpContent.class), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override

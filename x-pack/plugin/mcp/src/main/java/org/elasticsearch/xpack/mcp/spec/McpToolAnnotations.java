@@ -18,6 +18,22 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
+/**
+ * Additional properties describing a Tool to clients.
+ * <p>
+ * NOTE: all properties in ToolAnnotations are **hints**.
+ * They are not guaranteed to provide a faithful description of
+ * tool behavior (including descriptive properties like `title`).
+ * <p>
+ * Clients should never make tool use decisions based on ToolAnnotations
+ * received from untrusted servers.
+ *
+ * @param title           A human-readable title for the tool.
+ * @param readOnlyHint    If true, the tool does not modify its environment.
+ * @param destructiveHint If true, the tool may perform destructive updates to its environment.
+ * @param idempotentHint  If true, calling the tool repeatedly with the same arguments will have no additional effect.
+ * @param openWorldHint   If true, this tool may interact with an "open world" of external entities.
+ */
 public record McpToolAnnotations(
     String title,
     Boolean readOnlyHint,
@@ -28,7 +44,7 @@ public record McpToolAnnotations(
 ) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_tool_annotations";
-    
+
     private static final ParseField TITLE_FIELD = new ParseField("title");
     private static final ParseField READ_ONLY_HINT_FIELD = new ParseField("readOnlyHint");
     private static final ParseField DESTRUCTIVE_HINT_FIELD = new ParseField("destructiveHint");

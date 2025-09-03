@@ -46,7 +46,7 @@ public record JSONRPCError(@NotNull int code, @NotNull String message, Map<Strin
     }
 
     public JSONRPCError(StreamInput in) throws IOException {
-        this(in.readInt(), in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readInt(), in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
@@ -58,7 +58,7 @@ public record JSONRPCError(@NotNull int code, @NotNull String message, Map<Strin
     public void writeTo(StreamOutput out) throws IOException {
         out.writeInt(code);
         out.writeString(message);
-        out.writeMap(data, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, data);
     }
 
     @Override

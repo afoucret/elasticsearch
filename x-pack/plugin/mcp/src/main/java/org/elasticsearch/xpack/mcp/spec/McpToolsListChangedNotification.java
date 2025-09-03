@@ -17,7 +17,13 @@ import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpToolsListChangedNotification(Map<String, Object> meta) implements McpNotification {
+/**
+ * An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be
+ * issued by servers without any previous subscription from the client.
+ *
+ * @param meta Additional metadata.
+ */
+public record McpToolsListChangedNotification(Map<String, Object> meta) implements McpServerNotification {
 
     public static final String NAME = "mcp_tools_list_changed_notification";
 
@@ -34,12 +40,12 @@ public record McpToolsListChangedNotification(Map<String, Object> meta) implemen
     }
 
     public McpToolsListChangedNotification(StreamInput in) throws IOException {
-        this(in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

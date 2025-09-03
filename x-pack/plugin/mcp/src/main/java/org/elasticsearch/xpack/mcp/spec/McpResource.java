@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -21,6 +22,18 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
+/**
+ * A known resource that the server is capable of reading.
+ *
+ * @param name        Intended for programmatic or logical use.
+ * @param title       Intended for UI and end-user contexts.
+ * @param uri         The URI of this resource.
+ * @param description A description of what this resource represents.
+ * @param mimeType    The MIME type of this resource, if known.
+ * @param annotations Optional annotations for the client.
+ * @param size        The size of the raw resource content, in bytes, if known.
+ * @param meta        Additional metadata.
+ */
 public record McpResource(
     @NotNull String uri,
     @NotNull String name,
@@ -71,14 +84,14 @@ public record McpResource(
 
     public McpResource(StreamInput in) throws IOException {
         this(
-            in.readOptionalString(),
-            in.readOptionalString(),
+            in.readString(),
+            in.readString(),
             in.readOptionalString(),
             in.readOptionalString(),
             in.readOptionalString(),
             in.readOptionalLong(),
             in.readOptionalWriteable(McpAnnotations::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -89,14 +102,14 @@ public record McpResource(
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(uri);
-        out.writeOptionalString(name);
+        out.writeString(uri);
+        out.writeString(name);
         out.writeOptionalString(title);
         out.writeOptionalString(description);
         out.writeOptionalString(mimeType);
         out.writeOptionalLong(size);
         out.writeOptionalWriteable(annotations);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

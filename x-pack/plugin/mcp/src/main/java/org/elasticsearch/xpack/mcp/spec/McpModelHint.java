@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -35,7 +36,7 @@ public record McpModelHint(@NotNull String name) implements NamedWriteable, ToXC
     }
 
     public McpModelHint(StreamInput in) throws IOException {
-        this(in.readOptionalString());
+        this(in.readString());
     }
 
     @Override
@@ -45,7 +46,7 @@ public record McpModelHint(@NotNull String name) implements NamedWriteable, ToXC
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(name);
+        out.writeString(name);
     }
 
     @Override

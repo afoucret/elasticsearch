@@ -12,6 +12,9 @@ import org.elasticsearch.common.io.stream.Writeable;
 
 import java.io.IOException;
 
+/**
+ * The sender or recipient of messages and data in a conversation.
+ */
 public enum McpRole implements Writeable {
     USER,
     ASSISTANT;

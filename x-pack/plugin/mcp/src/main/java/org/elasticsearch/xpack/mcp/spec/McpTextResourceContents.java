@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,6 +20,14 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
+/**
+ * The contents of a specific resource or sub-resource.
+ *
+ * @param uri      The URI of this resource.
+ * @param mimeType The MIME type of this resource, if known.
+ * @param text     The text of the item.
+ * @param meta     Additional metadata.
+ */
 public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeType, @NotNull String text, Map<String, Object> meta)
     implements
         McpResourceContent {
@@ -44,20 +53,15 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
     }
 
     public McpTextResourceContents(StreamInput in) throws IOException {
-        this(
-            in.readOptionalString(),
-            in.readOptionalString(),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readString(), in.readString(), in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(uri);
-        out.writeOptionalString(mimeType);
-        out.writeOptionalString(text);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(uri);
+        out.writeString(mimeType);
+        out.writeString(text);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

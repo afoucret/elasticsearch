@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -22,13 +23,10 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpPrompt(
-    @NotNull String name,
-    String title,
-    String description,
-    List<McpPromptArgument> arguments,
-    Map<String, Object> meta
-) implements NamedWriteable, ToXContentObject {
+public record McpPrompt(@NotNull String name, String title, String description, List<McpPromptArgument> arguments, Map<String, Object> meta)
+    implements
+        NamedWriteable,
+        ToXContentObject {
 
     public static final String NAME = "mcp_prompt";
 
@@ -63,8 +61,8 @@ public record McpPrompt(
             in.readString(),
             in.readOptionalString(),
             in.readOptionalString(),
-            in.readCollectionAsList(McpPromptArgument::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptionalCollectionAsList(McpPromptArgument::new),
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -78,8 +76,8 @@ public record McpPrompt(
         out.writeString(name);
         out.writeOptionalString(title);
         out.writeOptionalString(description);
-        out.writeCollection(arguments);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptionalCollection(arguments);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

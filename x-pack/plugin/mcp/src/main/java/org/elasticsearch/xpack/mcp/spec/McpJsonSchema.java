@@ -62,11 +62,11 @@ public record McpJsonSchema(
     public McpJsonSchema(StreamInput in) throws IOException {
         this(
             in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
+            in.readOptional(StreamInput::readGenericMap),
             in.readOptionalStringCollectionAsList(),
             in.readOptionalBoolean(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap),
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -78,11 +78,11 @@ public record McpJsonSchema(
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeOptionalString(type);
-        out.writeMap(properties, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, properties);
         out.writeOptionalStringCollection(required);
         out.writeOptionalBoolean(additionalProperties);
-        out.writeMap(defs, StreamOutput::writeString, StreamOutput::writeGenericValue);
-        out.writeMap(definitions, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, defs);
+        out.writeOptional(StreamOutput::writeGenericMap, definitions);
     }
 
     @Override

@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -25,9 +26,7 @@ public record McpCallToolResult(
     Boolean isError,
     Map<String, Object> structuredContent,
     Map<String, Object> meta
-)
-    implements
-        McpResult {
+) implements McpServerResult {
 
     public static final String NAME = "mcp_call_tool_result";
 
@@ -63,8 +62,8 @@ public record McpCallToolResult(
         this(
             in.readNamedWriteableCollectionAsList(McpContent.class),
             in.readOptionalBoolean(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap),
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -72,8 +71,8 @@ public record McpCallToolResult(
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(content);
         out.writeOptionalBoolean(isError);
-        out.writeMap(structuredContent, StreamOutput::writeString, StreamOutput::writeGenericValue);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, structuredContent);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

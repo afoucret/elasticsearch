@@ -22,6 +22,17 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
+/**
+ * Definition for a tool the client can call.
+ *
+ * @param name         Intended for programmatic or logical use.
+ * @param title        Intended for UI and end-user contexts.
+ * @param description  A human-readable description of the tool.
+ * @param inputSchema  A JSON Schema object defining the expected parameters for the tool.
+ * @param outputSchema An optional JSON Schema object defining the structure of the tool's output.
+ * @param annotations  Optional additional tool information.
+ * @param meta         Additional metadata.
+ */
 public record McpTool(
     @NotNull String name,
     @NotNull String description,
@@ -31,7 +42,7 @@ public record McpTool(
     McpToolAnnotations annotations,
     Map<String, Object> meta
 ) implements NamedWriteable, ToXContentObject {
-    
+
     public static final String NAME = "mcp_tool";
 
     private static final ParseField NAME_FIELD = new ParseField("title");
@@ -68,13 +79,13 @@ public record McpTool(
 
     public McpTool(StreamInput in) throws IOException {
         this(
-            in.readOptionalString(),
-            in.readOptionalString(),
+            in.readString(),
+            in.readString(),
             in.readOptionalString(),
             in.readOptionalWriteable(McpJsonSchema::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
+            in.readOptional(StreamInput::readGenericMap),
             in.readOptionalWriteable(McpToolAnnotations::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -85,13 +96,13 @@ public record McpTool(
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(name);
+        out.writeString(name);
+        out.writeString(description);
         out.writeOptionalString(title);
-        out.writeOptionalString(description);
         out.writeOptionalWriteable(inputSchema);
-        out.writeMap(outputSchema, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, outputSchema);
         out.writeOptionalWriteable(annotations);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

@@ -18,12 +18,19 @@ import java.io.IOException;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
+/**
+ * A resource that the server is capable of reading, included in a prompt or tool call result.
+ * <p>
+ * Note: resource links returned by tools are not guaranteed to appear in the results of `resources/list` requests.
+ */
 public record McpResourceLink(@NotNull String uri) implements McpContent {
+
+    public static final String NAME = "mcp_resource_link";
 
     private static final ParseField URI = new ParseField("uri");
 
     public static final ConstructingObjectParser<McpResourceLink, Void> PARSER = new ConstructingObjectParser<>(
-        "mcp_resource_link",
+        NAME,
         args -> new McpResourceLink((String) args[0])
     );
 
@@ -37,7 +44,7 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     @Override
     public String getWriteableName() {
-        return "resource";
+        return NAME;
     }
 
     @Override

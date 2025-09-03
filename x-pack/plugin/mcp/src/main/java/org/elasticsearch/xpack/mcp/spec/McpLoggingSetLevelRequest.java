@@ -7,12 +7,11 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
-import org.elasticsearch.common.io.stream.NamedWriteable;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Object> meta) implements NamedWriteable, ToXContentObject {
+public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Object> meta) implements McpClientRequest {
 
     private static final ParseField LEVEL_FIELD = new ParseField("level");
     private static final ParseField META_FIELD = new ParseField("_meta");
@@ -39,7 +38,7 @@ public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Objec
     }
 
     public McpLoggingSetLevelRequest(StreamInput in) throws IOException {
-        this(in.readOptionalString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
@@ -49,16 +48,14 @@ public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Objec
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(level);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(level);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (level != null) {
-            builder.field(LEVEL_FIELD.getPreferredName(), level);
-        }
+        builder.field(LEVEL_FIELD.getPreferredName(), level);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

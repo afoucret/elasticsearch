@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -22,7 +23,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpGetPromptRequest(@NotNull String name, Map<String, Object> arguments, Map<String, Object> meta)
     implements
-        McpRequest {
+        McpClientRequest {
 
     public static final String NAME = "mcp_get_prompt_request";
 
@@ -48,18 +49,14 @@ public record McpGetPromptRequest(@NotNull String name, Map<String, Object> argu
     }
 
     public McpGetPromptRequest(StreamInput in) throws IOException {
-        this(
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(name);
-        out.writeMap(arguments, StreamOutput::writeString, StreamOutput::writeGenericValue);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(name);
+        out.writeOptional(StreamOutput::writeGenericMap, arguments);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

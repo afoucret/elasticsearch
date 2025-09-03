@@ -41,14 +41,19 @@ public record JSONRPCNotification(@NotNull String jsonrpc, @NotNull String metho
     }
 
     public JSONRPCNotification(StreamInput in) throws IOException {
-        this(in.readString(), in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(jsonrpc);
         out.writeString(method);
-        out.writeMap(params, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, params);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

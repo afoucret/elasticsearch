@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -22,10 +23,10 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpInitializeRequest(
     @NotNull String protocolVersion,
-    McpClientCapabilities capabilities,
-    McpImplementation clientInfo,
+    @NotNull McpClientCapabilities capabilities,
+    @NotNull McpImplementation clientInfo,
     Map<String, Object> meta
-) implements McpRequest {
+) implements McpClientRequest {
 
     public static final String NAME = "mcp_initialize_request";
 
@@ -62,7 +63,7 @@ public record McpInitializeRequest(
             in.readString(),
             in.readOptionalWriteable(McpClientCapabilities::new),
             in.readOptionalWriteable(McpImplementation::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
+            in.readOptional(StreamInput::readGenericMap)
         );
     }
 
@@ -71,7 +72,7 @@ public record McpInitializeRequest(
         out.writeString(protocolVersion);
         out.writeOptionalWriteable(capabilities);
         out.writeOptionalWriteable(clientInfo);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

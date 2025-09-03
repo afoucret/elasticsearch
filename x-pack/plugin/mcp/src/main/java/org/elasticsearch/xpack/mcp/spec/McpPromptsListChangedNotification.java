@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpPromptsListChangedNotification(Map<String, Object> meta) implements McpNotification {
+public record McpPromptsListChangedNotification(Map<String, Object> meta) implements McpServerNotification {
 
     public static final String NAME = "mcp_prompts_list_changed_notification";
 
@@ -34,12 +34,12 @@ public record McpPromptsListChangedNotification(Map<String, Object> meta) implem
     }
 
     public McpPromptsListChangedNotification(StreamInput in) throws IOException {
-        this(in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

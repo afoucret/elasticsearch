@@ -45,20 +45,15 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
     }
 
     public McpBlobResourceContents(StreamInput in) throws IOException {
-        this(
-            in.readOptionalString(),
-            in.readOptionalString(),
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readString(), in.readString(), in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(uri);
-        out.writeOptionalString(mimeType);
-        out.writeOptionalString(blob);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(uri);
+        out.writeString(mimeType);
+        out.writeString(blob);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

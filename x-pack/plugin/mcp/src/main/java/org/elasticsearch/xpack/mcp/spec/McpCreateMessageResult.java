@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,7 +20,7 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<String, Object> meta) implements McpResult {
+public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<String, Object> meta) implements McpClientResult {
 
     public static final String NAME = "mcp_create_message_result";
 
@@ -43,13 +44,13 @@ public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<St
     }
 
     public McpCreateMessageResult(StreamInput in) throws IOException {
-        this(in.readOptionalWriteable(McpSamplingMessage::new), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readNamedWriteable(McpSamplingMessage.class), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalWriteable(message);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeWriteable(message);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

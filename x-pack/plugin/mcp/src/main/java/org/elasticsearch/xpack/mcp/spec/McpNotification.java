@@ -11,8 +11,6 @@ import org.elasticsearch.xcontent.ToXContentObject;
 
 import java.util.Map;
 
-public sealed interface McpNotification extends NamedWriteable, ToXContentObject permits McpInitializedNotification,
-    McpProgressNotification, McpLoggingMessageNotification, McpResourcesUpdatedNotification, McpToolsListChangedNotification,
-    McpResourcesListChangedNotification, McpPromptsListChangedNotification, McpRootsListChangedNotification {
+public sealed interface McpNotification extends NamedWriteable, ToXContentObject permits McpClientNotification, McpServerNotification {
     Map<String, Object> meta();
 }

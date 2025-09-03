@@ -19,6 +19,17 @@ import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
+/**
+ * Capabilities that a server may support. Known capabilities are defined here, in this schema, but this is not a closed set: any
+ * server can define its own, additional capabilities.
+ *
+ * @param experimental Experimental, non-standard capabilities that the server supports.
+ * @param logging      Present if the server supports sending log messages to the client.
+ * @param completions  Present if the server supports argument autocompletion suggestions.
+ * @param prompts      Present if the server offers any prompt templates.
+ * @param resources    Present if the server offers any resources to read.
+ * @param tools        Present if the server offers any tools to call.
+ */
 public record McpServerCapabilities(
     CompletionCapabilities completions,
     Map<String, Object> experimental,
@@ -61,7 +72,7 @@ public record McpServerCapabilities(
     public McpServerCapabilities(StreamInput in) throws IOException {
         this(
             in.readOptionalWriteable(CompletionCapabilities::new),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
+            in.readOptional(StreamInput::readGenericMap),
             in.readOptionalWriteable(LoggingCapabilities::new),
             in.readOptionalWriteable(PromptCapabilities::new),
             in.readOptionalWriteable(ResourceCapabilities::new),
@@ -77,7 +88,7 @@ public record McpServerCapabilities(
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeOptionalWriteable(completions);
-        out.writeMap(experimental, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, experimental);
         out.writeOptionalWriteable(logging);
         out.writeOptionalWriteable(prompts);
         out.writeOptionalWriteable(resources);

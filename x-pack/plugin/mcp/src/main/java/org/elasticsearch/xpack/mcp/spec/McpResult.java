@@ -11,8 +11,6 @@ import org.elasticsearch.xcontent.ToXContentObject;
 
 import java.util.Map;
 
-public sealed interface McpResult extends NamedWriteable, ToXContentObject permits McpInitializeResult, McpCallToolResult,
-    McpCompleteResult, McpElicitResult, McpGetPromptResult, McpListPromptsResult, McpListResourcesResult, McpListResourceTemplatesResult,
-    McpListRootsResult, McpListToolsResult, McpReadResourceResult, McpCreateMessageResult {
+public sealed interface McpResult extends NamedWriteable, ToXContentObject permits McpClientResult, McpServerResult {
     Map<String, Object> meta();
 }

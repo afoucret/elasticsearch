@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -19,7 +20,15 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, Object> meta) implements McpNotification {
+/**
+ * A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should
+ * only be sent if the client previously sent a resources/subscribe request.
+ *
+ * @param uri  The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually
+ *             subscribed to.
+ * @param meta Additional metadata.
+ */
+public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, Object> meta) implements McpServerNotification {
 
     public static final String NAME = "mcp_resources_updated_notification";
 
@@ -28,7 +37,7 @@ public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, O
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpResourcesUpdatedNotification, Void> PARSER = new ConstructingObjectParser<>(
-        mcp_resources_updated_notification,
+        NAME,
         args -> new McpResourcesUpdatedNotification((String) args[0], (Map<String, Object>) args[1])
     );
 
@@ -38,13 +47,13 @@ public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, O
     }
 
     public McpResourcesUpdatedNotification(StreamInput in) throws IOException {
-        this(in.readString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(uri);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

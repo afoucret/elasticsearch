@@ -23,7 +23,7 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpCallToolRequest(@NotNull String name, Map<String, Object> arguments, Map<String, Object> meta)
     implements
-        McpRequest {
+        McpClientRequest {
 
     public static final String NAME = "mcp_call_tool_request";
 
@@ -49,18 +49,14 @@ public record McpCallToolRequest(@NotNull String name, Map<String, Object> argum
     }
 
     public McpCallToolRequest(StreamInput in) throws IOException {
-        this(
-            in.readOptionalString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue)
-        );
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(name);
-        out.writeMap(arguments, StreamOutput::writeString, StreamOutput::writeGenericValue);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(name);
+        out.writeOptional(StreamOutput::writeGenericMap, arguments);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

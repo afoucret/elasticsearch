@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -20,7 +21,13 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta) implements McpRequest {
+/**
+ * Sent from the client to request resources/updated notifications from the server whenever a particular resource changes.
+ *
+ * @param uri  The URI of the resource to subscribe to.
+ * @param meta Additional metadata.
+ */
+public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta) implements McpClientRequest {
 
     public static final String NAME = "mcp_subscribe_request";
 
@@ -44,13 +51,13 @@ public record McpSubscribeRequest(@NotNull String uri, Map<String, Object> meta)
     }
 
     public McpSubscribeRequest(StreamInput in) throws IOException {
-        this(in.readOptionalString(), in.readMap(StreamInput::readString, StreamInput::readGenericValue));
+        this(in.readString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(uri);
-        out.writeMap(meta, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeString(uri);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override

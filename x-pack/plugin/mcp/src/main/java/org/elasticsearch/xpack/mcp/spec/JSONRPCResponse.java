@@ -45,20 +45,20 @@ public record JSONRPCResponse(@NotNull String jsonrpc, @NotNull String id, Map<S
     }
 
     public JSONRPCResponse(StreamInput in) throws IOException {
-        this(
-            in.readString(),
-            in.readString(),
-            in.readMap(StreamInput::readString, StreamInput::readGenericValue),
-            in.readOptionalWriteable(JSONRPCError::new)
-        );
+        this(in.readString(), in.readString(), in.readOptional(StreamInput::readGenericMap), in.readOptionalWriteable(JSONRPCError::new));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(jsonrpc);
         out.writeString(id);
-        out.writeMap(result, StreamOutput::writeString, StreamOutput::writeGenericValue);
+        out.writeOptional(StreamOutput::writeGenericMap, result);
         out.writeOptionalWriteable(error);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
     }
 
     @Override

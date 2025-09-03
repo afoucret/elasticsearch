@@ -13,7 +13,9 @@ import org.elasticsearch.xcontent.ToXContentObject;
 
 import java.io.IOException;
 
-public sealed interface McpContent extends NamedWriteable, ToXContentObject permits McpTextContent, McpImageContent, McpResourceLink {
+public sealed interface McpContent extends NamedWriteable, ToXContentObject permits McpTextContent, McpImageContent, McpResourceLink,
+    McpAudioContent {
+
     void writeTo(StreamOutput out) throws IOException;
 
     static McpContent readFrom(StreamInput in) throws IOException {
