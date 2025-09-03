@@ -54,9 +54,7 @@ public record McpUnsubscribeRequest(@NotNull String uri, Map<String, Object> met
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (uri != null) {
-            builder.field(URI_FIELD.getPreferredName(), uri);
-        }
+        builder.field(URI_FIELD.getPreferredName(), uri);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

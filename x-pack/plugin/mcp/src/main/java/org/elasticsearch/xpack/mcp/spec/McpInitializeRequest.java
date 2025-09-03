@@ -75,9 +75,7 @@ public record McpInitializeRequest(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (protocolVersion != null) {
-            builder.field(PROTOCOL_VERSION_FIELD.getPreferredName(), protocolVersion);
-        }
+        builder.field(PROTOCOL_VERSION_FIELD.getPreferredName(), protocolVersion);
         if (capabilities != null) {
             builder.field(CAPABILITIES_FIELD.getPreferredName(), capabilities);
         }

@@ -54,9 +54,7 @@ public record McpCompleteResult(@NotNull List<String> completions, Map<String, O
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (completions != null) {
-            builder.field(COMPLETIONS_FIELD.getPreferredName(), completions);
-        }
+        builder.field(COMPLETIONS_FIELD.getPreferredName(), completions);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

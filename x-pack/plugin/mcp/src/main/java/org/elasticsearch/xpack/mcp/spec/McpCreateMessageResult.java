@@ -53,9 +53,7 @@ public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<St
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (message != null) {
-            builder.field(MESSAGE_FIELD.getPreferredName(), message);
-        }
+        builder.field(MESSAGE_FIELD.getPreferredName(), message);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

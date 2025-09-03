@@ -7,6 +7,7 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
+
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpImplementation(@NotNull String name, String title, @NotNull String version) implements NamedWriteable, ToXContentObject {
+public record McpImplementation(@NotNull String name, @NotNull String version, String title) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_implementation";
     public static final ConstructingObjectParser<McpImplementation, Void> PARSER = new ConstructingObjectParser<>(
@@ -33,8 +34,8 @@ public record McpImplementation(@NotNull String name, String title, @NotNull Str
 
     static {
         PARSER.declareString(constructorArg(), NAME_FIELD);
-        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
         PARSER.declareString(constructorArg(), VERSION_FIELD);
+        PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
     }
 
     public McpImplementation(StreamInput in) throws IOException {
@@ -49,21 +50,17 @@ public record McpImplementation(@NotNull String name, String title, @NotNull Str
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(name);
-        out.writeOptionalString(title);
         out.writeString(version);
+        out.writeOptionalString(title);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (name != null) {
-            builder.field(NAME_FIELD.getPreferredName(), name);
-        }
+        builder.field(NAME_FIELD.getPreferredName(), name);
+        builder.field(VERSION_FIELD.getPreferredName(), version);
         if (title != null) {
             builder.field(TITLE_FIELD.getPreferredName(), title);
-        }
-        if (version != null) {
-            builder.field(VERSION_FIELD.getPreferredName(), version);
         }
         builder.endObject();
         return builder;

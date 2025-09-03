@@ -61,9 +61,7 @@ public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (prompt != null) {
-            builder.field(PROMPT_FIELD.getPreferredName(), prompt);
-        }
+        builder.field(PROMPT_FIELD.getPreferredName(), prompt);
         if (schema != null) {
             builder.field(SCHEMA_FIELD.getPreferredName(), schema);
         }

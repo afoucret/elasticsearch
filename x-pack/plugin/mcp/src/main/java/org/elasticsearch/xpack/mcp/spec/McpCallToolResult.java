@@ -77,9 +77,7 @@ public record McpCallToolResult(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (content != null) {
-            builder.field(CONTENT_FIELD.getPreferredName(), content);
-        }
+        builder.field(CONTENT_FIELD.getPreferredName(), content);
         if (isError != null) {
             builder.field(IS_ERROR_FIELD.getPreferredName(), isError);
         }

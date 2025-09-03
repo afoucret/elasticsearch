@@ -64,9 +64,7 @@ public record McpListResourcesResult(@NotNull List<McpResource> resources, Strin
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (resources != null) {
-            builder.field(RESOURCES_FIELD.getPreferredName(), resources);
-        }
+        builder.field(RESOURCES_FIELD.getPreferredName(), resources);
         if (nextCursor != null) {
             builder.field(NEXT_CURSOR_FIELD.getPreferredName(), nextCursor);
         }

@@ -62,15 +62,9 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (uri != null) {
-            builder.field(URI_FIELD.getPreferredName(), uri);
-        }
-        if (mimeType != null) {
-            builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
-        }
-        if (blob != null) {
-            builder.field(BLOB_FIELD.getPreferredName(), blob);
-        }
+        builder.field(URI_FIELD.getPreferredName(), uri);
+        builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
+        builder.field(BLOB_FIELD.getPreferredName(), blob);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

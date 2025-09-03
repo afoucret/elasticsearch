@@ -94,14 +94,10 @@ public record McpTool(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (name != null) {
-            builder.field(new ParseField("name").getPreferredName(), name);
-        }
+        builder.field(new ParseField("name").getPreferredName(), name);
+        builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         if (title != null) {
             builder.field(TITLE_FIELD.getPreferredName(), title);
-        }
-        if (description != null) {
-            builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
         if (inputSchema != null) {
             builder.field(INPUT_SCHEMA_FIELD.getPreferredName(), inputSchema);

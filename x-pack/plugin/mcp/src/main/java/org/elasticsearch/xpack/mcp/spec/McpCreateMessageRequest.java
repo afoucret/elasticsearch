@@ -106,9 +106,7 @@ public record McpCreateMessageRequest(
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (messages != null) {
-            builder.field(MESSAGES_FIELD.getPreferredName(), messages);
-        }
+        builder.field(MESSAGES_FIELD.getPreferredName(), messages);
         if (modelPreferences != null) {
             builder.field(MODEL_PREFERENCES_FIELD.getPreferredName(), modelPreferences);
         }

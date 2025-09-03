@@ -54,9 +54,7 @@ public record McpCompleteRequest(@NotNull String query, Map<String, Object> meta
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (query != null) {
-            builder.field(QUERY_FIELD.getPreferredName(), query);
-        }
+        builder.field(QUERY_FIELD.getPreferredName(), query);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

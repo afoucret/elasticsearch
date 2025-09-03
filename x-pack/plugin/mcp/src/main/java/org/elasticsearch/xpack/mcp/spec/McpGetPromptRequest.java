@@ -63,9 +63,7 @@ public record McpGetPromptRequest(@NotNull String name, Map<String, Object> argu
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (name != null) {
-            builder.field(NAME_FIELD.getPreferredName(), name);
-        }
+        builder.field(NAME_FIELD.getPreferredName(), name);
         if (arguments != null) {
             builder.field(ARGUMENTS_FIELD.getPreferredName(), arguments);
         }

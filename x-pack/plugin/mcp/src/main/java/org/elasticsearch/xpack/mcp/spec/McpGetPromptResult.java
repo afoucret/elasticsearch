@@ -64,11 +64,9 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
+        builder.field(MESSAGES_FIELD.getPreferredName(), messages);
         if (description != null) {
             builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
-        }
-        if (messages != null) {
-            builder.field(MESSAGES_FIELD.getPreferredName(), messages);
         }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);

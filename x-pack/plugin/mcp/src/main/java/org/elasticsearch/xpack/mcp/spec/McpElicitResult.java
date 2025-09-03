@@ -56,9 +56,7 @@ public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, O
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (result != null) {
-            builder.field(RESULT_FIELD.getPreferredName(), result);
-        }
+        builder.field(RESULT_FIELD.getPreferredName(), result);
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }
