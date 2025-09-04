@@ -61,8 +61,8 @@ public record McpInitializeRequest(
     public McpInitializeRequest(StreamInput in) throws IOException {
         this(
             in.readString(),
-            in.readOptionalWriteable(McpClientCapabilities::new),
-            in.readOptionalWriteable(McpImplementation::new),
+            in.readOptionalNamedWriteable(McpClientCapabilities.class),
+            in.readOptionalNamedWriteable(McpImplementation.class),
             in.readOptional(StreamInput::readGenericMap)
         );
     }
@@ -70,8 +70,8 @@ public record McpInitializeRequest(
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(protocolVersion);
-        out.writeOptionalWriteable(capabilities);
-        out.writeOptionalWriteable(clientInfo);
+        out.writeOptionalNamedWriteable(capabilities);
+        out.writeOptionalNamedWriteable(clientInfo);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

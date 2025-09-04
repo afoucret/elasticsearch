@@ -6,52 +6,44 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import com.unboundid.util.NotNull;
+
+import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent;
+import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCompleteRequest(
-    String prompt,
-    Map<String, Object> promptArguments,
-    List<McpPromptMessage> messages,
-    McpModelPreferences modelPreferences,
-    Map<String, Object> meta
-) implements McpClientRequest {
+public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument argument, Context context, Map<String, Object> meta)
+    implements
+        McpClientRequest {
 
     public static final String NAME = "mcp_complete_request";
 
-    private static final ParseField PROMPT_FIELD = new ParseField("prompt");
-    private static final ParseField PROMPT_ARGUMENTS_FIELD = new ParseField("prompt_arguments");
-    private static final ParseField MESSAGES_FIELD = new ParseField("messages");
-    private static final ParseField MODEL_PREFERENCES_FIELD = new ParseField("model_preferences");
+    private static final ParseField REF_FIELD = new ParseField("ref");
+    private static final ParseField ARGUMENT_FIELD = new ParseField("argument");
+    private static final ParseField CONTEXT_FIELD = new ParseField("context");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCompleteRequest, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpCompleteRequest(
-            (String) args[0],
-            (Map<String, Object>) args[1],
-            (List<McpPromptMessage>) args[2],
-            (McpModelPreferences) args[3],
-            (Map<String, Object>) args[4]
-        )
+        args -> new McpCompleteRequest((McpReference) args[0], (Argument) args[1], (Context) args[2], (Map<String, Object>) args[3])
     );
 
     static {
-        PARSER.declareString(optionalConstructorArg(), PROMPT_FIELD);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), PROMPT_ARGUMENTS_FIELD);
-        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES_FIELD);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> McpModelPreferences.PARSER.parse(p, null), MODEL_PREFERENCES_FIELD);
+        PARSER.declareObject(constructorArg(), (p, c) -> McpReference.fromXContent(p), REF_FIELD);
+        PARSER.declareObject(constructorArg(), Argument.PARSER, ARGUMENT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), Context.PARSER, CONTEXT_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
@@ -62,42 +54,114 @@ public record McpCompleteRequest(
 
     public McpCompleteRequest(StreamInput in) throws IOException {
         this(
-            in.readOptionalString(),
-            in.readOptional(StreamInput::readGenericMap),
-            in.readOptionalCollectionAsList(McpPromptMessage::new),
-            in.readOptionalWriteable(McpModelPreferences::new),
+            in.readNamedWriteable(McpReference.class),
+            new Argument(in),
+            in.readOptionalWriteable(Context::new),
             in.readOptional(StreamInput::readGenericMap)
         );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalString(prompt);
-        out.writeOptional(StreamOutput::writeGenericMap, promptArguments);
-        out.writeOptionalCollection(messages);
-        out.writeOptionalWriteable(modelPreferences);
+        out.writeNamedWriteable(ref);
+        argument.writeTo(out);
+        out.writeOptionalWriteable(context);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        if (prompt != null) {
-            builder.field(PROMPT_FIELD.getPreferredName(), prompt);
-        }
-        if (promptArguments != null) {
-            builder.field(PROMPT_ARGUMENTS_FIELD.getPreferredName(), promptArguments);
-        }
-        if (messages != null) {
-            builder.field(MESSAGES_FIELD.getPreferredName(), messages);
-        }
-        if (modelPreferences != null) {
-            builder.field(MODEL_PREFERENCES_FIELD.getPreferredName(), modelPreferences);
+        builder.field(REF_FIELD.getPreferredName(), ref);
+        builder.field(ARGUMENT_FIELD.getPreferredName(), argument);
+        if (context != null) {
+            builder.field(CONTEXT_FIELD.getPreferredName(), context);
         }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;
+    }
+
+    public record Argument(@NotNull String name, @NotNull String value) implements NamedWriteable, ToXContentObject {
+        public static final String NAME = "mcp_complete_request_argument";
+
+        private static final ParseField NAME_FIELD = new ParseField("name");
+        private static final ParseField VALUE_FIELD = new ParseField("value");
+
+        public static final ConstructingObjectParser<Argument, Void> PARSER = new ConstructingObjectParser<>(
+            NAME,
+            args -> new Argument((String) args[0], (String) args[1])
+        );
+
+        static {
+            PARSER.declareString(constructorArg(), NAME_FIELD);
+            PARSER.declareString(constructorArg(), VALUE_FIELD);
+        }
+
+        public Argument(StreamInput in) throws IOException {
+            this(in.readString(), in.readString());
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
+        }
+
+        @Override
+        public void writeTo(StreamOutput out) throws IOException {
+            out.writeString(name);
+            out.writeString(value);
+        }
+
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            builder.startObject();
+            builder.field(NAME_FIELD.getPreferredName(), name);
+            builder.field(VALUE_FIELD.getPreferredName(), value);
+            builder.endObject();
+            return builder;
+        }
+    }
+
+    public record Context(Map<String, Object> arguments) implements NamedWriteable, ToXContentObject {
+        public static final String NAME = "mcp_complete_request_context";
+
+        private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
+
+        @SuppressWarnings("unchecked")
+        public static final ConstructingObjectParser<Context, Void> PARSER = new ConstructingObjectParser<>(
+            NAME,
+            args -> new Context((Map<String, Object>) args[0])
+        );
+
+        static {
+            PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), ARGUMENTS_FIELD);
+        }
+
+        public Context(StreamInput in) throws IOException {
+            this(in.readOptional(StreamInput::readGenericMap));
+        }
+
+        @Override
+        public String getWriteableName() {
+            return NAME;
+        }
+
+        @Override
+        public void writeTo(StreamOutput out) throws IOException {
+            out.writeOptional(StreamOutput::writeGenericMap, arguments);
+        }
+
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            builder.startObject();
+            if (arguments != null) {
+                builder.field(ARGUMENTS_FIELD.getPreferredName(), arguments);
+            }
+            builder.endObject();
+            return builder;
+        }
     }
 }

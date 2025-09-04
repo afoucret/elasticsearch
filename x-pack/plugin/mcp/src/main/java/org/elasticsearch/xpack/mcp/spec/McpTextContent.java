@@ -15,6 +15,7 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
@@ -33,7 +34,7 @@ public record McpTextContent(@NotNull String text, McpAnnotations annotations, M
 
     private static final ParseField TEXT_FIELD = new ParseField("text");
     private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");
-    private static final ParseField META_FIELD = new ParseField("meta");
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpTextContent, Void> PARSER = new ConstructingObjectParser<>(
@@ -44,7 +45,8 @@ public record McpTextContent(@NotNull String text, McpAnnotations annotations, M
     static {
         PARSER.declareString(constructorArg(), TEXT_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> McpAnnotations.PARSER.parse(p, null), ANNOTATIONS_FIELD);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
+        PARSER.declareString(constructorArg(), TYPE_FIELD);
     }
 
     public McpTextContent(StreamInput in) throws IOException {
@@ -57,7 +59,13 @@ public record McpTextContent(@NotNull String text, McpAnnotations annotations, M
     }
 
     @Override
+    public Type type() {
+        return Type.TEXT;
+    }
+
+    @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeEnum(type());
         out.writeString(text);
         out.writeOptionalWriteable(annotations);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
@@ -66,12 +74,13 @@ public record McpTextContent(@NotNull String text, McpAnnotations annotations, M
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
+        builder.field(TYPE_FIELD.getPreferredName(), type().name().toLowerCase(Locale.ROOT));
         builder.field(TEXT_FIELD.getPreferredName(), text);
         if (annotations != null) {
             builder.field(ANNOTATIONS_FIELD.getPreferredName(), annotations);
         }
         if (meta != null) {
-            builder.field(META_FIELD.getPreferredName(), annotations);
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
         builder.endObject();
         return builder;

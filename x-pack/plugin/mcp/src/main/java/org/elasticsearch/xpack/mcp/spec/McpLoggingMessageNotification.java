@@ -20,38 +20,64 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpLoggingMessageNotification(@NotNull String message, Map<String, Object> meta) implements McpServerNotification {
+public record McpLoggingMessageNotification(
+    @NotNull McpLoggingLevel level,
+    @NotNull Map<String, Object> data,
+    String logger,
+    Map<String, Object> meta
+) implements McpServerNotification {
 
     public static final String NAME = "mcp_logging_message_notification";
 
-    private static final ParseField MESSAGE_FIELD = new ParseField("message");
+    private static final ParseField LEVEL_FIELD = new ParseField("level");
+    private static final ParseField DATA_FIELD = new ParseField("data");
+    private static final ParseField LOGGER_FIELD = new ParseField("logger");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpLoggingMessageNotification, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpLoggingMessageNotification((String) args[0], (Map<String, Object>) args[1])
+        args -> new McpLoggingMessageNotification(
+            (McpLoggingLevel) args[0],
+            (Map<String, Object>) args[1],
+            (String) args[2],
+            (Map<String, Object>) args[3]
+        )
     );
 
     static {
-        PARSER.declareString(constructorArg(), MESSAGE_FIELD);
+        PARSER.declareString(constructorArg(), McpLoggingLevel::fromString, LEVEL_FIELD);
+        PARSER.declareObject(constructorArg(), (p, c) -> p.map(), DATA_FIELD);
+        PARSER.declareString(optionalConstructorArg(), LOGGER_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpLoggingMessageNotification(StreamInput in) throws IOException {
-        this(in.readString(), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readEnum(McpLoggingLevel.class),
+            in.readGenericMap(),
+            in.readOptionalString(),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeString(message);
+        out.writeEnum(level);
+        out.writeGenericMap(data);
+        out.writeOptionalString(logger);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(MESSAGE_FIELD.getPreferredName(), message);
+        builder.field(LEVEL_FIELD.getPreferredName(), level.value());
+        builder.field(DATA_FIELD.getPreferredName(), data);
+
+        if (logger != null) {
+            builder.field(LOGGER_FIELD.getPreferredName(), logger);
+        }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

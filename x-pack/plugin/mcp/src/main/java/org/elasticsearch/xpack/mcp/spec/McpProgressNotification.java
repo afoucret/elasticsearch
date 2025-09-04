@@ -8,9 +8,11 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
 
+import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
@@ -20,31 +22,51 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpProgressNotification(@NotNull String progressToken, @NotNull McpContent content, Map<String, Object> meta)
-    implements
-        McpClientNotification,
-        McpServerNotification {
+public record McpProgressNotification(
+    @NotNull Object progressToken,
+    double progress,
+    Double total,
+    String message,
+    Map<String, Object> meta
+) implements McpClientNotification, McpServerNotification {
 
     public static final String NAME = "mcp_progress_notification";
 
     private static final ParseField PROGRESS_TOKEN_FIELD = new ParseField("progressToken");
-    private static final ParseField CONTENT_FIELD = new ParseField("content");
+    private static final ParseField PROGRESS_FIELD = new ParseField("progress");
+    private static final ParseField TOTAL_FIELD = new ParseField("total");
+    private static final ParseField MESSAGE_FIELD = new ParseField("message");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpProgressNotification, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpProgressNotification((String) args[0], (McpContent) args[1], (Map<String, Object>) args[2])
+        args -> new McpProgressNotification(args[0], (double) args[1], (Double) args[2], (String) args[3], (Map<String, Object>) args[4])
     );
 
     static {
-        PARSER.declareString(constructorArg(), PROGRESS_TOKEN_FIELD);
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareField(constructorArg(), (p, c) -> switch (p.currentToken()) {
+            case VALUE_NUMBER -> p.numberValue();
+            case VALUE_STRING -> p.text();
+            default -> throw new ParsingException(
+                p.getTokenLocation(),
+                "Unsupported value type [" + p.currentToken() + "] for field [" + PROGRESS_TOKEN_FIELD.getPreferredName() + "]"
+            );
+        }, PROGRESS_TOKEN_FIELD, ObjectParser.ValueType.VALUE);
+        PARSER.declareDouble(constructorArg(), PROGRESS_FIELD);
+        PARSER.declareDouble(optionalConstructorArg(), TOTAL_FIELD);
+        PARSER.declareString(optionalConstructorArg(), MESSAGE_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpProgressNotification(StreamInput in) throws IOException {
-        this(in.readString(), in.readNamedWriteable(McpContent.class), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readGenericValue(),
+            in.readDouble(),
+            in.readOptionalDouble(),
+            in.readOptionalString(),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
@@ -54,8 +76,10 @@ public record McpProgressNotification(@NotNull String progressToken, @NotNull Mc
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeString(progressToken);
-        out.writeNamedWriteable(content);
+        out.writeGenericValue(progressToken);
+        out.writeDouble(progress);
+        out.writeOptionalDouble(total);
+        out.writeOptionalString(message);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
@@ -63,7 +87,13 @@ public record McpProgressNotification(@NotNull String progressToken, @NotNull Mc
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         builder.field(PROGRESS_TOKEN_FIELD.getPreferredName(), progressToken);
-        builder.field(CONTENT_FIELD.getPreferredName(), content);
+        builder.field(PROGRESS_FIELD.getPreferredName(), progress);
+        if (total != null) {
+            builder.field(TOTAL_FIELD.getPreferredName(), total);
+        }
+        if (message != null) {
+            builder.field(MESSAGE_FIELD.getPreferredName(), message);
+        }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

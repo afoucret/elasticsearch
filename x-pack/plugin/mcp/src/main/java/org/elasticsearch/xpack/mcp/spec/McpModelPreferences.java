@@ -44,7 +44,7 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
     }
 
     public McpModelPreferences(StreamInput in) throws IOException {
-        this(in.readCollectionAsList(McpModelHint::new), in.readOptionalDouble(), in.readOptionalDouble(), in.readOptionalDouble());
+        this(in.readOptionalCollectionAsList(McpModelHint::new), in.readOptionalDouble(), in.readOptionalDouble(), in.readOptionalDouble());
     }
 
     @Override
@@ -54,7 +54,7 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(hints);
+        out.writeOptionalCollection(hints);
         out.writeOptionalDouble(costPriority);
         out.writeOptionalDouble(speedPriority);
         out.writeOptionalDouble(intelligencePriority);

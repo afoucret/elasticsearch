@@ -38,8 +38,8 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     );
 
     static {
-        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
         PARSER.declareObjectArray(constructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
@@ -49,13 +49,17 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     }
 
     public McpGetPromptResult(StreamInput in) throws IOException {
-        this(in.readCollectionAsList(McpPromptMessage::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readNamedWriteableCollectionAsList(McpPromptMessage.class),
+            in.readOptionalString(),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeNamedWriteableCollection(messages);
         out.writeOptionalString(description);
-        out.writeCollection(messages);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

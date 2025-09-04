@@ -33,7 +33,7 @@ public record McpPromptMessage(@NotNull McpRole role, @NotNull McpContent conten
 
     static {
         PARSER.declareString(constructorArg(), McpRole::valueOf, ROLE_FIELD);
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareObject(constructorArg(), (p, c) -> McpContent.fromXContent(p), CONTENT_FIELD);
     }
 
     public McpPromptMessage(StreamInput in) throws IOException {

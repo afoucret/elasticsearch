@@ -47,7 +47,7 @@ public record McpCallToolResult(
     );
 
     static {
-        PARSER.declareNamedObjects(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), CONTENT_FIELD);
+        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpContent.fromXContent(p), CONTENT_FIELD);
         PARSER.declareBoolean(optionalConstructorArg(), IS_ERROR_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), STRUCTURED_CONTENT_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
@@ -69,7 +69,7 @@ public record McpCallToolResult(
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(content);
+        out.writeNamedWriteableCollection(content);
         out.writeOptionalBoolean(isError);
         out.writeOptional(StreamOutput::writeGenericMap, structuredContent);
         out.writeOptional(StreamOutput::writeGenericMap, meta);

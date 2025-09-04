@@ -10,6 +10,7 @@ import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
@@ -52,9 +53,9 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     public McpClientCapabilities(StreamInput in) throws IOException {
         this(
             in.readOptional(StreamInput::readGenericMap),
-            in.readOptionalWriteable(RootCapabilities::new),
-            in.readOptionalWriteable(Sampling::new),
-            in.readOptionalWriteable(Elicitation::new)
+            in.readOptionalNamedWriteable(RootCapabilities.class),
+            in.readOptionalNamedWriteable(Sampling.class),
+            in.readOptionalNamedWriteable(Elicitation.class)
         );
     }
 
@@ -66,9 +67,9 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeOptional(StreamOutput::writeGenericMap, experimental);
-        out.writeOptionalWriteable(roots);
-        out.writeOptionalWriteable(sampling);
-        out.writeOptionalWriteable(elicitation);
+        out.writeOptionalNamedWriteable(roots);
+        out.writeOptionalNamedWriteable(sampling);
+        out.writeOptionalNamedWriteable(elicitation);
     }
 
     @Override
@@ -133,10 +134,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public static final String NAME = "mcp_client_capabilities_sampling";
 
-        public static final ConstructingObjectParser<Sampling, Void> PARSER = new ConstructingObjectParser<>(
-            "sampling",
-            args -> new Sampling()
-        );
+        public static final ObjectParser<Sampling, Void> PARSER = new ObjectParser<>(NAME, Sampling::new);
 
         public Sampling(StreamInput in) {
             this();
@@ -162,10 +160,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public static final String NAME = "mcp_client_capabilities_elicitation";
 
-        public static final ConstructingObjectParser<Elicitation, Void> PARSER = new ConstructingObjectParser<>(
-            "elicitation",
-            args -> new Elicitation()
-        );
+        public static final ObjectParser<Elicitation, Void> PARSER = new ObjectParser<>(NAME, Elicitation::new);
 
         public Elicitation(StreamInput in) {
             this();

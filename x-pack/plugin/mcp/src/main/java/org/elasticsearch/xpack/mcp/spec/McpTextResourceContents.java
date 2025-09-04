@@ -33,6 +33,7 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
         McpResourceContent {
 
     public static final String NAME = "mcp_text_resource_contents";
+    public static final Type TYPE = Type.TEXT;
 
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
@@ -58,6 +59,7 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeEnum(TYPE);
         out.writeString(uri);
         out.writeString(mimeType);
         out.writeString(text);

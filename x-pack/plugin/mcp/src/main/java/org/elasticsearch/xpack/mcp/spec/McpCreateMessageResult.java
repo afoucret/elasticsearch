@@ -20,21 +20,39 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<String, Object> meta) implements McpClientResult {
+public record McpCreateMessageResult(
+    @NotNull McpRole role,
+    @NotNull McpContent content,
+    @NotNull String model,
+    McpStopReason stopReason,
+    Map<String, Object> meta
+) implements McpClientResult {
 
     public static final String NAME = "mcp_create_message_result";
 
-    private static final ParseField MESSAGE_FIELD = new ParseField("message");
+    private static final ParseField ROLE_FIELD = new ParseField("role");
+    private static final ParseField CONTENT_FIELD = new ParseField("content");
+    private static final ParseField MODEL_FIELD = new ParseField("model");
+    private static final ParseField STOP_REASON_FIELD = new ParseField("stopReason");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpCreateMessageResult, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpCreateMessageResult((McpSamplingMessage) args[0], (Map<String, Object>) args[1])
+        args -> new McpCreateMessageResult(
+            (McpRole) args[0],
+            (McpContent) args[1],
+            (String) args[2],
+            (McpStopReason) args[3],
+            (Map<String, Object>) args[4]
+        )
     );
 
     static {
-        PARSER.declareObject(constructorArg(), McpSamplingMessage.PARSER, MESSAGE_FIELD);
+        PARSER.declareString(constructorArg(), McpRole::valueOf, ROLE_FIELD);
+        PARSER.declareObject(constructorArg(), (p, c) -> McpContent.fromXContent(p), CONTENT_FIELD);
+        PARSER.declareString(constructorArg(), MODEL_FIELD);
+        PARSER.declareString(optionalConstructorArg(), McpStopReason::fromString, STOP_REASON_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
@@ -44,19 +62,33 @@ public record McpCreateMessageResult(@NotNull McpSamplingMessage message, Map<St
     }
 
     public McpCreateMessageResult(StreamInput in) throws IOException {
-        this(in.readNamedWriteable(McpSamplingMessage.class), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readEnum(McpRole.class),
+            in.readNamedWriteable(McpContent.class),
+            in.readString(),
+            in.readOptionalEnum(McpStopReason.class),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeWriteable(message);
+        out.writeEnum(role);
+        out.writeNamedWriteable(content);
+        out.writeString(model);
+        out.writeOptionalEnum(stopReason);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(MESSAGE_FIELD.getPreferredName(), message);
+        builder.field(ROLE_FIELD.getPreferredName(), role);
+        builder.field(CONTENT_FIELD.getPreferredName(), content);
+        builder.field(MODEL_FIELD.getPreferredName(), model);
+        if (stopReason != null) {
+            builder.field(STOP_REASON_FIELD.getPreferredName(), stopReason.value());
+        }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

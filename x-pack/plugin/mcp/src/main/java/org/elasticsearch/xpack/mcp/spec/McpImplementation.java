@@ -40,7 +40,7 @@ public record McpImplementation(@NotNull String name, @NotNull String version, S
     }
 
     public McpImplementation(StreamInput in) throws IOException {
-        this(in.readString(), in.readOptionalString(), in.readString());
+        this(in.readString(), in.readString(), in.readOptionalString());
     }
 
     @Override

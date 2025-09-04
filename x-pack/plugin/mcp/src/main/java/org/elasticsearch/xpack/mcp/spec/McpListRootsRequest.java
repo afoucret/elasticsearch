@@ -8,14 +8,28 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
+
 public record McpListRootsRequest(Map<String, Object> meta) implements McpServerRequest {
 
     public static final String NAME = "mcp_list_roots_request";
+
+    @SuppressWarnings("unchecked")
+    public static final ConstructingObjectParser<McpListRootsRequest, Void> PARSER = new ConstructingObjectParser<>(
+        NAME,
+        args -> new McpListRootsRequest((Map<String, Object>) args[0])
+    );
+
+    static {
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
+    }
 
     public McpListRootsRequest(StreamInput in) throws IOException {
         this(in.readOptional(StreamInput::readGenericMap));

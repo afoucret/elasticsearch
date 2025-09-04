@@ -7,10 +7,10 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.NamedWriteable;
-import org.elasticsearch.xcontent.ToXContent;
+import org.elasticsearch.xcontent.ToXContentObject;
 
 import java.util.Map;
 
-public sealed interface McpRequest extends NamedWriteable, ToXContent permits McpClientRequest, McpServerRequest {
+public sealed interface McpRequest extends NamedWriteable, ToXContentObject permits McpClientRequest, McpServerRequest {
     Map<String, Object> meta();
 }

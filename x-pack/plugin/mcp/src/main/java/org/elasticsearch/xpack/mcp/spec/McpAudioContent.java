@@ -15,6 +15,7 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
@@ -42,6 +43,7 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
         PARSER.declareString(constructorArg(), MIME_TYPE_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> McpAnnotations.PARSER.parse(p, null), ANNOTATIONS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
+        PARSER.declareString(constructorArg(), TYPE_FIELD);
     }
 
     public McpAudioContent(StreamInput in) throws IOException {
@@ -54,7 +56,13 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
     }
 
     @Override
+    public Type type() {
+        return Type.AUDIO;
+    }
+
+    @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeEnum(type());
         out.writeString(data);
         out.writeString(mimeType);
         out.writeOptionalWriteable(annotations);
@@ -64,6 +72,7 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
+        builder.field(TYPE_FIELD.getPreferredName(), type().name().toLowerCase(Locale.ROOT));
         builder.field(DATA_FIELD.getPreferredName(), data);
         builder.field(MIME_TYPE_FIELD.getPreferredName(), mimeType);
         if (annotations != null) {

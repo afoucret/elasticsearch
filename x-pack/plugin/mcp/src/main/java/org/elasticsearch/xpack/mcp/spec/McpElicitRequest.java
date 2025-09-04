@@ -21,12 +21,14 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map<String, Object> meta) implements McpServerRequest {
+public record McpElicitRequest(@NotNull String message, McpJsonSchema requestedSchema, Map<String, Object> meta)
+    implements
+        McpServerRequest {
 
     public static final String NAME = "mcp_elicit_request";
 
-    private static final ParseField PROMPT_FIELD = new ParseField("prompt");
-    private static final ParseField SCHEMA_FIELD = new ParseField("schema");
+    private static final ParseField MESSAGE_FIELD = new ParseField("message");
+    private static final ParseField REQUESTED_SCHEMA_FIELD = new ParseField("requestedSchema");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
@@ -36,8 +38,8 @@ public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map
     );
 
     static {
-        PARSER.declareString(constructorArg(), PROMPT_FIELD);
-        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, SCHEMA_FIELD);
+        PARSER.declareString(constructorArg(), MESSAGE_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpJsonSchema.PARSER, REQUESTED_SCHEMA_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
@@ -52,17 +54,17 @@ public record McpElicitRequest(@NotNull String prompt, McpJsonSchema schema, Map
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeString(prompt);
-        out.writeOptionalWriteable(schema);
+        out.writeString(message);
+        out.writeOptionalWriteable(requestedSchema);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
-        builder.field(PROMPT_FIELD.getPreferredName(), prompt);
-        if (schema != null) {
-            builder.field(SCHEMA_FIELD.getPreferredName(), schema);
+        builder.field(MESSAGE_FIELD.getPreferredName(), message);
+        if (requestedSchema != null) {
+            builder.field(REQUESTED_SCHEMA_FIELD.getPreferredName(), requestedSchema);
         }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);

@@ -8,9 +8,11 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import com.unboundid.util.NotNull;
 
+import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
@@ -37,7 +39,14 @@ public record McpCancelledNotification(@NotNull Object requestId, String reason,
     );
 
     static {
-        PARSER.declareObject(constructorArg(), (p, c) -> p.objectText(), REQUEST_ID_FIELD);
+        PARSER.declareField(constructorArg(), (p, c) -> switch (p.currentToken()) {
+            case VALUE_NUMBER -> p.numberValue();
+            case VALUE_STRING -> p.text();
+            default -> throw new ParsingException(
+                p.getTokenLocation(),
+                "Unsupported value type [" + p.currentToken() + "] for field [" + REQUEST_ID_FIELD.getPreferredName() + "]"
+            );
+        }, REQUEST_ID_FIELD, ObjectParser.ValueType.VALUE);
         PARSER.declareString(optionalConstructorArg(), REASON_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
     }

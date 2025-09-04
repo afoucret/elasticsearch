@@ -41,7 +41,7 @@ public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, 
     );
 
     static {
-        PARSER.declareNamedObjects(constructorArg(), (p, c, n) -> p.namedObject(McpResourceContent.class, n, c), CONTENTS_FIELD);
+        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpResourceContent.fromXContent(p), CONTENTS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 

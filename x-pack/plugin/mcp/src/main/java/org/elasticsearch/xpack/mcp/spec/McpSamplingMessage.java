@@ -34,9 +34,11 @@ public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent cont
         NamedWriteable,
         ToXContentObject {
 
+    public static final String NAME = "mcp_sampling_message";
+
     private static final ParseField ROLE_FIELD = new ParseField("role");
     private static final ParseField CONTENT_FIELD = new ParseField("content");
-    public static final String NAME = "mcp_sampling_message";
+    private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpSamplingMessage, Void> PARSER = new ConstructingObjectParser<>(
@@ -45,9 +47,9 @@ public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent cont
     );
 
     static {
-        PARSER.declareString(constructorArg(), McpRole::valueOf, new ParseField("role"));
-        PARSER.declareNamedObject(constructorArg(), (p, c, n) -> p.namedObject(McpContent.class, n, c), new ParseField("content"));
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
+        PARSER.declareString(constructorArg(), McpRole::valueOf, ROLE_FIELD);
+        PARSER.declareObject(constructorArg(), (p, c) -> McpContent.fromXContent(p), CONTENT_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
     public McpSamplingMessage(StreamInput in) throws IOException {
@@ -63,17 +65,20 @@ public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent cont
     public void writeTo(StreamOutput out) throws IOException {
         out.writeEnum(role);
         out.writeNamedWriteable(content);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        if (role != null) {
-            builder.field(ROLE_FIELD.getPreferredName(), role);
+
+        builder.field(ROLE_FIELD.getPreferredName(), role);
+        builder.field(CONTENT_FIELD.getPreferredName(), content);
+
+        if (meta != null) {
+            builder.field(META_FIELD.getPreferredName(), meta);
         }
-        if (content != null) {
-            builder.field(CONTENT_FIELD.getPreferredName(), content);
-        }
+
         builder.endObject();
         return builder;
     }

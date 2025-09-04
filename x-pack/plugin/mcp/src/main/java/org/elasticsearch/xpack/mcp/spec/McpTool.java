@@ -45,7 +45,7 @@ public record McpTool(
 
     public static final String NAME = "mcp_tool";
 
-    private static final ParseField NAME_FIELD = new ParseField("title");
+    private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField TITLE_FIELD = new ParseField("title");
     private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
     private static final ParseField INPUT_SCHEMA_FIELD = new ParseField("inputSchema");

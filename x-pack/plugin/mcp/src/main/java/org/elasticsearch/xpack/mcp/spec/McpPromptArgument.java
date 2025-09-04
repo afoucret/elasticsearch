@@ -74,9 +74,11 @@ public record McpPromptArgument(@NotNull String name, String title, String descr
         if (description != null) {
             builder.field(DESCRIPTION_FIELD.getPreferredName(), description);
         }
+
         if (required != null) {
             builder.field(REQUIRED_FIELD.getPreferredName(), required);
         }
+
         builder.endObject();
         return builder;
     }

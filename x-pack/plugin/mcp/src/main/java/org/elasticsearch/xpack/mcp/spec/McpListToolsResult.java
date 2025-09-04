@@ -47,12 +47,12 @@ public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor
     }
 
     public McpListToolsResult(StreamInput in) throws IOException {
-        this(in.readCollectionAsList(McpTool::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
+        this(in.readNamedWriteableCollectionAsList(McpTool.class), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(tools);
+        out.writeNamedWriteableCollection(tools);
         out.writeOptionalString(nextCursor);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }

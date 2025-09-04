@@ -105,21 +105,27 @@ public record McpToolAnnotations(
         if (title != null) {
             builder.field(TITLE_FIELD.getPreferredName(), title);
         }
+
         if (readOnlyHint != null) {
             builder.field(READ_ONLY_HINT_FIELD.getPreferredName(), readOnlyHint);
         }
+
         if (destructiveHint != null) {
             builder.field(DESTRUCTIVE_HINT_FIELD.getPreferredName(), destructiveHint);
         }
+
         if (idempotentHint != null) {
             builder.field(IDEMPOTENT_HINT_FIELD.getPreferredName(), idempotentHint);
         }
+
         if (openWorldHint != null) {
             builder.field(OPEN_WORLD_HINT_FIELD.getPreferredName(), openWorldHint);
         }
+
         if (returnDirect != null) {
             builder.field(RETURN_DIRECT_FIELD.getPreferredName(), returnDirect);
         }
+
         builder.endObject();
         return builder;
     }

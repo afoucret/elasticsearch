@@ -15,6 +15,7 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
@@ -36,6 +37,7 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     static {
         PARSER.declareString(constructorArg(), URI);
+        PARSER.declareString(constructorArg(), TYPE_FIELD);
     }
 
     public McpResourceLink(StreamInput in) throws IOException {
@@ -48,13 +50,20 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
     }
 
     @Override
+    public Type type() {
+        return Type.RESOURCE_LINK;
+    }
+
+    @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeEnum(type());
         out.writeString(uri);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
+        builder.field(TYPE_FIELD.getPreferredName(), type().name().toLowerCase(Locale.ROOT));
         builder.field(URI.getPreferredName(), uri);
         builder.endObject();
         return builder;

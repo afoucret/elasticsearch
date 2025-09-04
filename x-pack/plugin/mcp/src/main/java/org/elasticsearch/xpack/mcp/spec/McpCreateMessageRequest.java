@@ -24,11 +24,11 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 
 public record McpCreateMessageRequest(
     @NotNull List<McpSamplingMessage> messages,
+    int maxTokens,
     McpModelPreferences modelPreferences,
     String systemPrompt,
-    Boolean includeContext,
+    McpIncludeContext includeContext,
     Double temperature,
-    Integer maxTokens,
     List<String> stopSequences,
     Map<String, Object> metadata,
     Map<String, Object> meta
@@ -37,11 +37,11 @@ public record McpCreateMessageRequest(
     public static final String NAME = "mcp_create_message_request";
 
     private static final ParseField MESSAGES_FIELD = new ParseField("messages");
+    private static final ParseField MAX_TOKENS_FIELD = new ParseField("maxTokens");
     private static final ParseField MODEL_PREFERENCES_FIELD = new ParseField("modelPreferences");
     private static final ParseField SYSTEM_PROMPT_FIELD = new ParseField("systemPrompt");
     private static final ParseField INCLUDE_CONTEXT_FIELD = new ParseField("includeContext");
     private static final ParseField TEMPERATURE_FIELD = new ParseField("temperature");
-    private static final ParseField MAX_TOKENS_FIELD = new ParseField("maxTokens");
     private static final ParseField STOP_SEQUENCES_FIELD = new ParseField("stopSequences");
     private static final ParseField METADATA_FIELD = new ParseField("metadata");
     private static final ParseField META_FIELD = new ParseField("_meta");
@@ -51,11 +51,11 @@ public record McpCreateMessageRequest(
         NAME,
         args -> new McpCreateMessageRequest(
             (List<McpSamplingMessage>) args[0],
-            (McpModelPreferences) args[1],
-            (String) args[2],
-            (Boolean) args[3],
-            (Double) args[4],
-            (Integer) args[5],
+            (int) args[1],
+            (McpModelPreferences) args[2],
+            (String) args[3],
+            (McpIncludeContext) args[4],
+            (Double) args[5],
             (List<String>) args[6],
             (Map<String, Object>) args[7],
             (Map<String, Object>) args[8]
@@ -64,11 +64,11 @@ public record McpCreateMessageRequest(
 
     static {
         PARSER.declareObjectArray(constructorArg(), (p, c) -> McpSamplingMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareInt(constructorArg(), MAX_TOKENS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), McpModelPreferences.PARSER, MODEL_PREFERENCES_FIELD);
         PARSER.declareString(optionalConstructorArg(), SYSTEM_PROMPT_FIELD);
-        PARSER.declareBoolean(optionalConstructorArg(), INCLUDE_CONTEXT_FIELD);
+        PARSER.declareString(optionalConstructorArg(), McpIncludeContext::fromString, INCLUDE_CONTEXT_FIELD);
         PARSER.declareDouble(optionalConstructorArg(), TEMPERATURE_FIELD);
-        PARSER.declareInt(optionalConstructorArg(), MAX_TOKENS_FIELD);
         PARSER.declareStringArray(optionalConstructorArg(), STOP_SEQUENCES_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), METADATA_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
@@ -82,11 +82,11 @@ public record McpCreateMessageRequest(
     public McpCreateMessageRequest(StreamInput in) throws IOException {
         this(
             in.readCollectionAsList(McpSamplingMessage::new),
+            in.readVInt(),
             in.readOptionalWriteable(McpModelPreferences::new),
             in.readOptionalString(),
-            in.readOptionalBoolean(),
+            in.readOptionalEnum(McpIncludeContext.class),
             in.readOptionalDouble(),
-            in.readOptionalVInt(),
             in.readOptionalStringCollectionAsList(),
             in.readOptional(StreamInput::readGenericMap),
             in.readOptional(StreamInput::readGenericMap)
@@ -96,11 +96,11 @@ public record McpCreateMessageRequest(
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(messages);
+        out.writeVInt(maxTokens);
         out.writeOptionalWriteable(modelPreferences);
         out.writeOptionalString(systemPrompt);
-        out.writeOptionalBoolean(includeContext);
+        out.writeOptionalEnum(includeContext);
         out.writeOptionalDouble(temperature);
-        out.writeOptionalVInt(maxTokens);
         out.writeOptionalStringCollection(stopSequences);
         out.writeOptional(StreamOutput::writeGenericMap, metadata);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
@@ -110,6 +110,7 @@ public record McpCreateMessageRequest(
     public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
         builder.startObject();
         builder.field(MESSAGES_FIELD.getPreferredName(), messages);
+        builder.field(MAX_TOKENS_FIELD.getPreferredName(), maxTokens);
         if (modelPreferences != null) {
             builder.field(MODEL_PREFERENCES_FIELD.getPreferredName(), modelPreferences);
         }
@@ -117,13 +118,10 @@ public record McpCreateMessageRequest(
             builder.field(SYSTEM_PROMPT_FIELD.getPreferredName(), systemPrompt);
         }
         if (includeContext != null) {
-            builder.field(INCLUDE_CONTEXT_FIELD.getPreferredName(), includeContext);
+            builder.field(INCLUDE_CONTEXT_FIELD.getPreferredName(), includeContext.value());
         }
         if (temperature != null) {
             builder.field(TEMPERATURE_FIELD.getPreferredName(), temperature);
-        }
-        if (maxTokens != null) {
-            builder.field(MAX_TOKENS_FIELD.getPreferredName(), maxTokens);
         }
         if (stopSequences != null) {
             builder.field(STOP_SEQUENCES_FIELD.getPreferredName(), stopSequences);

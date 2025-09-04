@@ -52,7 +52,7 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(audience);
+        out.writeOptionalCollection(audience);
         out.writeOptionalDouble(priority);
     }
 

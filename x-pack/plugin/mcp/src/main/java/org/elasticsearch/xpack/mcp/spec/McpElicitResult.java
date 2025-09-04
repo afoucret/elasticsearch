@@ -20,21 +20,25 @@ import java.util.Map;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
-public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, Object> meta) implements McpClientResult {
+public record McpElicitResult(@NotNull McpElicitResultAction action, Map<String, Object> content, Map<String, Object> meta)
+    implements
+        McpClientResult {
 
     public static final String NAME = "mcp_elicit_result";
 
-    private static final ParseField RESULT_FIELD = new ParseField("result");
+    private static final ParseField ACTION_FIELD = new ParseField("action");
+    private static final ParseField CONTENT_FIELD = new ParseField("content");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpElicitResult, Void> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpElicitResult((Map<String, Object>) args[0], (Map<String, Object>) args[1])
+        args -> new McpElicitResult((McpElicitResultAction) args[0], (Map<String, Object>) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObject(constructorArg(), (p, c) -> p.map(), RESULT_FIELD);
+        PARSER.declareString(constructorArg(), McpElicitResultAction::fromString, ACTION_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), CONTENT_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 
@@ -44,19 +48,27 @@ public record McpElicitResult(@NotNull Map<String, Object> result, Map<String, O
     }
 
     public McpElicitResult(StreamInput in) throws IOException {
-        this(in.readGenericMap(), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readEnum(McpElicitResultAction.class),
+            in.readOptional(StreamInput::readGenericMap),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeGenericMap(result);
+        out.writeEnum(action);
+        out.writeOptional(StreamOutput::writeGenericMap, content);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
-        builder.field(RESULT_FIELD.getPreferredName(), result);
+        builder.field(ACTION_FIELD.getPreferredName(), action.value());
+        if (content != null) {
+            builder.field(CONTENT_FIELD.getPreferredName(), content);
+        }
         if (meta != null) {
             builder.field(META_FIELD.getPreferredName(), meta);
         }

@@ -10,6 +10,7 @@ import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
@@ -122,9 +123,10 @@ public record McpServerCapabilities(
 
     public record CompletionCapabilities() implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_server_capabilities_completion_capabilities";
-        public static final ConstructingObjectParser<CompletionCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-            "completion_capabilities",
-            args -> new CompletionCapabilities()
+        public static final ObjectParser<CompletionCapabilities, Void> PARSER = new ObjectParser<>(
+            NAME,
+            false,
+            CompletionCapabilities::new
         );
 
         public CompletionCapabilities(StreamInput in) {
@@ -149,10 +151,7 @@ public record McpServerCapabilities(
 
     public record LoggingCapabilities() implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_server_capabilities_logging_capabilities";
-        public static final ConstructingObjectParser<LoggingCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-            "logging_capabilities",
-            args -> new LoggingCapabilities()
-        );
+        public static final ObjectParser<LoggingCapabilities, Void> PARSER = new ObjectParser<>(NAME, false, LoggingCapabilities::new);
 
         public LoggingCapabilities(StreamInput in) {
             this();
@@ -179,7 +178,7 @@ public record McpServerCapabilities(
         public static final String NAME = "mcp_server_capabilities_prompt_capabilities";
 
         public static final ConstructingObjectParser<PromptCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-            "prompt_capabilities",
+            NAME,
             args -> new PromptCapabilities((Boolean) args[0])
         );
 
@@ -218,7 +217,7 @@ public record McpServerCapabilities(
         public static final String NAME = "mcp_server_capabilities_resource_capabilities";
 
         public static final ConstructingObjectParser<ResourceCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-            "resource_capabilities",
+            NAME,
             args -> new ResourceCapabilities((Boolean) args[0], (Boolean) args[1])
         );
 
@@ -261,7 +260,7 @@ public record McpServerCapabilities(
         public static final String NAME = "mcp_server_capabilities_tool_capabilities";
 
         public static final ConstructingObjectParser<ToolCapabilities, Void> PARSER = new ConstructingObjectParser<>(
-            "tool_capabilities",
+            NAME,
             args -> new ToolCapabilities((Boolean) args[0])
         );
 

@@ -25,10 +25,11 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
         McpResourceContent {
 
     public static final String NAME = "mcp_blob_resource_contents";
+    public static final Type TYPE = Type.BLOB;
 
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
-    private static final ParseField BLOB_FIELD = new ParseField("blob");
+    protected static final ParseField BLOB_FIELD = new ParseField("blob");
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
@@ -50,6 +51,7 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
+        out.writeEnum(TYPE);
         out.writeString(uri);
         out.writeString(mimeType);
         out.writeString(blob);

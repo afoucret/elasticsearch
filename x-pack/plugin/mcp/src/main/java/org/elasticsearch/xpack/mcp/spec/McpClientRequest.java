@@ -7,5 +7,5 @@
 package org.elasticsearch.xpack.mcp.spec;
 
 public sealed interface McpClientRequest extends McpRequest permits McpPingRequest, McpInitializeRequest, McpCompleteRequest,
-    McpGetPromptRequest, McpListPromptsRequest, McpListResourcesRequest, McpReadResourceRequest, McpSubscribeRequest, McpUnsubscribeRequest,
-    McpCallToolRequest, McpListToolsRequest, McpLoggingSetLevelRequest {}
+    McpGetPromptRequest, McpListPromptsRequest, McpListResourcesRequest, McpListResourceTemplatesRequest, McpReadResourceRequest,
+    McpSubscribeRequest, McpUnsubscribeRequest, McpCallToolRequest, McpListToolsRequest, McpLoggingSetLevelRequest {}

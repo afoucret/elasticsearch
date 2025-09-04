@@ -8,14 +8,28 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
+
 public record McpPingRequest(Map<String, Object> meta) implements McpClientRequest, McpServerRequest {
 
     public static final String NAME = "mcp_ping_request";
+
+    @SuppressWarnings("unchecked")
+    public static final ConstructingObjectParser<McpPingRequest, Void> PARSER = new ConstructingObjectParser<>(
+        NAME,
+        args -> new McpPingRequest((Map<String, Object>) args[0])
+    );
+
+    static {
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), new ParseField("_meta"));
+    }
 
     public McpPingRequest(StreamInput in) throws IOException {
         this(in.readOptional(StreamInput::readGenericMap));

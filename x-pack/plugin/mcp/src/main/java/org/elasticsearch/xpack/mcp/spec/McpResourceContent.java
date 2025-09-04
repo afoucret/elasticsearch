@@ -6,16 +6,30 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.xcontent.ToXContentObject;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentParser;
+import org.elasticsearch.xcontent.XContentParserConfiguration;
+import org.elasticsearch.xcontent.json.JsonXContent;
 
 import java.io.IOException;
 import java.util.Map;
 
 public sealed interface McpResourceContent extends NamedWriteable, ToXContentObject permits McpTextResourceContents,
     McpBlobResourceContents {
+
+    String NAME = "mcp_resource_content";
+
+    enum Type {
+        TEXT,
+        BLOB
+    }
+
     String uri();
 
     String mimeType();
@@ -24,7 +38,30 @@ public sealed interface McpResourceContent extends NamedWriteable, ToXContentObj
 
     void writeTo(StreamOutput out) throws IOException;
 
-    static McpResourceContent readFrom(StreamInput in) throws IOException {
-        return in.readNamedWriteable(McpResourceContent.class);
+    static McpResourceContent read(StreamInput in) throws IOException {
+        Type type = in.readEnum(Type.class);
+        return switch (type) {
+            case TEXT -> new McpTextResourceContents(in);
+            case BLOB -> new McpBlobResourceContents(in);
+        };
+    }
+
+    static McpResourceContent fromXContent(XContentParser parser) throws IOException {
+        Map<String, Object> rawContent = parser.map();
+        Type type = rawContent.containsKey(McpBlobResourceContents.BLOB_FIELD.getPreferredName()) ? Type.BLOB : Type.TEXT;
+
+        try (
+            XContentBuilder builder = JsonXContent.contentBuilder().map(rawContent);
+            XContentParser typeParser = XContentHelper.createParser(
+                XContentParserConfiguration.EMPTY,
+                BytesReference.bytes(builder),
+                builder.contentType()
+            )
+        ) {
+            return switch (type) {
+                case TEXT -> McpTextResourceContents.PARSER.apply(typeParser, null);
+                case BLOB -> McpBlobResourceContents.PARSER.apply(typeParser, null);
+            };
+        }
     }
 }
