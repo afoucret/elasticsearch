@@ -25,7 +25,7 @@ public record McpListPromptsRequest(String cursor, Map<String, Object> meta) imp
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListPromptsRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListPromptsRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListPromptsRequest((String) args[0], (Map<String, Object>) args[1])
     );

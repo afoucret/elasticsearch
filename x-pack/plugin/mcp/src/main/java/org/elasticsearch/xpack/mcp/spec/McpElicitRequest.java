@@ -32,7 +32,7 @@ public record McpElicitRequest(@NotNull String message, McpJsonSchema requestedS
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpElicitRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpElicitRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpElicitRequest((String) args[0], (McpJsonSchema) args[1], (Map<String, Object>) args[2])
     );
@@ -49,13 +49,13 @@ public record McpElicitRequest(@NotNull String message, McpJsonSchema requestedS
     }
 
     public McpElicitRequest(StreamInput in) throws IOException {
-        this(in.readString(), in.readOptionalWriteable(McpJsonSchema::new), in.readOptional(StreamInput::readGenericMap));
+        this(in.readString(), in.readOptionalNamedWriteable(McpJsonSchema.class), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(message);
-        out.writeOptionalWriteable(requestedSchema);
+        out.writeOptionalNamedWriteable(requestedSchema);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

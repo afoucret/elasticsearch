@@ -24,7 +24,7 @@ public record McpPromptsListChangedNotification(Map<String, Object> meta) implem
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpPromptsListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPromptsListChangedNotification, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_prompts_list_changed_notification",
         args -> new McpPromptsListChangedNotification((Map<String, Object>) args[0])
     );

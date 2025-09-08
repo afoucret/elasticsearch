@@ -30,13 +30,13 @@ public record McpListToolsResult(@NotNull List<McpTool> tools, String nextCursor
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListToolsResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListToolsResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListToolsResult((List<McpTool>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpTool.PARSER.parse(p, null), TOOLS_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpTool.PARSER, TOOLS_FIELD);
         PARSER.declareString(optionalConstructorArg(), NEXT_CURSOR_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }

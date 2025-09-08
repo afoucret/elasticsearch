@@ -37,7 +37,7 @@ public record McpCreateMessageResult(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCreateMessageResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCreateMessageResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCreateMessageResult(
             (McpRole) args[0],

@@ -37,7 +37,7 @@ public record McpPrompt(@NotNull String name, String title, String description, 
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpPrompt, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPrompt, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpPrompt(
             (String) args[0],
@@ -52,7 +52,7 @@ public record McpPrompt(@NotNull String name, String title, String description, 
         PARSER.declareString(constructorArg(), NAME_FIELD);
         PARSER.declareString(optionalConstructorArg(), TITLE_FIELD);
         PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
-        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpPromptArgument.PARSER.parse(p, null), ARGUMENTS_FIELD);
+        PARSER.declareObjectArray(optionalConstructorArg(), McpPromptArgument.PARSER, ARGUMENTS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
 

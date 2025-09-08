@@ -32,13 +32,13 @@ public record McpListResourcesResult(@NotNull List<McpResource> resources, Strin
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListResourcesResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListResourcesResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListResourcesResult((List<McpResource>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpResource.PARSER.parse(p, null), RESOURCES_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpResource.PARSER, RESOURCES_FIELD);
         PARSER.declareString(optionalConstructorArg(), NEXT_CURSOR_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
@@ -49,12 +49,16 @@ public record McpListResourcesResult(@NotNull List<McpResource> resources, Strin
     }
 
     public McpListResourcesResult(StreamInput in) throws IOException {
-        this(in.readCollectionAsList(McpResource::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readNamedWriteableCollectionAsList(McpResource.class),
+            in.readOptionalString(),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(resources);
+        out.writeNamedWriteableCollection(resources);
         out.writeOptionalString(nextCursor);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }

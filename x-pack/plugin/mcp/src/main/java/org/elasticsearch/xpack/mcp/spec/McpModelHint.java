@@ -26,7 +26,7 @@ public record McpModelHint(@NotNull String name) implements NamedWriteable, ToXC
 
     private static final ParseField NAME_FIELD = new ParseField("name");
 
-    public static final ConstructingObjectParser<McpModelHint, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpModelHint, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpModelHint((String) args[0])
     );

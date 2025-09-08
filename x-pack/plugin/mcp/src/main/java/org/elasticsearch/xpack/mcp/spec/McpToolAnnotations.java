@@ -52,7 +52,7 @@ public record McpToolAnnotations(
     private static final ParseField OPEN_WORLD_HINT_FIELD = new ParseField("openWorldHint");
     private static final ParseField RETURN_DIRECT_FIELD = new ParseField("returnDirect");
 
-    public static final ConstructingObjectParser<McpToolAnnotations, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpToolAnnotations, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpToolAnnotations(
             (String) args[0],

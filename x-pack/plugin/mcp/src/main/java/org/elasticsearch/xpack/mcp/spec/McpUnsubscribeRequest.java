@@ -36,7 +36,7 @@ public record McpUnsubscribeRequest(@NotNull String uri, Map<String, Object> met
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpUnsubscribeRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpUnsubscribeRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpUnsubscribeRequest((String) args[0], (Map<String, Object>) args[1])
     );

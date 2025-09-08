@@ -22,7 +22,7 @@ public record McpEmptyResult(Map<String, Object> meta) implements McpClientResul
     public static final String NAME = "mcp_empty_result";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpEmptyResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpEmptyResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpEmptyResult((Map<String, Object>) args[0])
     );

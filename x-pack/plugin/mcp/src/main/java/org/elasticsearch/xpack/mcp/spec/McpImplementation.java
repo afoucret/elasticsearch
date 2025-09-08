@@ -25,7 +25,7 @@ public record McpImplementation(@NotNull String name, @NotNull String version, S
 
     public static final String NAME = "mcp_implementation";
 
-    public static final ConstructingObjectParser<McpImplementation, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpImplementation, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpImplementation((String) args[0], (String) args[1], (String) args[2])
     );

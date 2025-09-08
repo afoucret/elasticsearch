@@ -15,7 +15,7 @@ public class McpTextResourceContentsTests extends McpSerializationTestCase<McpTe
 
     @Override
     protected Writeable.Reader<McpTextResourceContents> instanceReader() {
-        return in -> (McpTextResourceContents) McpResourceContent.read(in);
+        return McpTextResourceContents::new;
     }
 
     @Override

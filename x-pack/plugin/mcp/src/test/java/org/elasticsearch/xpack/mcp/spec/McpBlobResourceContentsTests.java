@@ -15,7 +15,7 @@ public class McpBlobResourceContentsTests extends McpSerializationTestCase<McpBl
 
     @Override
     protected Writeable.Reader<McpBlobResourceContents> instanceReader() {
-        return in -> (McpBlobResourceContents) McpResourceContent.read(in);
+        return McpBlobResourceContents::new;
     }
 
     @Override

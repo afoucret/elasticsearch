@@ -31,7 +31,7 @@ public record McpElicitResult(@NotNull McpElicitResultAction action, Map<String,
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpElicitResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpElicitResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpElicitResult((McpElicitResultAction) args[0], (Map<String, Object>) args[1], (Map<String, Object>) args[2])
     );

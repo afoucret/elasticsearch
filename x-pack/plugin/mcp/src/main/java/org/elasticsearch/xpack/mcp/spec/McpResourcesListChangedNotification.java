@@ -30,7 +30,7 @@ public record McpResourcesListChangedNotification(Map<String, Object> meta) impl
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpResourcesListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpResourcesListChangedNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpResourcesListChangedNotification((Map<String, Object>) args[0])
     );

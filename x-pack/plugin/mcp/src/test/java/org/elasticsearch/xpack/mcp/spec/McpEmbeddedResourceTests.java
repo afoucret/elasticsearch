@@ -15,7 +15,7 @@ public class McpEmbeddedResourceTests extends McpSerializationTestCase<McpEmbedd
 
     @Override
     protected Writeable.Reader<McpEmbeddedResource> instanceReader() {
-        return (in) -> (McpEmbeddedResource) McpContent.read(in);
+        return McpEmbeddedResource::new;
     }
 
     @Override

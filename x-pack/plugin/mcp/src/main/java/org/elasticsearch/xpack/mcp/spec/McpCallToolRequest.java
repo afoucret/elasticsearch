@@ -32,7 +32,7 @@ public record McpCallToolRequest(@NotNull String name, Map<String, Object> argum
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCallToolRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCallToolRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCallToolRequest((String) args[0], (Map<String, Object>) args[1], (Map<String, Object>) args[2])
     );

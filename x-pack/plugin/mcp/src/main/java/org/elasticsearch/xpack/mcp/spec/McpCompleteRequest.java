@@ -35,7 +35,7 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCompleteRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCompleteRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCompleteRequest((McpReference) args[0], (Argument) args[1], (Context) args[2], (Map<String, Object>) args[3])
     );
@@ -55,8 +55,8 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
     public McpCompleteRequest(StreamInput in) throws IOException {
         this(
             in.readNamedWriteable(McpReference.class),
-            new Argument(in),
-            in.readOptionalWriteable(Context::new),
+            in.readNamedWriteable(Argument.class),
+            in.readOptionalNamedWriteable(Context.class),
             in.readOptional(StreamInput::readGenericMap)
         );
     }
@@ -64,8 +64,8 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeNamedWriteable(ref);
-        argument.writeTo(out);
-        out.writeOptionalWriteable(context);
+        out.writeNamedWriteable(argument);
+        out.writeOptionalNamedWriteable(context);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
@@ -90,7 +90,7 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
         private static final ParseField NAME_FIELD = new ParseField("name");
         private static final ParseField VALUE_FIELD = new ParseField("value");
 
-        public static final ConstructingObjectParser<Argument, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<Argument, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new Argument((String) args[0], (String) args[1])
         );
@@ -131,7 +131,7 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
         private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
 
         @SuppressWarnings("unchecked")
-        public static final ConstructingObjectParser<Context, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<Context, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new Context((Map<String, Object>) args[0])
         );

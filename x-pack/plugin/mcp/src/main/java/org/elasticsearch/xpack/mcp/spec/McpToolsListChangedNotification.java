@@ -30,7 +30,7 @@ public record McpToolsListChangedNotification(Map<String, Object> meta) implemen
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpToolsListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpToolsListChangedNotification, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_tools_list_changed_notification",
         args -> new McpToolsListChangedNotification((Map<String, Object>) args[0])
     );

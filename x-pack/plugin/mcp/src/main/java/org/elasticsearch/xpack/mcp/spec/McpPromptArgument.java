@@ -33,7 +33,7 @@ public record McpPromptArgument(@NotNull String name, String title, String descr
     private static final ParseField DESCRIPTION_FIELD = new ParseField("description");
     private static final ParseField REQUIRED_FIELD = new ParseField("required");
 
-    public static final ConstructingObjectParser<McpPromptArgument, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPromptArgument, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_argument",
         args -> new McpPromptArgument((String) args[0], (String) args[1], (String) args[2], (Boolean) args[3])
     );

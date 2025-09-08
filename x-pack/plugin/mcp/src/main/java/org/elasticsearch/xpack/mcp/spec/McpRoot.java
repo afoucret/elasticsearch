@@ -38,7 +38,7 @@ public record McpRoot(@NotNull String uri, String name, Map<String, Object> meta
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpRoot, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpRoot, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpRoot((String) args[0], (String) args[1], (Map<String, Object>) args[2])
     );

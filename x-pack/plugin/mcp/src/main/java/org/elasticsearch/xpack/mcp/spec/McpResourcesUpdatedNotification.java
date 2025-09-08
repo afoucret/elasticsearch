@@ -36,7 +36,7 @@ public record McpResourcesUpdatedNotification(@NotNull String uri, Map<String, O
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpResourcesUpdatedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpResourcesUpdatedNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpResourcesUpdatedNotification((String) args[0], (Map<String, Object>) args[1])
     );

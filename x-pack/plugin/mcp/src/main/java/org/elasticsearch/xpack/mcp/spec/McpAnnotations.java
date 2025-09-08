@@ -6,17 +6,19 @@
  */
 package org.elasticsearch.xpack.mcp.spec;
 
+import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -28,16 +30,22 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
     private static final ParseField PRIORITY_FIELD = new ParseField("priority");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpAnnotations, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpAnnotations, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
-        args -> new McpAnnotations(
-            args[0] == null ? null : ((List<String>) args[0]).stream().map(McpRole::valueOf).collect(Collectors.toList()),
-            (Double) args[1]
-        )
+        args -> new McpAnnotations((List<McpRole>) args[0], (Double) args[1])
     );
 
     static {
-        PARSER.declareStringArray(optionalConstructorArg(), AUDIENCE_FIELD);
+        PARSER.declareFieldArray(optionalConstructorArg(), (p, c) -> {
+            try {
+                return McpRole.valueOf(p.text().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                throw new ParsingException(
+                    p.getTokenLocation(),
+                    "Invalid audience [" + p.text() + "], allowed values are " + List.of(McpRole.values())
+                );
+            }
+        }, AUDIENCE_FIELD, ObjectParser.ValueType.STRING_ARRAY);
         PARSER.declareDouble(optionalConstructorArg(), PRIORITY_FIELD);
     }
 

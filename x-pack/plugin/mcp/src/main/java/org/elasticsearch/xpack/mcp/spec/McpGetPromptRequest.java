@@ -32,7 +32,7 @@ public record McpGetPromptRequest(@NotNull String name, Map<String, Object> argu
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpGetPromptRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpGetPromptRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpGetPromptRequest((String) args[0], (Map<String, Object>) args[1], (Map<String, Object>) args[2])
     );

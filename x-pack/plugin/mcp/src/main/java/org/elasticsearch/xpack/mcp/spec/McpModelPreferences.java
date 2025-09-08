@@ -31,13 +31,13 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
     public static final String NAME = "mcp_model_preferences";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpModelPreferences, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpModelPreferences, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_model_preferences",
         args -> new McpModelPreferences((List<McpModelHint>) args[0], (Double) args[1], (Double) args[2], (Double) args[3])
     );
 
     static {
-        PARSER.declareObjectArray(optionalConstructorArg(), (p, c) -> McpModelHint.PARSER.parse(p, null), HINTS_FIELD);
+        PARSER.declareObjectArray(optionalConstructorArg(), McpModelHint.PARSER, HINTS_FIELD);
         PARSER.declareDouble(optionalConstructorArg(), COST_PRIORITY_FIELD);
         PARSER.declareDouble(optionalConstructorArg(), SPEED_PRIORITY_FIELD);
         PARSER.declareDouble(optionalConstructorArg(), INTELLIGENCE_PRIORITY_FIELD);

@@ -34,13 +34,13 @@ public record McpListResourceTemplatesResult(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListResourceTemplatesResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListResourceTemplatesResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListResourceTemplatesResult((List<McpResourceTemplate>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpResourceTemplate.PARSER.parse(p, null), RESOURCE_TEMPLATES_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpResourceTemplate.PARSER, RESOURCE_TEMPLATES_FIELD);
         PARSER.declareString(optionalConstructorArg(), NEXT_CURSOR_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }
@@ -51,12 +51,16 @@ public record McpListResourceTemplatesResult(
     }
 
     public McpListResourceTemplatesResult(StreamInput in) throws IOException {
-        this(in.readCollectionAsList(McpResourceTemplate::new), in.readOptionalString(), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readNamedWriteableCollectionAsList(McpResourceTemplate.class),
+            in.readOptionalString(),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeCollection(resourceTemplates);
+        out.writeNamedWriteableCollection(resourceTemplates);
         out.writeOptionalString(nextCursor);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }

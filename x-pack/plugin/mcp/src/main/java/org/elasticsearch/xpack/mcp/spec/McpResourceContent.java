@@ -8,7 +8,6 @@ package org.elasticsearch.xpack.mcp.spec;
 
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.io.stream.NamedWriteable;
-import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.xcontent.ToXContentObject;
@@ -37,14 +36,6 @@ public sealed interface McpResourceContent extends NamedWriteable, ToXContentObj
     Map<String, Object> meta();
 
     void writeTo(StreamOutput out) throws IOException;
-
-    static McpResourceContent read(StreamInput in) throws IOException {
-        Type type = in.readEnum(Type.class);
-        return switch (type) {
-            case TEXT -> new McpTextResourceContents(in);
-            case BLOB -> new McpBlobResourceContents(in);
-        };
-    }
 
     static McpResourceContent fromXContent(XContentParser parser) throws IOException {
         Map<String, Object> rawContent = parser.map();

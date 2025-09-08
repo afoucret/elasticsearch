@@ -27,7 +27,7 @@ public record McpLoggingSetLevelRequest(@NotNull String level, Map<String, Objec
     public static final String NAME = "mcp_logging_set_level_request";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpLoggingSetLevelRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpLoggingSetLevelRequest, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_logging_set_level_request",
         args -> new McpLoggingSetLevelRequest((String) args[0], (Map<String, Object>) args[1])
     );

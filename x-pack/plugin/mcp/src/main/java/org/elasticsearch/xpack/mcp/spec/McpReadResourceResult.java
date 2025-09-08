@@ -35,7 +35,7 @@ public record McpReadResourceResult(@NotNull List<McpResourceContent> contents, 
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpReadResourceResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpReadResourceResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpReadResourceResult((List<McpResourceContent>) args[0], (Map<String, Object>) args[1])
     );

@@ -25,7 +25,7 @@ public record McpListToolsRequest(String cursor, Map<String, Object> meta) imple
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListToolsRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListToolsRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListToolsRequest((String) args[0], (Map<String, Object>) args[1])
     );

@@ -30,13 +30,13 @@ public record McpListRootsResult(@NotNull List<McpRoot> roots, String nextCursor
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListRootsResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListRootsResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListRootsResult((List<McpRoot>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpRoot.PARSER.parse(p, null), ROOTS_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpRoot.PARSER, ROOTS_FIELD);
         PARSER.declareString(optionalConstructorArg(), NEXT_CURSOR_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }

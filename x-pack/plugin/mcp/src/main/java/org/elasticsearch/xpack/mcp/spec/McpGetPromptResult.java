@@ -32,13 +32,13 @@ public record McpGetPromptResult(@NotNull List<McpPromptMessage> messages, Strin
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpGetPromptResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpGetPromptResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpGetPromptResult((List<McpPromptMessage>) args[0], (String) args[1], (Map<String, Object>) args[2])
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpPromptMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpPromptMessage.PARSER, MESSAGES_FIELD);
         PARSER.declareString(optionalConstructorArg(), DESCRIPTION_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
     }

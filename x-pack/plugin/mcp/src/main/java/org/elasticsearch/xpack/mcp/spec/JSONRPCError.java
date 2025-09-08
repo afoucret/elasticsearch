@@ -34,7 +34,7 @@ public record JSONRPCError(@NotNull int code, @NotNull String message, Map<Strin
     private static final ParseField DATA_FIELD = new ParseField("data");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<JSONRPCError, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<JSONRPCError, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new JSONRPCError((int) args[0], (String) args[1], (Map<String, Object>) args[2])
     );

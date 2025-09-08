@@ -15,7 +15,7 @@ public class McpAudioContentTests extends McpSerializationTestCase<McpAudioConte
 
     @Override
     protected Writeable.Reader<McpAudioContent> instanceReader() {
-        return in -> (McpAudioContent) McpContent.read(in);
+        return McpAudioContent::new;
     }
 
     @Override

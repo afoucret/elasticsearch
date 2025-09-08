@@ -37,7 +37,7 @@ public record McpInitializeResult(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpInitializeResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpInitializeResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpInitializeResult(
             (String) args[0],
@@ -64,8 +64,8 @@ public record McpInitializeResult(
     public McpInitializeResult(StreamInput in) throws IOException {
         this(
             in.readString(),
-            in.readOptionalWriteable(McpServerCapabilities::new),
-            in.readOptionalWriteable(McpImplementation::new),
+            in.readOptionalNamedWriteable(McpServerCapabilities.class),
+            in.readOptionalNamedWriteable(McpImplementation.class),
             in.readOptionalString(),
             in.readOptional(StreamInput::readGenericMap)
         );
@@ -74,8 +74,8 @@ public record McpInitializeResult(
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeString(protocolVersion);
-        out.writeOptionalWriteable(capabilities);
-        out.writeOptionalWriteable(serverInfo);
+        out.writeOptionalNamedWriteable(capabilities);
+        out.writeOptionalNamedWriteable(serverInfo);
         out.writeOptionalString(instructions);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }

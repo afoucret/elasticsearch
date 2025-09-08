@@ -31,7 +31,7 @@ public record McpCompleteResult(@NotNull Completion completion, Map<String, Obje
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCompleteResult, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCompleteResult, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCompleteResult((Completion) args[0], (Map<String, Object>) args[1])
     );
@@ -47,12 +47,12 @@ public record McpCompleteResult(@NotNull Completion completion, Map<String, Obje
     }
 
     public McpCompleteResult(StreamInput in) throws IOException {
-        this(new Completion(in), in.readOptional(StreamInput::readGenericMap));
+        this(in.readNamedWriteable(Completion.class), in.readOptional(StreamInput::readGenericMap));
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        completion.writeTo(out);
+        out.writeNamedWriteable(completion);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
@@ -76,7 +76,7 @@ public record McpCompleteResult(@NotNull Completion completion, Map<String, Obje
         private static final ParseField HAS_MORE_FIELD = new ParseField("hasMore");
 
         @SuppressWarnings("unchecked")
-        public static final ConstructingObjectParser<Completion, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<Completion, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new Completion((List<String>) args[0], (Integer) args[1], (Boolean) args[2])
         );

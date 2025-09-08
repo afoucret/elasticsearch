@@ -57,7 +57,7 @@ public record McpResource(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpResource, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpResource, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpResource(
             (String) args[0],
@@ -90,7 +90,7 @@ public record McpResource(
             in.readOptionalString(),
             in.readOptionalString(),
             in.readOptionalLong(),
-            in.readOptionalWriteable(McpAnnotations::new),
+            in.readOptionalNamedWriteable(McpAnnotations.class),
             in.readOptional(StreamInput::readGenericMap)
         );
     }
@@ -108,7 +108,7 @@ public record McpResource(
         out.writeOptionalString(description);
         out.writeOptionalString(mimeType);
         out.writeOptionalLong(size);
-        out.writeOptionalWriteable(annotations);
+        out.writeOptionalNamedWriteable(annotations);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

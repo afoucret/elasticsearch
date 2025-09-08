@@ -49,7 +49,7 @@ public record McpServerCapabilities(
     public static final String NAME = "mcp_server_capabilities";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpServerCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpServerCapabilities, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_server_capabilities",
         args -> new McpServerCapabilities(
             (CompletionCapabilities) args[0],
@@ -72,12 +72,12 @@ public record McpServerCapabilities(
 
     public McpServerCapabilities(StreamInput in) throws IOException {
         this(
-            in.readOptionalWriteable(CompletionCapabilities::new),
+            in.readOptionalNamedWriteable(CompletionCapabilities.class),
             in.readOptional(StreamInput::readGenericMap),
-            in.readOptionalWriteable(LoggingCapabilities::new),
-            in.readOptionalWriteable(PromptCapabilities::new),
-            in.readOptionalWriteable(ResourceCapabilities::new),
-            in.readOptionalWriteable(ToolCapabilities::new)
+            in.readOptionalNamedWriteable(LoggingCapabilities.class),
+            in.readOptionalNamedWriteable(PromptCapabilities.class),
+            in.readOptionalNamedWriteable(ResourceCapabilities.class),
+            in.readOptionalNamedWriteable(ToolCapabilities.class)
         );
     }
 
@@ -88,12 +88,12 @@ public record McpServerCapabilities(
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeOptionalWriteable(completions);
+        out.writeOptionalNamedWriteable(completions);
         out.writeOptional(StreamOutput::writeGenericMap, experimental);
-        out.writeOptionalWriteable(logging);
-        out.writeOptionalWriteable(prompts);
-        out.writeOptionalWriteable(resources);
-        out.writeOptionalWriteable(tools);
+        out.writeOptionalNamedWriteable(logging);
+        out.writeOptionalNamedWriteable(prompts);
+        out.writeOptionalNamedWriteable(resources);
+        out.writeOptionalNamedWriteable(tools);
     }
 
     @Override
@@ -123,7 +123,7 @@ public record McpServerCapabilities(
 
     public record CompletionCapabilities() implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_server_capabilities_completion_capabilities";
-        public static final ObjectParser<CompletionCapabilities, Void> PARSER = new ObjectParser<>(
+        public static final ObjectParser<CompletionCapabilities, Object> PARSER = new ObjectParser<>(
             NAME,
             false,
             CompletionCapabilities::new
@@ -151,7 +151,7 @@ public record McpServerCapabilities(
 
     public record LoggingCapabilities() implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_server_capabilities_logging_capabilities";
-        public static final ObjectParser<LoggingCapabilities, Void> PARSER = new ObjectParser<>(NAME, false, LoggingCapabilities::new);
+        public static final ObjectParser<LoggingCapabilities, Object> PARSER = new ObjectParser<>(NAME, false, LoggingCapabilities::new);
 
         public LoggingCapabilities(StreamInput in) {
             this();
@@ -177,7 +177,7 @@ public record McpServerCapabilities(
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
         public static final String NAME = "mcp_server_capabilities_prompt_capabilities";
 
-        public static final ConstructingObjectParser<PromptCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<PromptCapabilities, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new PromptCapabilities((Boolean) args[0])
         );
@@ -216,7 +216,7 @@ public record McpServerCapabilities(
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
         public static final String NAME = "mcp_server_capabilities_resource_capabilities";
 
-        public static final ConstructingObjectParser<ResourceCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<ResourceCapabilities, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new ResourceCapabilities((Boolean) args[0], (Boolean) args[1])
         );
@@ -259,7 +259,7 @@ public record McpServerCapabilities(
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
         public static final String NAME = "mcp_server_capabilities_tool_capabilities";
 
-        public static final ConstructingObjectParser<ToolCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<ToolCapabilities, Object> PARSER = new ConstructingObjectParser<>(
             NAME,
             args -> new ToolCapabilities((Boolean) args[0])
         );

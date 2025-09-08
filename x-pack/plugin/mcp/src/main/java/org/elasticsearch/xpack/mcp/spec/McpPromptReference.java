@@ -28,7 +28,7 @@ public record McpPromptReference(@NotNull String name, String title) implements 
     private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField TITLE_FIELD = new ParseField("title");
 
-    public static final ConstructingObjectParser<McpPromptReference, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPromptReference, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpPromptReference((String) args[0], (String) args[1])
     );

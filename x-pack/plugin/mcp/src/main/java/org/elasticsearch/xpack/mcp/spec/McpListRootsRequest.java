@@ -22,7 +22,7 @@ public record McpListRootsRequest(Map<String, Object> meta) implements McpServer
     public static final String NAME = "mcp_list_roots_request";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpListRootsRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpListRootsRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpListRootsRequest((Map<String, Object>) args[0])
     );

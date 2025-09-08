@@ -47,7 +47,7 @@ public record McpCreateMessageRequest(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCreateMessageRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCreateMessageRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCreateMessageRequest(
             (List<McpSamplingMessage>) args[0],
@@ -63,7 +63,7 @@ public record McpCreateMessageRequest(
     );
 
     static {
-        PARSER.declareObjectArray(constructorArg(), (p, c) -> McpSamplingMessage.PARSER.parse(p, null), MESSAGES_FIELD);
+        PARSER.declareObjectArray(constructorArg(), McpSamplingMessage.PARSER, MESSAGES_FIELD);
         PARSER.declareInt(constructorArg(), MAX_TOKENS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), McpModelPreferences.PARSER, MODEL_PREFERENCES_FIELD);
         PARSER.declareString(optionalConstructorArg(), SYSTEM_PROMPT_FIELD);
@@ -83,7 +83,7 @@ public record McpCreateMessageRequest(
         this(
             in.readCollectionAsList(McpSamplingMessage::new),
             in.readVInt(),
-            in.readOptionalWriteable(McpModelPreferences::new),
+            in.readOptionalNamedWriteable(McpModelPreferences.class),
             in.readOptionalString(),
             in.readOptionalEnum(McpIncludeContext.class),
             in.readOptionalDouble(),
@@ -97,7 +97,7 @@ public record McpCreateMessageRequest(
     public void writeTo(StreamOutput out) throws IOException {
         out.writeCollection(messages);
         out.writeVInt(maxTokens);
-        out.writeOptionalWriteable(modelPreferences);
+        out.writeOptionalNamedWriteable(modelPreferences);
         out.writeOptionalString(systemPrompt);
         out.writeOptionalEnum(includeContext);
         out.writeOptionalDouble(temperature);

@@ -29,7 +29,7 @@ public record McpRootsListChangedNotification(Map<String, Object> meta) implemen
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpRootsListChangedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpRootsListChangedNotification, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_roots_list_changed_notification",
         args -> new McpRootsListChangedNotification((Map<String, Object>) args[0])
     );

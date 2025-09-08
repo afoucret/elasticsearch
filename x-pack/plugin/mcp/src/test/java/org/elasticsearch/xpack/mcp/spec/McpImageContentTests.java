@@ -15,7 +15,7 @@ public class McpImageContentTests extends McpSerializationTestCase<McpImageConte
 
     @Override
     protected Writeable.Reader<McpImageContent> instanceReader() {
-        return in -> (McpImageContent) McpContent.read(in);
+        return McpImageContent::new;
     }
 
     @Override

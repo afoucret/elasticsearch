@@ -34,7 +34,7 @@ public record JSONRPCResponse(@NotNull String jsonrpc, @NotNull Object id, Map<S
     private static final ParseField ERROR_FIELD = new ParseField("error");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<JSONRPCResponse, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<JSONRPCResponse, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new JSONRPCResponse((String) args[0], args[1], (Map<String, Object>) args[2], (JSONRPCError) args[3])
     );
@@ -58,7 +58,7 @@ public record JSONRPCResponse(@NotNull String jsonrpc, @NotNull Object id, Map<S
             in.readString(),
             in.readGenericValue(),
             in.readOptional(StreamInput::readGenericMap),
-            in.readOptionalWriteable(JSONRPCError::new)
+            in.readOptionalNamedWriteable(JSONRPCError.class)
         );
     }
 
@@ -67,7 +67,7 @@ public record JSONRPCResponse(@NotNull String jsonrpc, @NotNull Object id, Map<S
         out.writeString(jsonrpc);
         out.writeGenericValue(id);
         out.writeOptional(StreamOutput::writeGenericMap, result);
-        out.writeOptionalWriteable(error);
+        out.writeOptionalNamedWriteable(error);
     }
 
     @Override

@@ -29,7 +29,7 @@ public record JSONRPCNotification(@NotNull String jsonrpc, @NotNull String metho
     private static final ParseField PARAMS_FIELD = new ParseField("params");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<JSONRPCNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<JSONRPCNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new JSONRPCNotification((String) args[0], (String) args[1], (Map<String, Object>) args[2])
     );

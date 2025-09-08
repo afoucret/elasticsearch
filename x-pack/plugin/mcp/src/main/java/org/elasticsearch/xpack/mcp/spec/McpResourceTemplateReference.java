@@ -26,7 +26,7 @@ public record McpResourceTemplateReference(@NotNull String uri) implements McpRe
     private static final ParseField TYPE_FIELD = new ParseField("type");
     private static final ParseField URI_FIELD = new ParseField("uri");
 
-    public static final ConstructingObjectParser<McpResourceTemplateReference, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpResourceTemplateReference, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpResourceTemplateReference((String) args[0])
     );

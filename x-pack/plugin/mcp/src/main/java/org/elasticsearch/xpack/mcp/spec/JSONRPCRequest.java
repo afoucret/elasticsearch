@@ -34,7 +34,7 @@ public record JSONRPCRequest(@NotNull String jsonrpc, @NotNull String method, @N
     private static final ParseField PARAMS_FIELD = new ParseField("params");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<JSONRPCRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<JSONRPCRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new JSONRPCRequest((String) args[0], (String) args[1], args[2], (Map<String, Object>) args[3])
     );

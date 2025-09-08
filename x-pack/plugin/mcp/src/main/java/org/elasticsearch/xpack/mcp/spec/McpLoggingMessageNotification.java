@@ -35,7 +35,7 @@ public record McpLoggingMessageNotification(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpLoggingMessageNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpLoggingMessageNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpLoggingMessageNotification(
             (McpLoggingLevel) args[0],

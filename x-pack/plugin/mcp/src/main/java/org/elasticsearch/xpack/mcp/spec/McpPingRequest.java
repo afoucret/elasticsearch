@@ -22,7 +22,7 @@ public record McpPingRequest(Map<String, Object> meta) implements McpClientReque
     public static final String NAME = "mcp_ping_request";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpPingRequest, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPingRequest, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpPingRequest((Map<String, Object>) args[0])
     );

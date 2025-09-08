@@ -54,7 +54,7 @@ public record McpTool(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpTool, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpTool, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_tool",
         args -> new McpTool(
             (String) args[0],
@@ -82,9 +82,9 @@ public record McpTool(
             in.readString(),
             in.readString(),
             in.readOptionalString(),
-            in.readOptionalWriteable(McpJsonSchema::new),
+            in.readOptionalNamedWriteable(McpJsonSchema.class),
             in.readOptional(StreamInput::readGenericMap),
-            in.readOptionalWriteable(McpToolAnnotations::new),
+            in.readOptionalNamedWriteable(McpToolAnnotations.class),
             in.readOptional(StreamInput::readGenericMap)
         );
     }
@@ -99,9 +99,9 @@ public record McpTool(
         out.writeString(name);
         out.writeString(description);
         out.writeOptionalString(title);
-        out.writeOptionalWriteable(inputSchema);
+        out.writeOptionalNamedWriteable(inputSchema);
         out.writeOptional(StreamOutput::writeGenericMap, outputSchema);
-        out.writeOptionalWriteable(annotations);
+        out.writeOptionalNamedWriteable(annotations);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

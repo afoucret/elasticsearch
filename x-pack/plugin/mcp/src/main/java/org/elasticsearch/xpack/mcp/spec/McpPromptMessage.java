@@ -26,7 +26,7 @@ public record McpPromptMessage(@NotNull McpRole role, @NotNull McpContent conten
     private static final ParseField CONTENT_FIELD = new ParseField("content");
     public static final String NAME = "mcp_prompt_message";
 
-    public static final ConstructingObjectParser<McpPromptMessage, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpPromptMessage, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_message",
         args -> new McpPromptMessage((McpRole) args[0], (McpContent) args[1])
     );

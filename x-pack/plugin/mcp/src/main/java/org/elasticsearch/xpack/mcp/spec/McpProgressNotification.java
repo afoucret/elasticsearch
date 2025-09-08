@@ -39,7 +39,7 @@ public record McpProgressNotification(
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpProgressNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpProgressNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpProgressNotification(args[0], (double) args[1], (Double) args[2], (String) args[3], (Map<String, Object>) args[4])
     );

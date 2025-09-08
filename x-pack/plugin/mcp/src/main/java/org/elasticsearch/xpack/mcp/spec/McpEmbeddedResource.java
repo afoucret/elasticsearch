@@ -33,7 +33,7 @@ public record McpEmbeddedResource(@NotNull McpResourceContent resource, McpAnnot
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpEmbeddedResource, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpEmbeddedResource, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpEmbeddedResource((McpResourceContent) args[0], (McpAnnotations) args[1], (Map<String, Object>) args[2])
     );
@@ -46,7 +46,11 @@ public record McpEmbeddedResource(@NotNull McpResourceContent resource, McpAnnot
     }
 
     public McpEmbeddedResource(StreamInput in) throws IOException {
-        this(McpResourceContent.read(in), in.readOptionalWriteable(McpAnnotations::new), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readNamedWriteable(McpResourceContent.class),
+            in.readOptionalNamedWriteable(McpAnnotations.class),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
@@ -61,9 +65,8 @@ public record McpEmbeddedResource(@NotNull McpResourceContent resource, McpAnnot
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeEnum(type());
-        resource.writeTo(out);
-        out.writeOptionalWriteable(annotations);
+        out.writeNamedWriteable(resource);
+        out.writeOptionalNamedWriteable(annotations);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 

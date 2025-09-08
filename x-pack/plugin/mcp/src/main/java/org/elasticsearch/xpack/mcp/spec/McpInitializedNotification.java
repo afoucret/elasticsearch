@@ -24,7 +24,7 @@ public record McpInitializedNotification(Map<String, Object> meta) implements Mc
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpInitializedNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpInitializedNotification, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_initialized_notification",
         args -> new McpInitializedNotification((Map<String, Object>) args[0])
     );

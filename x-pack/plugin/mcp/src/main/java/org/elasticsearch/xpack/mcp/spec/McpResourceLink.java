@@ -30,7 +30,7 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     private static final ParseField URI = new ParseField("uri");
 
-    public static final ConstructingObjectParser<McpResourceLink, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpResourceLink, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpResourceLink((String) args[0])
     );
@@ -56,7 +56,6 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeEnum(type());
         out.writeString(uri);
     }
 

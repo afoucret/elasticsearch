@@ -33,7 +33,7 @@ public record McpCancelledNotification(@NotNull Object requestId, String reason,
     private static final ParseField REASON_FIELD = new ParseField("reason");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpCancelledNotification, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpCancelledNotification, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpCancelledNotification(args[0], (String) args[1], (Map<String, Object>) args[2])
     );

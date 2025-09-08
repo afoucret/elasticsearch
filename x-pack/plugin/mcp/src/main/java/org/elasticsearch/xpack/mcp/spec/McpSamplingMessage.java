@@ -41,7 +41,7 @@ public record McpSamplingMessage(@NotNull McpRole role, @NotNull McpContent cont
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpSamplingMessage, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpSamplingMessage, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpSamplingMessage((McpRole) args[0], (McpContent) args[1], (Map<String, Object>) args[2])
     );

@@ -15,7 +15,7 @@ public class McpResourceLinkTests extends McpSerializationTestCase<McpResourceLi
 
     @Override
     protected Writeable.Reader<McpResourceLink> instanceReader() {
-        return in -> (McpResourceLink) McpContent.read(in);
+        return McpResourceLink::new;
     }
 
     @Override

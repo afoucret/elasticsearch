@@ -38,7 +38,7 @@ public record McpJsonSchema(
     public static final String NAME = "mcp_json_schema";
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpJsonSchema, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpJsonSchema, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_json_schema",
         args -> new McpJsonSchema(
             (String) args[0],

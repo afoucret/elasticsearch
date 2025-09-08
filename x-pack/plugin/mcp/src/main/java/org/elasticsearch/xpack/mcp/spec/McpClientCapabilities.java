@@ -33,7 +33,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     private static final ParseField ELICITATION_FIELD = new ParseField("elicitation");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpClientCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpClientCapabilities, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpClientCapabilities(
             (Map<String, Object>) args[0],
@@ -96,7 +96,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
         public static final String NAME = "mcp_client_capabilities_root_capabilities";
 
-        public static final ConstructingObjectParser<RootCapabilities, Void> PARSER = new ConstructingObjectParser<>(
+        public static final ConstructingObjectParser<RootCapabilities, Object> PARSER = new ConstructingObjectParser<>(
             "root_capabilities",
             args -> new RootCapabilities((Boolean) args[0])
         );
@@ -134,7 +134,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public static final String NAME = "mcp_client_capabilities_sampling";
 
-        public static final ObjectParser<Sampling, Void> PARSER = new ObjectParser<>(NAME, Sampling::new);
+        public static final ObjectParser<Sampling, Object> PARSER = new ObjectParser<>(NAME, Sampling::new);
 
         public Sampling(StreamInput in) {
             this();
@@ -160,7 +160,7 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public static final String NAME = "mcp_client_capabilities_elicitation";
 
-        public static final ObjectParser<Elicitation, Void> PARSER = new ObjectParser<>(NAME, Elicitation::new);
+        public static final ObjectParser<Elicitation, Object> PARSER = new ObjectParser<>(NAME, Elicitation::new);
 
         public Elicitation(StreamInput in) {
             this();

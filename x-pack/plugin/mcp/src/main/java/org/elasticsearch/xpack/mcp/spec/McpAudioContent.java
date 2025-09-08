@@ -33,7 +33,7 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
     private static final ParseField META_FIELD = new ParseField("_meta");
 
     @SuppressWarnings("unchecked")
-    public static final ConstructingObjectParser<McpAudioContent, Void> PARSER = new ConstructingObjectParser<>(
+    public static final ConstructingObjectParser<McpAudioContent, Object> PARSER = new ConstructingObjectParser<>(
         NAME,
         args -> new McpAudioContent((String) args[0], (String) args[1], (McpAnnotations) args[2], (Map<String, Object>) args[3])
     );
@@ -41,13 +41,18 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
     static {
         PARSER.declareString(constructorArg(), DATA_FIELD);
         PARSER.declareString(constructorArg(), MIME_TYPE_FIELD);
-        PARSER.declareObject(optionalConstructorArg(), (p, c) -> McpAnnotations.PARSER.parse(p, null), ANNOTATIONS_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpAnnotations.PARSER, ANNOTATIONS_FIELD);
         PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
         PARSER.declareString(constructorArg(), TYPE_FIELD);
     }
 
     public McpAudioContent(StreamInput in) throws IOException {
-        this(in.readString(), in.readString(), in.readOptionalWriteable(McpAnnotations::new), in.readOptional(StreamInput::readGenericMap));
+        this(
+            in.readString(),
+            in.readString(),
+            in.readOptionalNamedWriteable(McpAnnotations.class),
+            in.readOptional(StreamInput::readGenericMap)
+        );
     }
 
     @Override
@@ -62,10 +67,9 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeEnum(type());
         out.writeString(data);
         out.writeString(mimeType);
-        out.writeOptionalWriteable(annotations);
+        out.writeOptionalNamedWriteable(annotations);
         out.writeOptional(StreamOutput::writeGenericMap, meta);
     }
 
