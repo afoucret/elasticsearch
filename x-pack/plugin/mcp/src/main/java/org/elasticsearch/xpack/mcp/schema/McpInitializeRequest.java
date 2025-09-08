@@ -1,0 +1,94 @@
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0; you may not use this file except in compliance with the Elastic License
+ * 2.0.
+ */
+package org.elasticsearch.xpack.mcp.schema;
+
+import com.unboundid.util.NotNull;
+
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.xcontent.ConstructingObjectParser;
+import org.elasticsearch.xcontent.ParseField;
+import org.elasticsearch.xcontent.ToXContent;
+import org.elasticsearch.xcontent.XContentBuilder;
+
+import java.io.IOException;
+import java.util.Map;
+
+import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
+import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
+
+public record McpInitializeRequest(
+    @NotNull String protocolVersion,
+    @NotNull McpClientCapabilities capabilities,
+    @NotNull McpImplementation clientInfo,
+    Map<String, Object> meta
+) implements McpClientRequest {
+
+    public static final String NAME = "mcp_initialize_request";
+
+    private static final ParseField PROTOCOL_VERSION_FIELD = new ParseField("protocolVersion");
+    private static final ParseField CAPABILITIES_FIELD = new ParseField("capabilities");
+    private static final ParseField CLIENT_INFO_FIELD = new ParseField("clientInfo");
+    private static final ParseField META_FIELD = new ParseField("_meta");
+
+    @SuppressWarnings("unchecked")
+    public static final ConstructingObjectParser<McpInitializeRequest, Object> PARSER = new ConstructingObjectParser<>(
+        NAME,
+        args -> new McpInitializeRequest(
+            (String) args[0],
+            (McpClientCapabilities) args[1],
+            (McpImplementation) args[2],
+            (Map<String, Object>) args[3]
+        )
+    );
+
+    static {
+        PARSER.declareString(constructorArg(), PROTOCOL_VERSION_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpClientCapabilities.PARSER, CAPABILITIES_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), McpImplementation.PARSER, CLIENT_INFO_FIELD);
+        PARSER.declareObject(optionalConstructorArg(), (p, c) -> p.map(), META_FIELD);
+    }
+
+    @Override
+    public String getWriteableName() {
+        return NAME;
+    }
+
+    public McpInitializeRequest(StreamInput in) throws IOException {
+        this(
+            in.readString(),
+            in.readOptionalNamedWriteable(McpClientCapabilities.class),
+            in.readOptionalNamedWriteable(McpImplementation.class),
+            in.readOptional(StreamInput::readGenericMap)
+        );
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeString(protocolVersion);
+        out.writeOptionalNamedWriteable(capabilities);
+        out.writeOptionalNamedWriteable(clientInfo);
+        out.writeOptional(StreamOutput::writeGenericMap, meta);
+    }
+
+    @Override
+    public XContentBuilder toXContent(XContentBuilder builder, ToXContent.Params params) throws IOException {
+        builder.startObject();
+        builder.field(PROTOCOL_VERSION_FIELD.getPreferredName(), protocolVersion);
+        if (capabilities != null) {
+            builder.field(CAPABILITIES_FIELD.getPreferredName(), capabilities);
+        }
+        if (clientInfo != null) {
+            builder.field(CLIENT_INFO_FIELD.getPreferredName(), clientInfo);
+        }
+        if (meta != null) {
+            builder.field(META_FIELD.getPreferredName(), meta);
+        }
+        builder.endObject();
+        return builder;
+    }
+}

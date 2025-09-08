@@ -17,5 +17,5 @@ module org.elasticsearch.xpack.mcp {
 
     exports org.elasticsearch.xpack.mcp;
     exports org.elasticsearch.xpack.mcp.rest;
-    exports org.elasticsearch.xpack.mcp.spec;
+    exports org.elasticsearch.xpack.mcp.schema;
 }

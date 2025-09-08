@@ -23,7 +23,7 @@ import org.elasticsearch.xcontent.NamedXContentRegistry;
 import org.elasticsearch.xpack.mcp.rest.RestDeleteMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestGetMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestPostMcpAction;
-import org.elasticsearch.xpack.mcp.spec.McpProtocol;
+import org.elasticsearch.xpack.mcp.schema.McpProtocol;
 
 import java.util.Collection;
 import java.util.List;
