@@ -19,7 +19,6 @@ import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
-import org.elasticsearch.xcontent.NamedXContentRegistry;
 import org.elasticsearch.xpack.mcp.rest.RestDeleteMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestGetMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestPostMcpAction;
@@ -45,11 +44,6 @@ public class McpPlugin extends Plugin implements ActionPlugin {
         Predicate<NodeFeature> clusterSupportsFeature
     ) {
         return List.of(new RestGetMcpSessionAction(), new RestDeleteMcpSessionAction(), new RestPostMcpAction());
-    }
-
-    @Override
-    public List<NamedXContentRegistry.Entry> getNamedXContent() {
-        return McpProtocol.namedXContent();
     }
 
     @Override

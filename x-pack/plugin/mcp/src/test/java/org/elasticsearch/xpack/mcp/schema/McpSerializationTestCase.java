@@ -10,7 +10,6 @@ import org.elasticsearch.common.io.stream.NamedWriteable;
 import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.test.AbstractXContentSerializingTestCase;
 import org.elasticsearch.test.ESTestCase;
-import org.elasticsearch.xcontent.NamedXContentRegistry;
 import org.elasticsearch.xcontent.ToXContentObject;
 
 import java.util.Map;
@@ -479,10 +478,5 @@ public abstract class McpSerializationTestCase<T extends NamedWriteable & ToXCon
     @Override
     protected NamedWriteableRegistry getNamedWriteableRegistry() {
         return new NamedWriteableRegistry(McpProtocol.namedWriteables());
-    }
-
-    @Override
-    protected NamedXContentRegistry xContentRegistry() {
-        return new NamedXContentRegistry(McpProtocol.namedXContent());
     }
 }
