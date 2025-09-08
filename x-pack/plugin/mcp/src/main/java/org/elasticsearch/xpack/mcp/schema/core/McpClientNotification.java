@@ -6,5 +6,8 @@
  */
 package org.elasticsearch.xpack.mcp.schema.core;
 
+import org.elasticsearch.xpack.mcp.schema.handshake.McpInitializedNotification;
+import org.elasticsearch.xpack.mcp.schema.root.McpRootsListChangedNotification;
+
 public sealed interface McpClientNotification extends McpNotification permits McpCancelledNotification, McpProgressNotification,
     McpInitializedNotification, McpRootsListChangedNotification {}

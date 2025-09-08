@@ -8,8 +8,8 @@ package org.elasticsearch.xpack.mcp.schema.core;
 
 import org.elasticsearch.xpack.mcp.schema.completion.McpCompleteResult;
 import org.elasticsearch.xpack.mcp.schema.elicitation.McpElicitResult;
-import org.elasticsearch.xpack.mcp.schema.messaging.McpCreateMessageResult;
 import org.elasticsearch.xpack.mcp.schema.root.McpListRootsResult;
+import org.elasticsearch.xpack.mcp.schema.sampling.McpCreateMessageResult;
 
 public sealed interface McpClientResult extends McpResult permits McpCreateMessageResult, McpListRootsResult, McpElicitResult,
-    McpEmptyResult {}
+    McpEmptyResult, McpCompleteResult {}

@@ -22,7 +22,7 @@ import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.xpack.mcp.rest.RestDeleteMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestGetMcpSessionAction;
 import org.elasticsearch.xpack.mcp.rest.RestPostMcpAction;
-import org.elasticsearch.xpack.mcp.schema.McpProtocol;
+import org.elasticsearch.xpack.mcp.schema.McpSchema;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,6 +48,6 @@ public class McpPlugin extends Plugin implements ActionPlugin {
 
     @Override
     public List<NamedWriteableRegistry.Entry> getNamedWriteables() {
-        return McpProtocol.namedWriteables();
+        return McpSchema.namedWriteables();
     }
 }

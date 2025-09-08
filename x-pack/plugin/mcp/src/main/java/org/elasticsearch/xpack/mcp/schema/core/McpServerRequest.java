@@ -6,5 +6,11 @@
  */
 package org.elasticsearch.xpack.mcp.schema.core;
 
+import org.elasticsearch.xpack.mcp.schema.elicitation.McpElicitRequest;
+import org.elasticsearch.xpack.mcp.schema.root.McpListRootsRequest;
+import org.elasticsearch.xpack.mcp.schema.sampling.McpCreateMessageRequest;
+
+;
+
 public sealed interface McpServerRequest extends McpRequest permits McpPingRequest, McpCreateMessageRequest, McpListRootsRequest,
     McpElicitRequest {}

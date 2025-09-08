@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-package org.elasticsearch.xpack.mcp.schema;
+package org.elasticsearch.xpack.mcp.schema.prompt;
 
 import com.unboundid.util.NotNull;
 
@@ -13,8 +13,11 @@ import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
 import org.elasticsearch.xcontent.ParseField;
+import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.ToXContentObject;
 import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xpack.mcp.schema.content.McpContent;
+import org.elasticsearch.xpack.mcp.schema.core.McpRole;
 
 import java.io.IOException;
 

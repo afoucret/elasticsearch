@@ -1,0 +1,1 @@
+The schema package has been reorganized and the changes have been committed.
