@@ -33,7 +33,7 @@ public record McpTextContent(@NotNull String text, McpAnnotations annotations, M
 
     public static final String NAME = "mcp_text_content";
 
-    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpTextContent.class, McpTextContent.NAME, McpTextContent::new);
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpContent.class, McpTextContent.NAME, McpTextContent::new);
 
     private static final ParseField TEXT_FIELD = new ParseField("text");
     private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");

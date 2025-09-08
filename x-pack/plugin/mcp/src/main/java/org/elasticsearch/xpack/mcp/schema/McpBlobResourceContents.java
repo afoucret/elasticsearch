@@ -28,7 +28,7 @@ public record McpBlobResourceContents(@NotNull String uri, @NotNull String mimeT
     public static final String NAME = "mcp_blob_resource_contents";
 
     public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
-        McpBlobResourceContents.class,
+        McpResourceContent.class,
         McpBlobResourceContents.NAME,
         McpBlobResourceContents::new
     );

@@ -29,7 +29,7 @@ public record McpResourceLink(@NotNull String uri) implements McpContent {
 
     public static final String NAME = "mcp_resource_link";
 
-    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpResourceLink.class, McpResourceLink.NAME, McpResourceLink::new);
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpContent.class, McpResourceLink.NAME, McpResourceLink::new);
 
     private static final ParseField URI = new ParseField("uri");
 

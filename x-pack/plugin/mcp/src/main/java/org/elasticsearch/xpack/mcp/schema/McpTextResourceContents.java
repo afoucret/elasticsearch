@@ -36,7 +36,7 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
     public static final String NAME = "mcp_text_resource_contents";
 
     public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
-        McpTextResourceContents.class,
+        McpResourceContent.class,
         McpTextResourceContents.NAME,
         McpTextResourceContents::new
     );

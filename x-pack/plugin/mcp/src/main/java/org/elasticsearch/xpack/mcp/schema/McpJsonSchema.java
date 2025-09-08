@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpJsonSchema(

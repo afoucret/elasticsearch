@@ -25,7 +25,7 @@ public record McpResourceTemplateReference(@NotNull String uri) implements McpRe
     public static final String TYPE_VALUE = "ref/resource";
 
     public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
-        McpResourceTemplateReference.class,
+        McpReference.class,
         McpResourceTemplateReference.NAME,
         McpResourceTemplateReference::new
     );
@@ -59,7 +59,6 @@ public record McpResourceTemplateReference(@NotNull String uri) implements McpRe
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeEnum(type());
         out.writeString(uri);
     }
 

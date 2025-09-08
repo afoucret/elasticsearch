@@ -42,8 +42,6 @@ public class McpProtocol {
             McpGetPromptRequest.NAMED_WRITEABLE_ENTRY,
             McpGetPromptResult.NAMED_WRITEABLE_ENTRY,
             McpImplementation.NAMED_WRITEABLE_ENTRY,
-            new NamedWriteableRegistry.Entry(McpImplementation.class, McpImplementation.NAME, McpImplementation::new),
-            McpImplementation.NAMED_WRITEABLE_ENTRY,
             McpInitializedNotification.NAMED_WRITEABLE_ENTRY,
             McpInitializeRequest.NAMED_WRITEABLE_ENTRY,
             McpInitializeResult.NAMED_WRITEABLE_ENTRY,

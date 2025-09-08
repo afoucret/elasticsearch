@@ -25,7 +25,7 @@ public record McpPromptReference(@NotNull String name, String title) implements 
     public static final String NAME = "mcp_prompt_reference";
     public static final String TYPE_VALUE = "ref/prompt";
 
-    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPromptReference.class, McpPromptReference.NAME, McpPromptReference::new);
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpReference.class, McpPromptReference.NAME, McpPromptReference::new);
 
     private static final ParseField TYPE_FIELD = new ParseField("type");
     private static final ParseField NAME_FIELD = new ParseField("name");
@@ -58,7 +58,6 @@ public record McpPromptReference(@NotNull String name, String title) implements 
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
-        out.writeEnum(type());
         out.writeString(name);
         out.writeOptionalString(title);
     }

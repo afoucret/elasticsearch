@@ -28,7 +28,7 @@ public record McpImageContent(@NotNull String data, @NotNull String mimeType, Mc
 
     public static final String NAME = "image";
 
-    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpImageContent.class, McpImageContent.NAME, McpImageContent::new);
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpContent.class, McpImageContent.NAME, McpImageContent::new);
 
     private static final ParseField DATA_FIELD = new ParseField("data");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");
