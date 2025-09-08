@@ -16,6 +16,9 @@ import org.elasticsearch.xcontent.XContentParser;
 import org.elasticsearch.xcontent.XContentParserConfiguration;
 import org.elasticsearch.xcontent.json.JsonXContent;
 
+import org.elasticsearch.xpack.mcp.schema.prompt.McpPromptReference;
+import org.elasticsearch.xpack.mcp.schema.resource.McpResourceTemplateReference;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
