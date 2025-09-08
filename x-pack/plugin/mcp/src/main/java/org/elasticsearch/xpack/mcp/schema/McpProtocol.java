@@ -15,7 +15,7 @@ public class McpProtocol {
 
     public static List<NamedWriteableRegistry.Entry> namedWriteables() {
         return List.of(
-            new NamedWriteableRegistry.Entry(McpAnnotations.class, McpAnnotations.NAME, McpAnnotations::new),
+            McpAnnotations.NAMED_WRITEABLE_ENTRY,
             new NamedWriteableRegistry.Entry(McpAudioContent.class, McpAudioContent.NAME, McpAudioContent::new),
             new NamedWriteableRegistry.Entry(McpBlobResourceContents.class, McpBlobResourceContents.NAME, McpBlobResourceContents::new),
             new NamedWriteableRegistry.Entry(McpResourceContent.class, McpTextResourceContents.NAME, McpTextResourceContents::new),

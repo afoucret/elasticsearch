@@ -8,6 +8,7 @@ package org.elasticsearch.xpack.mcp.schema;
 
 import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.io.stream.NamedWriteable;
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -28,6 +29,12 @@ public record McpAnnotations(List<McpRole> audience, Double priority) implements
 
     private static final ParseField AUDIENCE_FIELD = new ParseField("audience");
     private static final ParseField PRIORITY_FIELD = new ParseField("priority");
+
+    public static final NamedWriteableRegistry.Entry NAMED_WRITEABLE_ENTRY = new NamedWriteableRegistry.Entry(
+        McpAnnotations.class,
+        McpAnnotations.NAME,
+        McpAnnotations::new
+    );
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpAnnotations, Object> PARSER = new ConstructingObjectParser<>(
