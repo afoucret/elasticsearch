@@ -17,6 +17,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -26,6 +27,12 @@ public record McpEmbeddedResource(@NotNull McpResourceContent resource, McpAnnot
 
     public static final String NAME = "mcp_embedded_resource";
     public static final String TYPE_VALUE = "resource";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpEmbeddedResource.class,
+        McpEmbeddedResource.NAME,
+        McpEmbeddedResource::new
+    );
 
     private static final ParseField TYPE_FIELD = new ParseField("type");
     private static final ParseField RESOURCE_FIELD = new ParseField("resource");

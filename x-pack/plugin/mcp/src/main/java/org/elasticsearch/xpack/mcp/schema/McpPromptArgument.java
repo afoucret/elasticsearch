@@ -18,6 +18,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -27,6 +28,8 @@ public record McpPromptArgument(@NotNull String name, String title, String descr
         ToXContentObject {
 
     public static final String NAME = "mcp_prompt_argument";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPromptArgument.class, McpPromptArgument.NAME, McpPromptArgument::new);
 
     private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField TITLE_FIELD = new ParseField("title");

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -26,6 +27,12 @@ public record McpListPromptsResult(@NotNull List<McpPrompt> prompts, String next
         McpServerResult {
 
     public static final String NAME = "mcp_list_prompts_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpListPromptsResult.class,
+        McpListPromptsResult.NAME,
+        McpListPromptsResult::new
+    );
 
     private static final ParseField PROMPTS_FIELD = new ParseField("prompts");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");

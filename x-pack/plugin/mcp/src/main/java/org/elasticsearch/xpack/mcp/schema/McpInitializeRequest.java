@@ -18,6 +18,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -29,6 +30,12 @@ public record McpInitializeRequest(
 ) implements McpClientRequest {
 
     public static final String NAME = "mcp_initialize_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpInitializeRequest.class,
+        McpInitializeRequest.NAME,
+        McpInitializeRequest::new
+    );
 
     private static final ParseField PROTOCOL_VERSION_FIELD = new ParseField("protocolVersion");
     private static final ParseField CAPABILITIES_FIELD = new ParseField("capabilities");

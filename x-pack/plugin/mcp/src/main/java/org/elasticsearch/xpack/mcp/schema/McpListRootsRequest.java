@@ -15,11 +15,18 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpListRootsRequest(Map<String, Object> meta) implements McpServerRequest {
 
     public static final String NAME = "mcp_list_roots_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpListRootsRequest.class,
+        McpListRootsRequest.NAME,
+        McpListRootsRequest::new
+    );
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpListRootsRequest, Object> PARSER = new ConstructingObjectParser<>(

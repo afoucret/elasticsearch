@@ -8,6 +8,7 @@ package org.elasticsearch.xpack.mcp.schema;
 
 import com.unboundid.util.NotNull;
 
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -26,6 +27,8 @@ public record McpImageContent(@NotNull String data, @NotNull String mimeType, Mc
         McpContent {
 
     public static final String NAME = "image";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpImageContent.class, McpImageContent.NAME, McpImageContent::new);
 
     private static final ParseField DATA_FIELD = new ParseField("data");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");

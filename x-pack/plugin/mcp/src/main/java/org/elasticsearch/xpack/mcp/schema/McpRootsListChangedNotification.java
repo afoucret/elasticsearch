@@ -15,6 +15,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 /**
@@ -25,6 +26,12 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 public record McpRootsListChangedNotification(Map<String, Object> meta) implements McpClientNotification {
 
     public static final String NAME = "roots_list_changed";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpRootsListChangedNotification.class,
+        McpRootsListChangedNotification.NAME,
+        McpRootsListChangedNotification::new
+    );
 
     private static final ParseField META_FIELD = new ParseField("_meta");
 

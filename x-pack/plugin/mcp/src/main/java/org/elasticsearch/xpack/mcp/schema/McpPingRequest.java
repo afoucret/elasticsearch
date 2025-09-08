@@ -15,11 +15,14 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpPingRequest(Map<String, Object> meta) implements McpClientRequest, McpServerRequest {
 
     public static final String NAME = "mcp_ping_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPingRequest.class, McpPingRequest.NAME, McpPingRequest::new);
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpPingRequest, Object> PARSER = new ConstructingObjectParser<>(

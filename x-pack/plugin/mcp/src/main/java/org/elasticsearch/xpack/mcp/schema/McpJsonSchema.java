@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpJsonSchema(
@@ -29,13 +30,16 @@ public record McpJsonSchema(
     Map<String, Object> definitions
 ) implements NamedWriteable, ToXContentObject {
 
+    public static final String NAME = "mcp_json_schema";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpJsonSchema.class, McpJsonSchema.NAME, McpJsonSchema::new);
+
     private static final ParseField TYPE_FIELD = new ParseField("type");
     private static final ParseField PROPERTIES_FIELD = new ParseField("properties");
     private static final ParseField REQUIRED_FIELD = new ParseField("required");
     private static final ParseField ADDITIONAL_PROPERTIES_FIELD = new ParseField("additionalProperties");
     private static final ParseField DEFS_FIELD = new ParseField("$defs");
     private static final ParseField DEFINITIONS_FIELD = new ParseField("definitions");
-    public static final String NAME = "mcp_json_schema";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpJsonSchema, Object> PARSER = new ConstructingObjectParser<>(

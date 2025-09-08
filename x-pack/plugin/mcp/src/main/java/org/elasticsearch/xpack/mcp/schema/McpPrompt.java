@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -29,6 +30,8 @@ public record McpPrompt(@NotNull String name, String title, String description, 
         ToXContentObject {
 
     public static final String NAME = "mcp_prompt";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPrompt.class, McpPrompt.NAME, McpPrompt::new);
 
     private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField TITLE_FIELD = new ParseField("title");

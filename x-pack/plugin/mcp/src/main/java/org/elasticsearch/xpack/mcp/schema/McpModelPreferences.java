@@ -17,6 +17,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.List;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpModelPreferences(List<McpModelHint> hints, Double costPriority, Double speedPriority, Double intelligencePriority)
@@ -24,11 +25,18 @@ public record McpModelPreferences(List<McpModelHint> hints, Double costPriority,
         NamedWriteable,
         ToXContentObject {
 
+    public static final String NAME = "mcp_model_preferences";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpModelPreferences.class,
+        McpModelPreferences.NAME,
+        McpModelPreferences::new
+    );
+
     private static final ParseField HINTS_FIELD = new ParseField("hints");
     private static final ParseField COST_PRIORITY_FIELD = new ParseField("costPriority");
     private static final ParseField SPEED_PRIORITY_FIELD = new ParseField("speedPriority");
     private static final ParseField INTELLIGENCE_PRIORITY_FIELD = new ParseField("intelligencePriority");
-    public static final String NAME = "mcp_model_preferences";
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpModelPreferences, Object> PARSER = new ConstructingObjectParser<>(

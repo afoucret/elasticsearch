@@ -15,11 +15,14 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpEmptyResult(Map<String, Object> meta) implements McpClientResult, McpServerResult {
 
     public static final String NAME = "mcp_empty_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpEmptyResult.class, McpEmptyResult.NAME, McpEmptyResult::new);
 
     @SuppressWarnings("unchecked")
     public static final ConstructingObjectParser<McpEmptyResult, Object> PARSER = new ConstructingObjectParser<>(

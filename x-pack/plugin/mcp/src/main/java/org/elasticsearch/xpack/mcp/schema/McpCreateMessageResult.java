@@ -17,6 +17,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -29,6 +30,12 @@ public record McpCreateMessageResult(
 ) implements McpClientResult {
 
     public static final String NAME = "mcp_create_message_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpCreateMessageResult.class,
+        McpCreateMessageResult.NAME,
+        McpCreateMessageResult::new
+    );
 
     private static final ParseField ROLE_FIELD = new ParseField("role");
     private static final ParseField CONTENT_FIELD = new ParseField("content");

@@ -17,6 +17,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -28,6 +29,12 @@ public record McpLoggingMessageNotification(
 ) implements McpServerNotification {
 
     public static final String NAME = "mcp_logging_message_notification";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpLoggingMessageNotification.class,
+        McpLoggingMessageNotification.NAME,
+        McpLoggingMessageNotification::new
+    );
 
     private static final ParseField LEVEL_FIELD = new ParseField("level");
     private static final ParseField DATA_FIELD = new ParseField("data");

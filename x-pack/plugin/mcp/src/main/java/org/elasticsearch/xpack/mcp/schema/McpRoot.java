@@ -19,6 +19,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -32,6 +33,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 public record McpRoot(@NotNull String uri, String name, Map<String, Object> meta) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_root";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpRoot.class, McpRoot.NAME, McpRoot::new);
 
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField NAME_FIELD = new ParseField("name");

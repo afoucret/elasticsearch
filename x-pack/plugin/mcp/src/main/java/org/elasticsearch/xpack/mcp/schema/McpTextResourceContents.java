@@ -8,6 +8,7 @@ package org.elasticsearch.xpack.mcp.schema;
 
 import com.unboundid.util.NotNull;
 
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -33,6 +34,12 @@ public record McpTextResourceContents(@NotNull String uri, @NotNull String mimeT
         McpResourceContent {
 
     public static final String NAME = "mcp_text_resource_contents";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpTextResourceContents.class,
+        McpTextResourceContents.NAME,
+        McpTextResourceContents::new
+    );
 
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");

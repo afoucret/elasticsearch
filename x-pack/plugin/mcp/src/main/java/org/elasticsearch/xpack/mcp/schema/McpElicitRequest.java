@@ -18,6 +18,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -26,6 +27,8 @@ public record McpElicitRequest(@NotNull String message, McpJsonSchema requestedS
         McpServerRequest {
 
     public static final String NAME = "mcp_elicit_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpElicitRequest.class, McpElicitRequest.NAME, McpElicitRequest::new);
 
     private static final ParseField MESSAGE_FIELD = new ParseField("message");
     private static final ParseField REQUESTED_SCHEMA_FIELD = new ParseField("requestedSchema");

@@ -8,6 +8,7 @@ package org.elasticsearch.xpack.mcp.schema;
 
 import com.unboundid.util.NotNull;
 
+import org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.xcontent.ConstructingObjectParser;
@@ -31,6 +32,8 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 public record McpTextContent(@NotNull String text, McpAnnotations annotations, Map<String, Object> meta) implements McpContent {
 
     public static final String NAME = "mcp_text_content";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpTextContent.class, McpTextContent.NAME, McpTextContent::new);
 
     private static final ParseField TEXT_FIELD = new ParseField("text");
     private static final ParseField ANNOTATIONS_FIELD = new ParseField("annotations");

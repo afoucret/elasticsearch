@@ -16,6 +16,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -23,6 +24,8 @@ public record McpPromptReference(@NotNull String name, String title) implements 
 
     public static final String NAME = "mcp_prompt_reference";
     public static final String TYPE_VALUE = "ref/prompt";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPromptReference.class, McpPromptReference.NAME, McpPromptReference::new);
 
     private static final ParseField TYPE_FIELD = new ParseField("type");
     private static final ParseField NAME_FIELD = new ParseField("name");

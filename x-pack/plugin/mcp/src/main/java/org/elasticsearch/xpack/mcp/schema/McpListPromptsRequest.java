@@ -15,11 +15,18 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpListPromptsRequest(String cursor, Map<String, Object> meta) implements McpClientRequest {
 
     public static final String NAME = "mcp_list_prompts_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpListPromptsRequest.class,
+        McpListPromptsRequest.NAME,
+        McpListPromptsRequest::new
+    );
 
     private static final ParseField CURSOR_FIELD = new ParseField("cursor");
     private static final ParseField META_FIELD = new ParseField("_meta");

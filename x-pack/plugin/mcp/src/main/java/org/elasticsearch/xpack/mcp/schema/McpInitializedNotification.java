@@ -15,11 +15,18 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpInitializedNotification(Map<String, Object> meta) implements McpClientNotification {
 
     public static final String NAME = "mcp_initialized_notification";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpInitializedNotification.class,
+        McpInitializedNotification.NAME,
+        McpInitializedNotification::new
+    );
 
     private static final ParseField META_FIELD = new ParseField("_meta");
 

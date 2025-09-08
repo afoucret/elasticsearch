@@ -20,6 +20,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -28,6 +29,8 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
         McpClientRequest {
 
     public static final String NAME = "mcp_complete_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpCompleteRequest.class, McpCompleteRequest.NAME, McpCompleteRequest::new);
 
     private static final ParseField REF_FIELD = new ParseField("ref");
     private static final ParseField ARGUMENT_FIELD = new ParseField("argument");
@@ -87,6 +90,8 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
     public record Argument(@NotNull String name, @NotNull String value) implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_complete_request_argument";
 
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(Argument.class, Argument.NAME, Argument::new);
+
         private static final ParseField NAME_FIELD = new ParseField("name");
         private static final ParseField VALUE_FIELD = new ParseField("value");
 
@@ -127,6 +132,8 @@ public record McpCompleteRequest(@NotNull McpReference ref, @NotNull Argument ar
 
     public record Context(Map<String, Object> arguments) implements NamedWriteable, ToXContentObject {
         public static final String NAME = "mcp_complete_request_context";
+
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(Context.class, Context.NAME, Context::new);
 
         private static final ParseField ARGUMENTS_FIELD = new ParseField("arguments");
 

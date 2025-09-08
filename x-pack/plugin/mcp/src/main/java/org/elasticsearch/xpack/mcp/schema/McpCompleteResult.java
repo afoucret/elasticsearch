@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpCompleteResult(@NotNull Completion completion, Map<String, Object> meta) implements McpServerResult {
 
     public static final String NAME = "mcp_complete_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpCompleteResult.class, McpCompleteResult.NAME, McpCompleteResult::new);
 
     private static final ParseField COMPLETION_FIELD = new ParseField("completion");
     private static final ParseField META_FIELD = new ParseField("_meta");
@@ -70,6 +73,8 @@ public record McpCompleteResult(@NotNull Completion completion, Map<String, Obje
     public record Completion(@NotNull List<String> values, Integer total, Boolean hasMore) implements NamedWriteable, ToXContentObject {
 
         public static final String NAME = "mcp_complete_result_completion";
+
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(Completion.class, Completion.NAME, Completion::new);
 
         private static final ParseField VALUES_FIELD = new ParseField("values");
         private static final ParseField TOTAL_FIELD = new ParseField("total");

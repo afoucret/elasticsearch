@@ -18,13 +18,17 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
 public record McpPromptMessage(@NotNull McpRole role, @NotNull McpContent content) implements NamedWriteable, ToXContentObject {
 
+    public static final String NAME = "mcp_prompt_message";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpPromptMessage.class, McpPromptMessage.NAME, McpPromptMessage::new);
+
     private static final ParseField ROLE_FIELD = new ParseField("role");
     private static final ParseField CONTENT_FIELD = new ParseField("content");
-    public static final String NAME = "mcp_prompt_message";
 
     public static final ConstructingObjectParser<McpPromptMessage, Object> PARSER = new ConstructingObjectParser<>(
         "mcp_prompt_message",

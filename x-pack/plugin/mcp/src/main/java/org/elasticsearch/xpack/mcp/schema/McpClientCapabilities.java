@@ -18,6 +18,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpClientCapabilities(Map<String, Object> experimental, RootCapabilities roots, Sampling sampling, Elicitation elicitation)
@@ -26,6 +27,12 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         ToXContentObject {
 
     public static final String NAME = "mcp_client_capabilities";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpClientCapabilities.class,
+        McpClientCapabilities.NAME,
+        McpClientCapabilities::new
+    );
 
     private static final ParseField EXPERIMENTAL_FIELD = new ParseField("experimental");
     private static final ParseField ROOTS_FIELD = new ParseField("roots");
@@ -96,6 +103,8 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
         private static final ParseField LIST_CHANGED = new ParseField("listChanged");
         public static final String NAME = "mcp_client_capabilities_root_capabilities";
 
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(RootCapabilities.class, RootCapabilities.NAME, RootCapabilities::new);
+
         public static final ConstructingObjectParser<RootCapabilities, Object> PARSER = new ConstructingObjectParser<>(
             "root_capabilities",
             args -> new RootCapabilities((Boolean) args[0])
@@ -134,6 +143,8 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
 
         public static final String NAME = "mcp_client_capabilities_sampling";
 
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(Sampling.class, Sampling.NAME, Sampling::new);
+
         public static final ObjectParser<Sampling, Object> PARSER = new ObjectParser<>(NAME, Sampling::new);
 
         public Sampling(StreamInput in) {
@@ -159,6 +170,8 @@ public record McpClientCapabilities(Map<String, Object> experimental, RootCapabi
     public record Elicitation() implements NamedWriteable, ToXContentObject {
 
         public static final String NAME = "mcp_client_capabilities_elicitation";
+
+        public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(Elicitation.class, Elicitation.NAME, Elicitation::new);
 
         public static final ObjectParser<Elicitation, Object> PARSER = new ObjectParser<>(NAME, Elicitation::new);
 

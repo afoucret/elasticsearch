@@ -19,6 +19,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -44,6 +45,8 @@ public record McpTool(
 ) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_tool";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpTool.class, McpTool.NAME, McpTool::new);
 
     private static final ParseField NAME_FIELD = new ParseField("name");
     private static final ParseField TITLE_FIELD = new ParseField("title");

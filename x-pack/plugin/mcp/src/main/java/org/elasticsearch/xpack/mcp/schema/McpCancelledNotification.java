@@ -19,6 +19,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -28,6 +29,12 @@ public record McpCancelledNotification(@NotNull Object requestId, String reason,
         McpServerNotification {
 
     public static final String NAME = "mcp_cancelled_notification";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpCancelledNotification.class,
+        McpCancelledNotification.NAME,
+        McpCancelledNotification::new
+    );
 
     private static final ParseField REQUEST_ID_FIELD = new ParseField("requestId");
     private static final ParseField REASON_FIELD = new ParseField("reason");

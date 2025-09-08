@@ -18,6 +18,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -30,6 +31,12 @@ import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstr
 public record McpReadResourceRequest(@NotNull String uri, Map<String, Object> meta) implements McpClientRequest {
 
     public static final String NAME = "mcp_read_resource_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpReadResourceRequest.class,
+        McpReadResourceRequest.NAME,
+        McpReadResourceRequest::new
+    );
 
     private static final ParseField URI_FIELD = new ParseField("uri");
     private static final ParseField META_FIELD = new ParseField("_meta");

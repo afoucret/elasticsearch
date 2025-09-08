@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -28,6 +29,12 @@ public record McpListResourceTemplatesResult(
 ) implements McpServerResult {
 
     public static final String NAME = "mcp_list_resource_templates_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpListResourceTemplatesResult.class,
+        McpListResourceTemplatesResult.NAME,
+        McpListResourceTemplatesResult::new
+    );
 
     private static final ParseField RESOURCE_TEMPLATES_FIELD = new ParseField("resourceTemplates");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");

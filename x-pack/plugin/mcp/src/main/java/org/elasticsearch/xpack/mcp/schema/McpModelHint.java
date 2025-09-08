@@ -18,11 +18,14 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 
 public record McpModelHint(@NotNull String name) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_model_hint";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpModelHint.class, McpModelHint.NAME, McpModelHint::new);
 
     private static final ParseField NAME_FIELD = new ParseField("name");
 

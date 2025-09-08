@@ -18,12 +18,15 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpImplementation(@NotNull String name, @NotNull String version, String title) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_implementation";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpImplementation.class, McpImplementation.NAME, McpImplementation::new);
 
     public static final ConstructingObjectParser<McpImplementation, Object> PARSER = new ConstructingObjectParser<>(
         NAME,

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -29,6 +30,8 @@ public record McpCallToolResult(
 ) implements McpServerResult {
 
     public static final String NAME = "mcp_call_tool_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpCallToolResult.class, McpCallToolResult.NAME, McpCallToolResult::new);
 
     private static final ParseField CONTENT_FIELD = new ParseField("content");
     private static final ParseField IS_ERROR_FIELD = new ParseField("isError");

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -35,6 +36,12 @@ public record McpCreateMessageRequest(
 ) implements McpServerRequest {
 
     public static final String NAME = "mcp_create_message_request";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpCreateMessageRequest.class,
+        McpCreateMessageRequest.NAME,
+        McpCreateMessageRequest::new
+    );
 
     private static final ParseField MESSAGES_FIELD = new ParseField("messages");
     private static final ParseField MAX_TOKENS_FIELD = new ParseField("maxTokens");

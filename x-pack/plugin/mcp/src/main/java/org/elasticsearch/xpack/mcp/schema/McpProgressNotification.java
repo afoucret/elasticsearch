@@ -19,6 +19,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -31,6 +32,12 @@ public record McpProgressNotification(
 ) implements McpClientNotification, McpServerNotification {
 
     public static final String NAME = "mcp_progress_notification";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(
+        McpProgressNotification.class,
+        McpProgressNotification.NAME,
+        McpProgressNotification::new
+    );
 
     private static final ParseField PROGRESS_TOKEN_FIELD = new ParseField("progressToken");
     private static final ParseField PROGRESS_FIELD = new ParseField("progress");

@@ -18,12 +18,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 public record McpListRootsResult(@NotNull List<McpRoot> roots, String nextCursor, Map<String, Object> meta) implements McpClientResult {
 
     public static final String NAME = "mcp_list_roots_result";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpListRootsResult.class, McpListRootsResult.NAME, McpListRootsResult::new);
 
     private static final ParseField ROOTS_FIELD = new ParseField("roots");
     private static final ParseField NEXT_CURSOR_FIELD = new ParseField("nextCursor");

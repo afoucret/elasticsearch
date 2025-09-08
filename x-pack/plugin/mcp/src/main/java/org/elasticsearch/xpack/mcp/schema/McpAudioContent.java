@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.*;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.constructorArg;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
@@ -26,6 +27,8 @@ public record McpAudioContent(@NotNull String data, @NotNull String mimeType, Mc
         McpContent {
 
     public static final String NAME = "audio";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpAudioContent.class, McpAudioContent.NAME, McpAudioContent::new);
 
     private static final ParseField DATA_FIELD = new ParseField("data");
     private static final ParseField MIME_TYPE_FIELD = new ParseField("mimeType");

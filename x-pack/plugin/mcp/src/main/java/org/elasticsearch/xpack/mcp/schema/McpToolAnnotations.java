@@ -16,6 +16,7 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 
+import static org.elasticsearch.common.io.stream.NamedWriteableRegistry.Entry;
 import static org.elasticsearch.xcontent.ConstructingObjectParser.optionalConstructorArg;
 
 /**
@@ -44,6 +45,8 @@ public record McpToolAnnotations(
 ) implements NamedWriteable, ToXContentObject {
 
     public static final String NAME = "mcp_tool_annotations";
+
+    public static final Entry NAMED_WRITEABLE_ENTRY = new Entry(McpToolAnnotations.class, McpToolAnnotations.NAME, McpToolAnnotations::new);
 
     private static final ParseField TITLE_FIELD = new ParseField("title");
     private static final ParseField READ_ONLY_HINT_FIELD = new ParseField("readOnlyHint");
