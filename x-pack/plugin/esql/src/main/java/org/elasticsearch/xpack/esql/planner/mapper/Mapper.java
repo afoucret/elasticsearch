@@ -24,6 +24,8 @@ import org.elasticsearch.xpack.esql.plan.logical.LogicalPlan;
 import org.elasticsearch.xpack.esql.plan.logical.PipelineBreaker;
 import org.elasticsearch.xpack.esql.plan.logical.TopN;
 import org.elasticsearch.xpack.esql.plan.logical.UnaryPlan;
+import org.elasticsearch.xpack.esql.plan.logical.inference.Completion;
+import org.elasticsearch.xpack.esql.plan.logical.inference.InferencePlan;
 import org.elasticsearch.xpack.esql.plan.logical.inference.Rerank;
 import org.elasticsearch.xpack.esql.plan.logical.join.Join;
 import org.elasticsearch.xpack.esql.plan.logical.join.JoinConfig;
@@ -37,6 +39,7 @@ import org.elasticsearch.xpack.esql.plan.physical.LookupJoinExec;
 import org.elasticsearch.xpack.esql.plan.physical.MergeExec;
 import org.elasticsearch.xpack.esql.plan.physical.PhysicalPlan;
 import org.elasticsearch.xpack.esql.plan.physical.TopNExec;
+import org.elasticsearch.xpack.esql.plan.physical.inference.CompletionExec;
 import org.elasticsearch.xpack.esql.plan.physical.inference.RerankExec;
 import org.elasticsearch.xpack.esql.session.Versioned;
 
@@ -141,16 +144,22 @@ public class Mapper {
             return new TopNExec(topN.source(), mappedChild, topN.order(), topN.limit(), null);
         }
 
-        if (unary instanceof Rerank rerank) {
-            mappedChild = addExchangeForFragment(rerank, mappedChild);
-            return new RerankExec(
-                rerank.source(),
-                mappedChild,
-                rerank.inferenceId(),
-                rerank.queryText(),
-                rerank.rerankFields(),
-                rerank.scoreAttribute()
-            );
+        if (unary instanceof InferencePlan) {
+            mappedChild = addExchangeForFragment(unary, mappedChild);
+            return switch (unary) {
+                case Rerank r -> new RerankExec(
+                    r.source(),
+                    mappedChild,
+                    r.inferenceId(),
+                    r.queryText(),
+                    r.rerankFields(),
+                    r.scoreAttribute()
+                );
+                case Completion c -> new CompletionExec(c.source(), mappedChild, c.inferenceId(), c.prompt(), c.targetField());
+                default -> throw new EsqlIllegalArgumentException(
+                    "unsupported inference plan type [" + unary.getClass().getSimpleName() + "]"
+                );
+            };
         }
 
         //

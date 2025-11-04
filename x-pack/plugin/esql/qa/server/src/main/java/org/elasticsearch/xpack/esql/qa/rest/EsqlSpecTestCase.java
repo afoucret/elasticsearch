@@ -73,12 +73,8 @@ import static org.elasticsearch.xpack.esql.CsvTestsDataLoader.createInferenceEnd
 import static org.elasticsearch.xpack.esql.CsvTestsDataLoader.deleteInferenceEndpoints;
 import static org.elasticsearch.xpack.esql.CsvTestsDataLoader.loadDataSetIntoEs;
 import static org.elasticsearch.xpack.esql.EsqlTestUtils.classpathResources;
-import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.COMPLETION;
-import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.KNN_FUNCTION_V5;
-import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.RERANK;
 import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.SEMANTIC_TEXT_FIELD_CAPS;
 import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.SOURCE_FIELD_MAPPING;
-import static org.elasticsearch.xpack.esql.action.EsqlCapabilities.Cap.TEXT_EMBEDDING_FUNCTION;
 import static org.elasticsearch.xpack.esql.qa.rest.RestEsqlTestCase.assertNotPartial;
 import static org.elasticsearch.xpack.esql.qa.rest.RestEsqlTestCase.hasCapabilities;
 
@@ -170,9 +166,7 @@ public abstract class EsqlSpecTestCase extends ESRestTestCase {
         assumeTrue("test clusters were broken", testClustersOk);
         INGEST.protectedBlock(() -> {
             // Inference endpoints must be created before ingesting any datasets that rely on them (mapping of inference_id)
-            if (supportsInferenceTestService()) {
-                createInferenceEndpoints(adminClient());
-            }
+            createInferenceEndpoints(adminClient());
             loadDataSetIntoEs(client(), supportsIndexModeLookup(), supportsSourceFieldMapping(), supportsInferenceTestService());
             return null;
         });
@@ -257,13 +251,7 @@ public abstract class EsqlSpecTestCase extends ESRestTestCase {
     }
 
     protected boolean requiresInferenceEndpoint() {
-        return Stream.of(
-            SEMANTIC_TEXT_FIELD_CAPS.capabilityName(),
-            RERANK.capabilityName(),
-            COMPLETION.capabilityName(),
-            KNN_FUNCTION_V5.capabilityName(),
-            TEXT_EMBEDDING_FUNCTION.capabilityName()
-        ).anyMatch(testCase.requiredCapabilities::contains);
+        return Stream.of(SEMANTIC_TEXT_FIELD_CAPS.capabilityName()).anyMatch(testCase.requiredCapabilities::contains);
     }
 
     protected boolean supportsIndexModeLookup() throws IOException {

@@ -19,6 +19,7 @@ import org.elasticsearch.client.ResponseListener;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.core.IOUtils;
+import org.elasticsearch.logging.LogManager;
 import org.elasticsearch.test.TestClustersThreadFilter;
 import org.elasticsearch.test.cluster.ElasticsearchCluster;
 import org.elasticsearch.test.rest.TestFeatureService;
@@ -244,7 +245,8 @@ public class MultiClusterSpecIT extends EsqlSpecTestCase {
         when(twoClients.performRequest(any())).then(invocation -> {
             Request request = invocation.getArgument(0);
             String endpoint = request.getEndpoint();
-            if (endpoint.startsWith("/_query")) {
+            LogManager.getLogger(MultiClusterSpecIT.class).warn("Endpoint : {}", endpoint);
+            if (endpoint.startsWith("/_query") || endpoint.startsWith("_inference")) {
                 return localClient.performRequest(request);
             } else if (endpoint.endsWith("/_bulk") && METADATA_INDICES.stream().anyMatch(i -> endpoint.equals("/" + i + "/_bulk"))) {
                 return remoteClient.performRequest(request);

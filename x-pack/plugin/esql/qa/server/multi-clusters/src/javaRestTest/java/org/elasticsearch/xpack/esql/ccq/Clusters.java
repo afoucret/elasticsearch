@@ -54,6 +54,11 @@ public class Clusters {
         if (supportRetryOnShardFailures(version) == false) {
             cluster.setting("cluster.routing.rebalance.enable", "none");
         }
+
+        if (localClusterVersion().equals(org.elasticsearch.Version.CURRENT)) {
+            cluster.plugin("inference-service-test");
+        }
+
         return cluster.build();
     }
 
